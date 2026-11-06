@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación en Vivo - Cultura Corporativa SOEX</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            stg: {
+              blue: '#0066FF',
+              blueDark: '#004ec2',
+              blueLight: '#eaf2ff',
+              orange: '#FF6A00',
+              orangeHover: '#e85f00',
+              orangeLight: '#fff2e8',
+              navy: '#0b192c',
+              bgLight: '#f8fafc'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f4f7fb;
+      min-height: 100vh;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 8px;
+    }
+    .card-secret {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-secret:hover:not(.used) {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 16px 30px -6px rgba(0, 102, 255, 0.18);
+      border-color: #0066FF;
+    }
+    @keyframes pulse-timer {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .timer-alert {
+      animation: pulse-timer 1s infinite;
+      color: #dc2626 !important;
+      border-color: #dc2626 !important;
+      background-color: #fef2f2 !important;
+    }
+  </style>
+</head>
+<body class="text-slate-800 font-sans antialiased p-3 md:p-6 flex flex-col justify-between">
+
+  <!-- ENCABEZADO SUPERIOR CON IDENTIDAD CORPORATIVA -->
+  <header class="max-w-7xl mx-auto w-full mb-6">
+    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 md:p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- LOGO SOMOSTUGESTORÍA + SOEX VENEZUELA -->
+      <div class="flex items-center gap-4">
+        <!-- Recreación fiel del imagotipo / logotipo con la tipografía y colores de la marca -->
+        <div class="flex flex-col items-start leading-none select-none">
+          <div class="text-2xl md:text-3xl font-black tracking-tight flex items-baseline">
+            <span class="text-stg-blue">somos</span><span class="text-stg-orange">tu</span><span class="text-stg-blue">gestoría</span>
+          </div>
+          <div class="w-full flex justify-end pr-1 mt-0.5">
+            <span class="text-xs md:text-sm font-extrabold tracking-normal text-stg-orange">desde 1997</span>
+          </div>
+        </div>
+
+        <div class="h-10 w-px bg-slate-200 hidden sm:block"></div>
+
+        <!-- Tag SOEX Venezuela -->
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider bg-stg-blue text-white px-2.5 py-1 rounded-md shadow-xs">SOEX Venezuela</span>
+        </div>
+      </div>
+
+      <!-- Resumen en vivo de progreso -->
+      <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 px-3 md:px-4 py-2 rounded-xl text-sm shadow-xs flex-wrap justify-center">
+        <div class="text-center px-2">
+          <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-bold">Preguntas</span>
+          <span id="answered-stat" class="text-base md:text-lg font-black text-stg-blue">0 / 16</span>
+        </div>
+        <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+        <div class="text-center px-2">
+          <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-bold">Puntaje Total</span>
+          <span id="total-points-stat" class="text-base md:text-lg font-black text-emerald-600">0 pts</span>
+        </div>
+        <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <button onclick="openQuestionsManager()" class="text-xs bg-stg-blue hover:bg-stg-blueDark text-white font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs" title="Editar y gestionar preguntas">
+            <i class="fa-solid fa-pen-to-square"></i> Gestionar Preguntas
+          </button>
+          <button onclick="resetAllProgress()" class="text-xs bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-300 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1 font-medium" title="Reiniciar notas de la sesión">
+            <i class="fa-solid fa-rotate-right text-slate-400"></i> Reiniciar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL: CUADRÍCULA + PANEL DE RESULTADOS -->
+  <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+    
+    <!-- CUADRÍCULA DE PREGUNTAS (8 columnas en desktop) -->
+    <section class="lg:col-span-8 flex flex-col justify-start">
+      <div class="bg-white border border-slate-200/90 rounded-2xl p-5 md:p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-stg-orangeLight text-stg-orange flex items-center justify-center font-bold text-sm">
+              <i class="fa-solid fa-cubes"></i>
+            </div>
+            <div>
+              <h2 id="grid-title" class="text-sm font-black text-slate-900 tracking-wide uppercase">Tablero Secreto de Preguntas</h2>
+              <span class="text-xs text-slate-500">Pide al participante que elija un número en voz alta</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid flexible de botones/tarjetas -->
+        <div id="cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 md:gap-4">
+          <!-- Tarjetas generadas dinámicamente con JS -->
+        </div>
+      </div>
+
+      <!-- Leyenda y Guía Rápida para el Evaluador -->
+      <div class="mt-4 bg-white border border-slate-200/80 rounded-xl p-3.5 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-stg-orange text-sm"></i>
+          <span><strong>Dinámica síncrona:</strong> 45 segundos de respuesta inmediata por micrófono y cámara.</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block shadow-xs"></span> 2 pts = Excelente</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block shadow-xs"></span> 1 pt = Parcial / Titubeó</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block shadow-xs"></span> 0 pts = Incorrecto</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL LATERAL: MARCADOR DE PARTICIPANTES -->
+    <aside class="lg:col-span-4 flex flex-col">
+      <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col h-[580px]">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-user text-stg-blue text-base"></i>
+            <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">Marcador de Evaluación</h3>
+          </div>
+          <button onclick="exportToCSV()" class="text-xs font-semibold text-slate-700 hover:text-stg-blue bg-slate-50 hover:bg-stg-blueLight px-2.5 py-1 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-file-arrow-down text-stg-blue"></i> Exportar CSV
+          </button>
+        </div>
+
+        <!-- Lista scrollable de participantes evaluados -->
+        <div id="evaluation-list" class="flex-grow overflow-y-auto custom-scroll pr-1 space-y-2 text-sm">
+          <!-- Inyectado por JS -->
+        </div>
+
+        <!-- Instrucción al pie del panel -->
+        <div class="pt-3 border-t border-slate-100 text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-cloud text-stg-blue"></i>
+          <span>Registro local en memoria listo para descarga al terminar.</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- MODAL DE PREGUNTA Y EVALUACIÓN EN VIVO -->
+  <div id="question-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 hidden">
+    <div class="bg-white border border-slate-200 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Barra superior del modal con colores corporativos -->
+      <div class="bg-gradient-to-r from-stg-blue to-stg-blueDark text-white p-4 md:px-6 md:py-4 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-3">
+          <span id="modal-q-badge" class="w-10 h-10 rounded-xl bg-stg-orange text-white font-black text-xl flex items-center justify-center shadow-md">
+            1
+          </span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange-200">Evaluación de Cultura SOEX</span>
+            <h3 id="modal-q-title" class="text-base md:text-lg font-black tracking-tight text-white leading-tight">Reto de Cultura SOEX</h3>
+          </div>
+        </div>
+
+        <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Contenido del Modal -->
+      <div class="p-5 md:p-7 overflow-y-auto custom-scroll space-y-5 bg-white">
+
+        <!-- Cronómetro interactivo central -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5">
+            <div id="timer-display" class="w-16 h-16 rounded-2xl bg-white border-2 border-stg-orange text-stg-orange font-black text-2xl flex items-center justify-center shadow-xs tracking-tight transition-colors">
+              45s
+            </div>
+            <div>
+              <span class="text-[11px] text-slate-500 uppercase tracking-wider block font-bold">Tiempo de Respuesta Oral</span>
+              <span id="timer-status-text" class="text-xs text-slate-700 font-medium">Listo para iniciar en directo</span>
+            </div>
+          </div>
+
+          <!-- Controles de reloj -->
+          <div class="flex items-center gap-2">
+            <button id="btn-start-timer" onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-play"></i> Iniciar
+            </button>
+            <button id="btn-pause-timer" onclick="pauseTimer()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-pause"></i> Pausar
+            </button>
+            <button onclick="resetTimer()" class="bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 text-xs px-3 py-2.5 rounded-xl transition-all" title="Reiniciar 45s">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Enunciado de la Pregunta Situacional -->
+        <div class="bg-stg-blueLight/60 border-l-4 border-stg-blue p-4 md:p-5 rounded-r-2xl">
+          <span class="text-[11px] font-extrabold text-stg-blue uppercase tracking-widest block mb-1">Situación Planteada en Vivo:</span>
+          <p id="modal-q-text" class="text-base md:text-lg font-semibold text-slate-900 leading-relaxed">
+            Texto de la pregunta...
+          </p>
+        </div>
+
+        <!-- Botón y Contenedor de la Respuesta Correcta -->
+        <div class="space-y-3">
+          <button id="btn-reveal-answer" onclick="toggleAnswerKey()" class="w-full py-3 px-4 bg-stg-orangeLight hover:bg-orange-100 border border-stg-orange/40 rounded-xl text-stg-orange font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-xs">
+            <i class="fa-solid fa-eye" id="reveal-icon"></i>
+            <span id="reveal-text">Mostrar respuesta correcta / criterio</span>
+          </button>
+
+          <div id="answer-key-content" class="hidden p-4 md:p-5 bg-amber-50/60 border border-amber-200 rounded-2xl text-sm text-slate-800 leading-relaxed shadow-xs">
+            <div class="mb-2">
+              <strong class="text-stg-orange text-xs uppercase tracking-wider block font-black">Respuesta Esperada / Normativa SOEX:</strong>
+              <p id="modal-q-answer" class="text-slate-800 font-normal mt-1 leading-relaxed"></p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-amber-200 text-xs text-slate-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-info text-stg-blue"></i>
+              <span><strong>Criterio a evaluar:</strong> Seguridad verbal, solidez, rapidez y apego estricto a las políticas internas.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de Calificación Rápida -->
+        <div class="bg-slate-50 border border-slate-200 p-4 md:p-5 rounded-2xl">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-600 block mb-3">Registro de Calificación:</span>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Participante (1 de los 16):</label>
+              <input id="eval-participant-name" type="text" placeholder="Ej. Carlos Mendoza" 
+                class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-stg-blue focus:ring-2 focus:ring-stg-blue/20">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Observación breve (opcional):</label>
+              <input id="eval-participant-note" type="text" placeholder="Ej. Muy seguro con la nomenclatura..." 
+                class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-stg-blue focus:ring-2 focus:ring-stg-blue/20">
+            </div>
+          </div>
+
+          <!-- Botones de asignación de puntaje con colores claros -->
+          <div class="grid grid-cols-3 gap-2 md:gap-3">
+            <button onclick="submitScore(2)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl transition-all shadow-xs flex flex-col items-center justify-center gap-0.5 group">
+              <span class="text-sm md:text-base flex items-center gap-1">2 Puntos <i class="fa-solid fa-check text-xs"></i></span>
+              <span class="text-[10px] text-emerald-100 font-normal">Excelente / Preciso</span>
+            </button>
+            <button onclick="submitScore(1)" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-3 rounded-xl transition-all shadow-xs flex flex-col items-center justify-center gap-0.5 group">
+              <span class="text-sm md:text-base flex items-center gap-1">1 Punto <i class="fa-solid fa-minus text-xs"></i></span>
+              <span class="text-[10px] text-amber-100 font-normal">Parcial / Inseguro</span>
+            </button>
+            <button onclick="submitScore(0)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-3 rounded-xl transition-all shadow-xs flex flex-col items-center justify-center gap-0.5 group">
+              <span class="text-sm md:text-base flex items-center gap-1">0 Puntos <i class="fa-solid fa-xmark text-xs"></i></span>
+              <span class="text-[10px] text-rose-100 font-normal">No sabe / Incorrecto</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE GESTIÓN Y EDICIÓN DE PREGUNTAS (ADMIN) -->
+  <div id="manager-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 hidden">
+    <div class="bg-white border border-slate-200 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- Encabezado del modal gestor -->
+      <div class="bg-slate-900 text-white p-4 md:px-6 md:py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-stg-orange text-white flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="text-base md:text-lg font-black text-white">Gestor de Preguntas y Respuestas</h3>
+            <span class="text-xs text-slate-400">Edita textos, agrega nuevas preguntas o ajusta la cantidad total</span>
+          </div>
+        </div>
+        <button onclick="closeQuestionsManager()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Barra de acciones rápidas -->
+      <div class="bg-slate-50 border-b border-slate-200 p-3 md:px-6 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-slate-700">Total preguntas activas:</span>
+          <span id="manager-q-count" class="bg-stg-blue text-white px-2.5 py-0.5 rounded-full font-black">16</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="addNewQuestion()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs">
+            <i class="fa-solid fa-plus"></i> Agregar Pregunta
+          </button>
+          <button onclick="restoreDefaultQuestions()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors" title="Restaurar las 16 originales de cultura SOEX">
+            <i class="fa-solid fa-arrow-rotate-left text-stg-orange"></i> Restaurar Predeterminadas
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista editable de preguntas -->
+      <div id="manager-questions-list" class="p-4 md:p-6 overflow-y-auto custom-scroll space-y-4 bg-slate-50/50 flex-grow">
+        <!-- Renderizado dinámicamente con formularios por pregunta -->
+      </div>
+
+      <!-- Pie del modal -->
+      <div class="p-4 bg-white border-t border-slate-200 flex items-center justify-between">
+        <span class="text-xs text-slate-500">
+          <i class="fa-solid fa-floppy-disk text-stg-blue mr-1"></i> Los cambios se guardan automáticamente en tu navegador.
+        </span>
+        <button onclick="closeQuestionsManager()" class="bg-stg-blue hover:bg-stg-blueDark text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-xs">
+          Listo / Aplicar al Tablero
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST / NOTIFICACIONES -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-stg-orange text-lg"></i>
+    <span id="toast-msg" class="text-sm font-medium">Notificación</span>
+  </div>
+
+  <script>
+    // PREGUNTAS PREDETERMINADAS BASADAS EN CULTURA SOEX
+    const defaultQuestionsData = [
+      {
+        id: 1,
+        topic: "Trayectoria y Estructura",
+        title: "Origen de la Gestoría y Respaldo",
+        question: "Un cliente español con una PYME en Madrid te pregunta con desconfianza en una llamada: «¿Desde cuándo operáis y quién me respalda legal y técnicamente si ustedes están en Venezuela?». ¿Cómo argumentas la relación entre SOEX y la gestoría en España transmitiéndole solidez absoluta?",
+        answer: "Destacar con total convicción que somostugestoría.es cuenta con más de 25 años de trayectoria en España (fundada en 1997 en Madrid) respaldando fiscal, contable y laboralmente a PYMES y autónomos. SOEX en Venezuela no es un tercero ni un call center, sino la columna vertebral operativa y tecnológica directa de la propia empresa, garantizando cumplimiento estricto bajo normativa española."
+      },
+      {
+        id: 2,
+        topic: "Estandarización Digital",
+        title: "Regla de Oro en Nomenclatura",
+        question: "Acabas de consolidar la primera versión del reporte de cierre del mes para el cliente 'Restauración Ibérica S.L.' hoy 7 de noviembre de 2026. Según nuestra política obligatoria de nomenclatura de ficheros, escribe o dicta exactamente el nombre del archivo.",
+        answer: "Formato obligatorio: AAAA_MM_DD_Nombre_Descriptivo_del_Archivo. Ejemplo exacto: 2026_11_07_Reporte_Cierre_Restauracion_Iberica.xlsx (o .pdf). Penalizar el uso de guiones simples (2026-11-07), fechas en formato DD_MM_AAAA, minúsculas informales o palabras como 'final(1)'."
+      },
+      {
+        id: 3,
+        topic: "Gestión Documental",
+        title: "Control de Versiones y Protocolo en la Nube",
+        question: "El Líder Contable te compartió un reporte fiscal consolidado del mes anterior ya aprobado por el cliente. Te percatas de que hace falta ajustar un detalle menor. ¿Puedes editar y sobrescribir directamente ese archivo en el Drive? ¿Cuál es el protocolo estricto a seguir?",
+        answer: "Está terminantemente PROHIBIDO sobrescribir archivos originales que representen entregas consolidadas. Se debe generar una nueva copia del archivo, actualizar la fecha y agregar las iniciales de quien edita (ejemplo: 2026_11_07_Reporte_Fiscal_Revision_YO.xlsx). En Google Drive se debe recurrir al historial de versiones si son cambios base."
+      },
+      {
+        id: 4,
+        topic: "Canales de Comunicación",
+        title: "WhatsApp vs. Trello",
+        question: "Un compañero de tu equipo te escribe un viernes a las 4:30 pm por WhatsApp: «Porfa, ayúdame a revisar la conciliación bancaria de estas 3 empresas y ajusta las facturas antes de que termine la jornada». Según las normativas internas de SOEX, ¿qué error de canal se cometió y cómo debe corregirse?",
+        answer: "WhatsApp es un canal exclusivo para mensajería rápida, urgencias operativas y comunicación informal. Las tareas importantes de gestión contable NUNCA se asignan por WhatsApp; deben gestionarse formalmente mediante tarjetas de Trello para garantizar trazabilidad, responsables y tiempos de entrega."
+      },
+      {
+        id: 5,
+        topic: "Canales Formales",
+        title: "Comunicación con Clientes de España",
+        question: "Un cliente de Barcelona te envía un audio por WhatsApp preguntándote si puede desgravar el IVA de una cena de negocios con amigos un domingo. ¿Cómo gestionas esa interacción cumpliendo la política de canales oficiales de la empresa?",
+        answer: "El Correo Electrónico es el único canal formal de comunicación para resoluciones y criterios fiscales con los clientes y con el equipo en España. Se atiende el mensaje con amabilidad y calidez, pero se le indica: «Con mucho gusto lo revisamos a detalle, te he enviado la respuesta formal y las implicaciones fiscales a tu correo electrónico para que quede constancia por escrito en tu expediente»."
+      },
+      {
+        id: 6,
+        topic: "Normativa Laboral",
+        title: "Control de Jornada y Fichaje",
+        question: "Tuviste un corte de energía eléctrica al iniciar el turno y entraste a laborar 45 minutos después del horario acordado. ¿En qué plataforma debes registrar obligatoriamente tu marcaje y cuál es el procedimiento con la incidencia de tiempo?",
+        answer: "El cumplimiento de la jornada laboral y el fichaje de entrada y salida se realiza obligatoriamente a través de WORKI. Se debe realizar el fichaje al incorporarse y notificar inmediatamente la incidencia a la coordinación/responsable de área para justificar la novedad."
+      },
+      {
+        id: 7,
+        topic: "Normativa Laboral",
+        title: "Gestión de Permisos Planificados",
+        question: "Necesitas solicitar el próximo viernes libre para realizar un trámite personal en un ente público. ¿Con cuántos días de anticipación mínima debes solicitarlo y qué requisito clave se debe asegurar para la operativa?",
+        answer: "Los permisos planificados se deben solicitar con un MÍNIMO DE 5 DÍAS de anticipación y requieren aprobación formal, coordinando previamente con los responsables del área la cobertura de suplencias para no comprometer las entregas del POD."
+      },
+      {
+        id: 8,
+        topic: "Normativa Laboral",
+        title: "Emergencias de Salud e Inasistencias",
+        question: "Si una persona del equipo sufre una indisposición de salud repentina que le impide conectarse a su jornada habitual, ¿cuál es el plazo máximo establecido para consignar el justificativo o aval médico?",
+        answer: "Las emergencias de salud deben notificarse con prontitud y justificarse formalmente mediante un aval médico válido en un lapso no mayor a 24 HORAS."
+      },
+      {
+        id: 9,
+        topic: "Organización del Trabajo",
+        title: "Estructura de los PODs y Capacidad",
+        question: "¿Qué es un POD en el modelo operativo de SOEX, cuántas empresas gestiona aproximadamente cada unidad y quién se ubica en la Estación 5 como responsable de supervisión?",
+        answer: "Un POD es una Unidad Operativa Multidisciplinar y Autosuficiente orientada a cumplir objetivos. Cada unidad tiene capacidad para gestionar aproximadamente 100 PYMES. La Estación 5 corresponde al LÍDER CONTABLE, encargado de la supervisión integral, cierres y control de KPIs."
+      },
+      {
+        id: 10,
+        topic: "Organización del Trabajo",
+        title: "Estación 3: Bancos y Tesorería",
+        question: "En un POD, si surge una discrepancia no resuelta en los extractos bancarios de una sociedad, ¿quiénes integran la Estación 3 responsable de esta área y cuáles son sus roles?",
+        answer: "La Estación 3 (Bancos y Tesorería) está conformada por 3 profesionales: 1 Especialista y 2 Analistas dedicados a la conciliación y extractos bancarios."
+      },
+      {
+        id: 11,
+        topic: "Valores Corporativos",
+        title: "Autonomía y Capacidad Resolutiva",
+        question: "Uno de nuestros valores pilares es la 'Autonomía'. Si un analista detecta un descuadre en una factura, ¿cuál es la actitud de un profesional autónomo en SOEX frente a un empleado tradicional pasivo?",
+        answer: "Ser resolutivo. No esperar pasivamente a que alguien le diga qué hacer ni limitarse a reportar «hay un error», sino investigar el origen, contrastar la documentación y plantear alternativas viables de solución antes de escalar al especialista o líder contable."
+      },
+      {
+        id: 12,
+        topic: "Valores Corporativos",
+        title: "Excelencia: Hacer las cosas bien a la primera",
+        question: "¿Bajo qué premisa fundamental se define el valor de la 'Excelencia' en SOEX y cómo impacta esto en la relación y confianza del cliente en España?",
+        answer: "Bajo la premisa de «Hacer las cosas bien a la primera». Se traduce en rigor, atención al detalle y autocontrol de calidad antes de enviar cualquier balance o declaración, evitando que el cliente o la administración tributaria española detecten inconsistencias evitables."
+      },
+      {
+        id: 13,
+        topic: "Onboarding e Integración",
+        title: "Plan de Éxito de los Primeros 90 Días",
+        question: "¿Cuáles son las 3 etapas del Plan de Éxito de 90 días en SOEX y qué comportamiento específico se evalúa entre los Días 61 al 90?",
+        answer: "Las tres etapas son: Días 1 al 30: Aprender (absorción total de conocimientos); Días 31 al 60: Colaborar (ejecutar tareas bajo acompañamiento); Días 61 al 90: LIDERAR (demostrar liderazgo, proactividad y plena autonomía en las funciones asignadas)."
+      },
+      {
+        id: 14,
+        topic: "Seguridad y Convivencia",
+        title: "Seguridad IT y Confidencialidad",
+        question: "Recibes en tu buzón un correo que aparenta ser del banco español BBVA solicitando verificar con urgencia las credenciales de acceso de un cliente. ¿Cuál es el protocolo de seguridad obligatorio?",
+        answer: "Nunca pulsar enlaces, descargar ficheros ni suministrar datos. Reporte INMEDIATO al departamento de Sistemas (IT) de correos sospechosos y resguardo absoluto de la confidencialidad de la información bancaria y fiscal del cliente."
+      },
+      {
+        id: 15,
+        topic: "Valores Corporativos",
+        title: "Resiliencia Operativa",
+        question: "En caso de ocurrir una contingencia técnica, de conectividad o fluido eléctrico en tu localidad durante el cierre trimestral de impuestos, ¿cómo se materializa el valor corporativo de la 'Resiliencia'?",
+        answer: "La Resiliencia en SOEX se define como la «Determinación para asegurar la continuidad del servicio». Se materializa teniendo planes de contingencia activos (redes alternativas, equipos de respaldo, comunicación temprana con el POD) para que los compromisos con España no se detengan."
+      },
+      {
+        id: 16,
+        topic: "Identidad y Propósito",
+        title: "Misión y Visión de SOEX Venezuela",
+        question: "En tus propias palabras: ¿Cuál es la Misión principal de SOEX en Venezuela respecto a la operación en España y cuál es nuestra Visión institucional?",
+        answer: "Misión: Ser el motor operativo y tecnológico, la columna vertebral para procesar con máxima precisión cada trámite fiscal, contable y laboral. Visión: Consolidarnos como el modelo de gestión remota de referencia y un polo de talento internacional de excelencia."
+      }
+    ];
+
+    // ESTADO ACTIVO Y PERSISTENCIA
+    let questionsData = [];
+    let evaluationState = {};
+    let currentQuestionIndex = null;
+    let timerInterval = null;
+    let timerSeconds = 45;
+    let isTimerRunning = false;
+
+    // CARGAR DESDE LOCALSTORAGE O USAR PREDETERMINADAS
+    function loadQuestions() {
+      try {
+        const saved = localStorage.getItem('soex_questions_data');
+        if (saved) {
+          questionsData = JSON.parse(saved);
+        } else {
+          questionsData = JSON.parse(JSON.stringify(defaultQuestionsData));
+        }
+      } catch (e) {
+        questionsData = JSON.parse(JSON.stringify(defaultQuestionsData));
+      }
+      initEvaluationState();
+    }
+
+    function saveQuestionsToStorage() {
+      try {
+        localStorage.setItem('soex_questions_data', JSON.stringify(questionsData));
+      } catch (e) {
+        console.error("Error al guardar preguntas en localStorage", e);
+      }
+    }
+
+    function initEvaluationState() {
+      const oldState = evaluationState || {};
+      evaluationState = {};
+      questionsData.forEach(q => {
+        if (oldState[q.id]) {
+          evaluationState[q.id] = oldState[q.id];
+        } else {
+          evaluationState[q.id] = {
+            answered: false,
+            participant: '',
+            score: null,
+            note: ''
+          };
+        }
+      });
+    }
+
+    // RENDERIZAR CUADRÍCULA SEGÚN CANTIDAD TOTAL DE PREGUNTAS
+    function renderGrid() {
+      const gridContainer = document.getElementById('cards-grid');
+      gridContainer.innerHTML = '';
+
+      document.getElementById('grid-title').innerText = `Tablero Secreto de Preguntas (1 al ${questionsData.length})`;
+
+      questionsData.forEach((q, idx) => {
+        const displayNum = idx + 1;
+        const item = evaluationState[q.id] || { answered: false, participant: '', score: null };
+        const isUsed = item.answered;
+
+        const card = document.createElement('button');
+        card.className = `card-secret relative rounded-2xl p-5 md:p-6 flex flex-col items-center justify-center min-h-[120px] md:min-h-[135px] border transition-all cursor-pointer ${
+          isUsed 
+            ? 'used bg-slate-100 border-slate-200 opacity-60 cursor-default' 
+            : 'bg-white border-slate-200 hover:border-stg-blue text-slate-900 shadow-sm'
+        }`;
+
+        if (!isUsed) {
+          card.onclick = () => openQuestionModal(q.id);
+        } else {
+          card.onclick = () => openQuestionModal(q.id, true);
+        }
+
+        // Insignia con el número
+        const numCircle = document.createElement('div');
+        numCircle.className = `w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center font-black text-2xl md:text-3xl transition-transform ${
+          isUsed 
+            ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' 
+            : 'bg-gradient-to-tr from-stg-blue to-stg-blueDark text-white shadow-md'
+        }`;
+        numCircle.innerHTML = isUsed ? '<i class="fa-solid fa-check text-xl"></i>' : displayNum;
+
+        // Subtítulo confidencial/secreto
+        const statusEl = document.createElement('div');
+        statusEl.className = 'w-full text-center mt-2.5';
+        statusEl.innerHTML = isUsed 
+          ? `<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Respondida</span>`
+          : `<span class="text-xs font-semibold uppercase tracking-widest text-slate-400 flex items-center justify-center gap-1.5"><i class="fa-solid fa-lock text-[10px] text-stg-orange"></i> Secreta</span>`;
+
+        card.appendChild(numCircle);
+        card.appendChild(statusEl);
+
+        if (isUsed && item.score !== null) {
+          const scoreBadge = document.createElement('div');
+          const badgeColor = item.score === 2 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                             item.score === 1 ? 'bg-amber-100 text-amber-800 border-amber-300' : 
+                                               'bg-rose-100 text-rose-800 border-rose-300';
+          scoreBadge.className = `mt-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeColor} truncate max-w-full`;
+          scoreBadge.innerText = `${item.participant || 'Part.'}: ${item.score} pts`;
+          card.appendChild(scoreBadge);
+        }
+
+        gridContainer.appendChild(card);
+      });
+
+      updateStats();
+      renderScoreboard();
+    }
+
+    // ABRIR MODAL CON LA PREGUNTA
+    function openQuestionModal(questionId, isAlreadyAnswered = false) {
+      const qIndex = questionsData.findIndex(item => item.id === questionId);
+      if (qIndex === -1) return;
+      const q = questionsData[qIndex];
+      const displayNum = qIndex + 1;
+
+      currentQuestionIndex = questionId;
+      const state = evaluationState[questionId] || {};
+
+      document.getElementById('modal-q-badge').innerText = displayNum;
+      document.getElementById('modal-q-title').innerText = `Reto #${displayNum} - ${q.topic || 'Criterio Operativo'}`;
+      document.getElementById('modal-q-text').innerText = q.question;
+      document.getElementById('modal-q-answer').innerText = q.answer;
+
+      document.getElementById('eval-participant-name').value = state.participant || '';
+      document.getElementById('eval-participant-note').value = state.note || '';
+
+      const answerContent = document.getElementById('answer-key-content');
+      answerContent.classList.add('hidden');
+      document.getElementById('reveal-text').innerText = 'Mostrar respuesta correcta / criterio';
+      document.getElementById('reveal-icon').className = 'fa-solid fa-eye';
+
+      resetTimer();
+      document.getElementById('question-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      pauseTimer();
+      document.getElementById('question-modal').classList.add('hidden');
+    }
+
+    function toggleAnswerKey() {
+      const content = document.getElementById('answer-key-content');
+      const text = document.getElementById('reveal-text');
+      const icon = document.getElementById('reveal-icon');
+      const isHidden = content.classList.contains('hidden');
+
+      if (isHidden) {
+        content.classList.remove('hidden');
+        text.innerText = 'Ocultar respuesta correcta';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        content.classList.add('hidden');
+        text.innerText = 'Mostrar respuesta correcta / criterio';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    // CONTROL DEL CRONÓMETRO DE 45 SEGUNDOS
+    function updateTimerDisplay() {
+      const display = document.getElementById('timer-display');
+      display.innerText = `${timerSeconds}s`;
+
+      if (timerSeconds <= 10 && timerSeconds > 0) {
+        display.classList.add('timer-alert');
+      } else {
+        display.classList.remove('timer-alert');
+      }
+
+      if (timerSeconds === 0) {
+        display.classList.remove('timer-alert');
+        display.classList.add('text-rose-600', 'border-rose-600', 'bg-rose-50');
+        document.getElementById('timer-status-text').innerText = '¡Tiempo concluido!';
+      }
+    }
+
+    function startTimer() {
+      if (isTimerRunning) return;
+      isTimerRunning = true;
+      document.getElementById('timer-status-text').innerText = 'Contando tiempo en vivo...';
+
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+        } else {
+          pauseTimer();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 45;
+      document.getElementById('timer-status-text').innerText = 'Listo para iniciar (45 segundos)';
+      const display = document.getElementById('timer-display');
+      display.classList.remove('timer-alert', 'text-rose-600', 'border-rose-600', 'bg-rose-50');
+      display.classList.add('text-stg-orange', 'border-stg-orange', 'bg-white');
+      updateTimerDisplay();
+    }
+
+    function submitScore(points) {
+      if (currentQuestionIndex === null) return;
+
+      const qIndex = questionsData.findIndex(item => item.id === currentQuestionIndex);
+      const displayNum = qIndex + 1;
+      const participantName = document.getElementById('eval-participant-name').value.trim() || `Participante (Pregunta ${displayNum})`;
+      const note = document.getElementById('eval-participant-note').value.trim();
+
+      evaluationState[currentQuestionIndex] = {
+        answered: true,
+        participant: participantName,
+        score: points,
+        note: note
+      };
+
+      pauseTimer();
+      closeModal();
+      renderGrid();
+
+      showToast(`¡Puntuación de ${participantName} registrada!`, 'fa-circle-check');
+    }
+
+    function updateStats() {
+      let answeredCount = 0;
+      let totalPoints = 0;
+
+      questionsData.forEach(q => {
+        const item = evaluationState[q.id];
+        if (item && item.answered) {
+          answeredCount++;
+          if (item.score !== null) totalPoints += item.score;
+        }
+      });
+
+      document.getElementById('answered-stat').innerText = `${answeredCount} / ${questionsData.length}`;
+      document.getElementById('total-points-stat').innerText = `${totalPoints} pts`;
+    }
+
+    function renderScoreboard() {
+      const listContainer = document.getElementById('evaluation-list');
+      listContainer.innerHTML = '';
+
+      const answeredItems = [];
+      questionsData.forEach((q, idx) => {
+        const item = evaluationState[q.id];
+        if (item && item.answered) {
+          answeredItems.push({
+            id: q.id,
+            displayNum: idx + 1,
+            ...item
+          });
+        }
+      });
+
+      if (answeredItems.length === 0) {
+        listContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
+            <i class="fa-solid fa-hourglass-start text-3xl mb-3 text-slate-300"></i>
+            <p class="text-xs font-semibold text-slate-600">No hay evaluaciones registradas aún.</p>
+            <p class="text-[11px] text-slate-400 mt-1">Pide a un participante que diga un número del 1 al ${questionsData.length} para comenzar.</p>
+          </div>
+        `;
+        return;
+      }
+
+      answeredItems.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between gap-2 hover:bg-slate-100 transition-colors';
+
+        const scoreBg = item.score === 2 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                        item.score === 1 ? 'bg-amber-100 text-amber-800 border-amber-300' :
+                                          'bg-rose-100 text-rose-800 border-rose-300';
+
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-6 h-6 rounded-lg bg-stg-blue text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+              ${item.displayNum}
+            </span>
+            <div class="min-w-0">
+              <span class="font-bold text-slate-800 block text-xs truncate">${item.participant}</span>
+              <span class="text-[10px] text-slate-500 block truncate">Pregunta #${item.displayNum}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <span class="text-xs font-extrabold px-2 py-0.5 rounded-md border ${scoreBg}">
+              ${item.score} pts
+            </span>
+            <button onclick="openQuestionModal(${item.id}, true)" class="text-slate-400 hover:text-stg-blue p-1 text-xs" title="Editar calificación">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+    }
+
+    // MODAL DE GESTIÓN / EDICIÓN DE PREGUNTAS
+    function openQuestionsManager() {
+      renderManagerList();
+      document.getElementById('manager-modal').classList.remove('hidden');
+    }
+
+    function closeQuestionsManager() {
+      document.getElementById('manager-modal').classList.add('hidden');
+      renderGrid();
+    }
+
+    function renderManagerList() {
+      const container = document.getElementById('manager-questions-list');
+      container.innerHTML = '';
+
+      document.getElementById('manager-q-count').innerText = questionsData.length;
+
+      questionsData.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3';
+        
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-stg-blue text-white font-black text-xs flex items-center justify-center">
+                ${index + 1}
+              </span>
+              <span class="text-xs font-bold text-slate-800 uppercase">Pregunta #${index + 1}</span>
+            </div>
+            <button onclick="deleteQuestion(${q.id})" class="text-slate-400 hover:text-rose-600 p-1 text-xs transition-colors" title="Eliminar esta pregunta">
+              <i class="fa-solid fa-trash-can"></i> Eliminar
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Categoría / Tema:</label>
+              <input type="text" value="${escapeHTML(q.topic || '')}" 
+                onchange="updateQuestionField(${q.id}, 'topic', this.value)"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-stg-blue">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Título de referencia:</label>
+              <input type="text" value="${escapeHTML(q.title || '')}" 
+                onchange="updateQuestionField(${q.id}, 'title', this.value)"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-stg-blue">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Texto de la Pregunta / Caso:</label>
+            <textarea rows="2" 
+              onchange="updateQuestionField(${q.id}, 'question', this.value)"
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-stg-blue">${escapeHTML(q.question || '')}</textarea>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-stg-orange mb-1">Respuesta Esperada / Criterio:</label>
+            <textarea rows="2" 
+              onchange="updateQuestionField(${q.id}, 'answer', this.value)"
+              class="w-full bg-amber-50/40 border border-amber-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-stg-orange">${escapeHTML(q.answer || '')}</textarea>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function updateQuestionField(id, field, value) {
+      const q = questionsData.find(item => item.id === id);
+      if (q) {
+        q[field] = value;
+        saveQuestionsToStorage();
+        showToast('Guardado automático', 'fa-check');
+      }
+    }
+
+    function addNewQuestion() {
+      const newId = Date.now();
+      const newQuestion = {
+        id: newId,
+        topic: "Nuevo Tema",
+        title: `Pregunta ${questionsData.length + 1}`,
+        question: "Escribe aquí la situación o pregunta a responder...",
+        answer: "Escribe aquí el criterio de evaluación y la respuesta correcta esperada..."
+      };
+
+      questionsData.push(newQuestion);
+      saveQuestionsToStorage();
+      initEvaluationState();
+      renderManagerList();
+      showToast('Pregunta agregada con éxito', 'fa-plus');
+    }
+
+    function deleteQuestion(id) {
+      if (questionsData.length <= 1) {
+        showToast('Debe haber al menos 1 pregunta', 'fa-triangle-exclamation');
+        return;
+      }
+
+      if (confirm('¿Deseas eliminar esta pregunta del tablero?')) {
+        questionsData = questionsData.filter(item => item.id !== id);
+        delete evaluationState[id];
+        saveQuestionsToStorage();
+        renderManagerList();
+        showToast('Pregunta eliminada', 'fa-trash-can');
+      }
+    }
+
+    function restoreDefaultQuestions() {
+      if (confirm('¿Restablecer las 16 preguntas predeterminadas de Cultura SOEX? Se reemplazarán las preguntas actuales.')) {
+        questionsData = JSON.parse(JSON.stringify(defaultQuestionsData));
+        saveQuestionsToStorage();
+        initEvaluationState();
+        renderManagerList();
+        showToast('Preguntas originales restauradas', 'fa-rotate-left');
+      }
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/"/g, '&quot;');
+    }
+
+    function exportToCSV() {
+      const records = [];
+      questionsData.forEach((q, idx) => {
+        const data = evaluationState[q.id];
+        if (data && data.answered) {
+          records.push({
+            Numero: idx + 1,
+            Tema: `"${(q.topic || '').replace(/"/g, '""')}"`,
+            Pregunta: `"${(q.title || '').replace(/"/g, '""')}"`,
+            Participante: `"${(data.participant || '').replace(/"/g, '""')}"`,
+            Puntos: data.score,
+            Nota: `"${(data.note || '').replace(/"/g, '""')}"`
+          });
+        }
+      });
+
+      if (records.length === 0) {
+        showToast('No hay datos para exportar todavía', 'fa-triangle-exclamation');
+        return;
+      }
+
+      const headers = ['Numero', 'Tema', 'Pregunta', 'Participante', 'Puntos', 'Nota'];
+      const csvRows = [headers.join(',')];
+
+      records.forEach(r => {
+        csvRows.push([r.Numero, r.Tema, r.Pregunta, r.Participante, r.Puntos, r.Nota].join(','));
+      });
+
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Evaluacion_SOEX_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast('Descargando reporte CSV...', 'fa-file-csv');
+    }
+
+    function resetAllProgress() {
+      if (confirm("¿Deseas reiniciar las calificaciones y respuestas registradas en esta sesión?")) {
+        initEvaluationState();
+        renderGrid();
+        showToast('Sesión reiniciada con éxito', 'fa-check');
+      }
+    }
+
+    function showToast(message, iconClass = 'fa-circle-check') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = message;
+      document.getElementById('toast-icon').className = `fa-solid ${iconClass} text-stg-orange text-lg`;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    window.onload = function() {
+      loadQuestions();
+      renderGrid();
+    };
+  </script>
+</body>
+</html>

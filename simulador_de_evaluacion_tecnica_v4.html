@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVALUACIÓN PRÁCTICA INDIVIDUAL • somostugestoría</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              blue: '#0055FF',
+              darkblue: '#0040CC',
+              orange: '#FF5500',
+              orangeDark: '#E04B00',
+            }
+          },
+          boxShadow: {
+            folderLight: '0 8px 20px -4px rgba(217, 119, 6, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+            folderHover: '0 16px 28px -6px rgba(217, 119, 6, 0.18), 0 6px 10px -3px rgba(0, 0, 0, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .folder-wrapper {
+      perspective: 1000px;
+    }
+    .folder-body {
+      background: linear-gradient(155deg, #FEFBF3 0%, #FEF3C7 60%, #FDE68A 100%);
+      box-shadow: 0 4px 14px -2px rgba(217, 119, 6, 0.10), 0 2px 5px -1px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+    }
+    .folder-pocket {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, #FEF3C7 100%);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(217, 119, 6, 0.06);
+    }
+    .folder-badge-blue {
+      background: linear-gradient(135deg, #0055FF 0%, #0044D6 100%);
+      box-shadow: 0 3px 8px rgba(0, 85, 255, 0.28);
+    }
+    .stamp-audited {
+      border: 2.5px dashed #059669;
+      color: #047857;
+      transform: rotate(-8deg);
+      text-shadow: 0 1px 2px rgba(16, 185, 129, 0.15);
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-100/80 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-blue selection:text-white">
+
+  <!-- ==================== HEADER CORPORATIVO OFICIAL ==================== -->
+  <header class="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Bloque de Identidad Oficial -->
+      <div class="flex items-center gap-3 cursor-pointer select-none" onclick="app.showHomeView()">
+        <div class="bg-white py-1.5 px-3 rounded-2xl flex items-center gap-3.5">
+          <!-- Logo somostugestoría -->
+          <div class="flex flex-col items-center">
+            <div class="text-2xl sm:text-3xl font-black tracking-tight leading-none">
+              <span class="text-[#0055FF]">somos</span><span class="text-[#FF5500]">tu</span><span class="text-[#0055FF]">gestoría</span>
+            </div>
+            <div class="text-[11px] sm:text-xs font-black text-[#FF5500] tracking-wider self-end mt-0.5">
+              desde 1997
+            </div>
+          </div>
+
+          <!-- Línea Divisoria Vertical Gris Clara -->
+          <div class="h-8 w-px bg-slate-300"></div>
+
+          <!-- Pastilla Azul SOEX VENEZUELA -->
+          <div class="bg-[#0055FF] text-white text-[11px] sm:text-xs font-extrabold px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-sm shadow-blue-500/25">
+            SOEX VENEZUELA
+          </div>
+        </div>
+      </div>
+
+      <!-- Controles de Encabezado: Temporizador Global, Restaurar & Calificaciones -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Selector Rápido de Tiempo para Evaluaciones -->
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-600 shadow-2xs">
+          <svg class="w-4 h-4 text-slate-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+            <polyline points="12 6 12 12 16 14" stroke-width="2"></polyline>
+          </svg>
+          <span class="text-slate-500 hidden sm:inline mr-1 font-semibold">Tiempo:</span>
+          <select id="timeDurationSelect" onchange="app.changeDefaultTime(this.value)" class="bg-white border border-slate-300 rounded-lg px-2 py-0.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer text-xs">
+            <option value="60">1:00 min (60s)</option>
+            <option value="90" selected>1:30 min (90s)</option>
+            <option value="120">2:00 min (120s)</option>
+            <option value="180">3:00 min (180s)</option>
+            <option value="300">5:00 min (300s)</option>
+          </select>
+        </div>
+
+        <!-- Botón Calificaciones -->
+        <button onclick="app.showSummaryModal()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-brand-blue border border-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span>Calificaciones</span>
+          <span id="headerAuditedBadge" class="bg-brand-blue text-white rounded-full px-2 py-0.2 text-[10px] font-black">0/16</span>
+        </button>
+
+        <!-- Botón Banco de Expedientes (Gestionar/Modificar/Eliminar) -->
+        <button onclick="app.openBankModal()" title="Ver y gestionar banco de expedientes" class="flex items-center gap-1.5 bg-white hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-3.5 h-3.5 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span class="hidden sm:inline">Banco Expedientes</span>
+        </button>
+
+        <!-- Botón Restaurar / Reiniciar Expedientes -->
+        <button onclick="app.openRestoreModal()" title="Restaurar carpetas a su estado inicial" class="flex items-center gap-1.5 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span class="hidden sm:inline">Restaurar</span>
+        </button>
+
+        <!-- Candado del Evaluador -->
+        <button id="evaluatorToggleBtn" onclick="app.toggleEvaluatorDrawer()" title="Panel del Evaluador (Ctrl + Shift + P)" class="p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-slate-200 text-slate-500 hover:text-brand-blue transition-all shadow-2xs relative">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ==================== VISTA 1: TABLERO DE CARPETAS (HOME) ==================== -->
+    <div id="homeView" class="space-y-6">
+      
+      <!-- Banner Principal de la Sección -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-blue-50 text-brand-blue font-black text-xs px-3.5 py-1.5 rounded-full mb-2.5 border border-blue-100 tracking-wide uppercase">
+            <span>EVALUACIÓN PRÁCTICA INDIVIDUAL</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            FICHA TÉCNICA
+          </h1>
+          <p class="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl font-medium">
+            Cotejo técnico de expedientes: <strong class="text-brand-blue font-bold">Figuras Jurídicas (2,5 pts)</strong> e <strong class="text-brand-orange font-bold">Identificación Tributaria y Validación AEAT (2,5 pts)</strong>.
+          </p>
+        </div>
+
+        <!-- Acciones del Tablero -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <button type="button" onclick="app.openBankModal()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-4 py-2.5 rounded-xl border border-slate-300 transition-all cursor-pointer">
+            <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            <span>Ver / Gestionar Banco</span>
+          </button>
+          
+          <button type="button" onclick="app.openNewExpedienteModal()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer">
+            <svg class="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>+ Nuevo Expediente</span>
+          </button>
+          
+          <button type="button" onclick="app.pickRandomExpediente()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md shadow-orange-500/20 transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            <span>Asignar Carpeta al Azar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Resumen Rápido -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Carpetas</span>
+          <span id="statTotalExp" class="text-2xl font-black text-slate-900 mt-0.5 block font-mono">16</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Evaluados / Auditados</span>
+          <span id="statAuditedExp" class="text-2xl font-black text-emerald-600 mt-0.5 block font-mono">0</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">Carpetas Pendientes</span>
+          <span id="statPendingExp" class="text-2xl font-black text-amber-600 mt-0.5 block font-mono">16</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-brand-blue uppercase tracking-wider block">Promedio de Grupo</span>
+          <span id="statAverageScore" class="text-2xl font-black text-brand-blue mt-0.5 block font-mono">-- / 5.0</span>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Carpetas Secretas -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <span>Expedientes Secretos Disponibles</span>
+            <span class="text-xs font-normal text-slate-500 normal-case">(Selecciona una carpeta para abrir su ficha técnica en pantalla)</span>
+          </h2>
+          <span class="text-xs font-bold text-slate-400 hidden sm:inline">somostugestoría • auditoría técnica</span>
+        </div>
+
+        <div id="foldersGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== VISTA 2: AUDITORÍA EN PANTALLA COMPLETA ==================== -->
+    <div id="auditView" class="hidden space-y-6">
+      
+      <!-- Barra Superior de Navegación del Caso -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3">
+          <button onclick="app.showHomeView()" class="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-all font-bold flex items-center gap-1.5 text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+            <span>Volver a las Carpetas</span>
+          </button>
+          
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="auditExpBadge" class="bg-slate-900 text-white text-xs font-black px-2.5 py-0.5 rounded-lg tracking-wider font-mono">EXPEDIENTE #01</span>
+              <span id="auditStatusBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 uppercase tracking-wide">Pendiente</span>
+            </div>
+            <h2 id="auditClientTitle" class="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">Juan Francisco Morales</h2>
+          </div>
+        </div>
+
+        <!-- Módulo del Temporizador Central -->
+        <div class="flex items-center gap-3 bg-slate-950 text-white px-4 py-2.5 rounded-2xl shadow-md border border-slate-800">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-brand-orange animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+              <polyline points="12 6 12 12 16 14" stroke-width="2"></polyline>
+            </svg>
+            <div id="timerDisplay" class="font-mono text-2xl font-black tracking-wider text-emerald-400">01:30</div>
+          </div>
+
+          <div class="flex items-center gap-1 pl-2 border-l border-slate-800">
+            <button id="timerPlayBtn" onclick="app.startTimer()" title="Iniciar / Continuar" class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="timerPauseBtn" onclick="app.pauseTimer()" title="Pausar" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-all opacity-50">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button onclick="app.resetTimer()" title="Reiniciar tiempo" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Botón Rápido: Marcar / Desmarcar Auditado (sin necesidad de calificar) -->
+          <button id="quickAuditToggleBtn" onclick="app.toggleAuditStatus()" class="font-extrabold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-2xs border">
+            <!-- Dinámico vía renderCurrentAudit -->
+          </button>
+
+          <!-- Botón Calificar en Privado -->
+          <button onclick="app.openEvaluatorForCurrent()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <span>Calificar en Privado</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Barra de Progreso del Tiempo -->
+      <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+        <div id="timerProgressBar" class="h-full bg-emerald-500 transition-all duration-300 w-full"></div>
+      </div>
+
+      <!-- 2 Columnas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Ficha de Entrada (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 relative overflow-hidden">
+            <div class="text-xs font-black text-brand-orange uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+              <span>Ficha Técnica Oficial</span>
+            </div>
+            
+            <h3 id="cardClientName" class="text-xl font-black text-slate-900 mt-1.5">Juan Francisco Morales</h3>
+            <div id="cardClientMeta" class="text-xs text-slate-500 font-semibold mt-0.5">Nacionalidad española, 38 años</div>
+
+            <div class="mt-4 pt-4 border-t border-slate-100 space-y-3.5">
+              <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Situación Operativa:</span>
+                <p id="cardSituation" class="text-sm font-semibold text-slate-700 leading-snug mt-1">
+                  Electricista que realiza trabajos de instalaciones de forma habitual a su propio nombre, sin socios ni estructura mercantil.
+                </p>
+              </div>
+
+              <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Documento Aportado en Expediente:</span>
+                <div class="mt-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <span id="cardDocType" class="text-[11px] font-bold text-slate-500 block uppercase">DNI Ordinario</span>
+                    <span id="cardDocNumber" class="text-lg font-black text-slate-900 font-mono tracking-wide">48.765.432-R</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block">Dato Registrado:</span>
+                    <span id="cardDocExtra" class="text-xs font-bold text-brand-blue font-mono">Validez: 15/09/2028</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-center gap-2.5 text-amber-900 text-xs font-medium">
+                <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <span>Esquema técnico de contraste reservado. Se revelará con la solución oficial para el cotejo en vivo.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preguntas Técnicas Grandes y Revelar Solución (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Tarjeta Pregunta 1 -->
+          <div class="bg-white rounded-2xl border-2 border-blue-100 p-6 shadow-sm hover:border-brand-blue/40 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="inline-flex items-center gap-2 bg-blue-50 text-brand-blue font-black text-xs px-3 py-1 rounded-lg uppercase tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+                <span>Pregunta 1 • Figuras Jurídicas y Actividad</span>
+              </div>
+              <span class="text-sm font-black text-brand-blue font-mono bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">2,5 PUNTOS</span>
+            </div>
+
+            <p id="auditQuestion1" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-2 leading-relaxed">
+              ¿Bajo qué figura jurídica opera en España y mediante qué modelo de impuesto rinde cuentas tributarias anualmente? ¿Este impuesto es fijo o progresivo?
+            </p>
+          </div>
+
+          <!-- Tarjeta Pregunta 2 -->
+          <div class="bg-white rounded-2xl border-2 border-orange-100 p-6 shadow-sm hover:border-brand-orange/40 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="inline-flex items-center gap-2 bg-orange-50 text-brand-orange font-black text-xs px-3 py-1 rounded-lg uppercase tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+                <span>Pregunta 2 • Identificación y Validación AEAT</span>
+              </div>
+              <span class="text-sm font-black text-brand-orange font-mono bg-orange-50 px-3 py-1 rounded-lg border border-orange-100">2,5 PUNTOS</span>
+            </div>
+
+            <p id="auditQuestion2" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-2 leading-relaxed">
+              Explica a nivel de dígitos cómo se compone su identificador fiscal. Si debes ingresar a la sede de la AEAT a descargar sus datos fiscales, ¿cuál es el dato de contraste obligatorio que debes introducir junto a su número de documento?
+            </p>
+          </div>
+
+          <!-- Revelar Solución Oficial -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider">Solución Oficial y Validación AEAT</h4>
+                <p class="text-xs text-slate-500 font-medium">Revela el esquema gráfico de contraste y las respuestas al concluir la intervención.</p>
+              </div>
+
+              <button id="toggleSolutionBtn" onclick="app.toggleOfficialSolution()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all">
+                <span id="solutionBtnIcon">👁</span>
+                <span id="solutionBtnText">Revelar Solución Oficial</span>
+              </button>
+            </div>
+
+            <div id="solutionBox" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-4">
+              <div class="p-4 rounded-xl bg-blue-50/80 border border-blue-100">
+                <strong class="text-xs font-black text-brand-blue uppercase tracking-wider block mb-1">Solución Pregunta 1:</strong>
+                <p id="auditSol1" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">--</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-orange-50/80 border border-orange-100">
+                <strong class="text-xs font-black text-brand-orange uppercase tracking-wider block mb-1">Solución Pregunta 2:</strong>
+                <p id="auditSol2" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">--</p>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-xs font-black text-slate-700 flex items-center gap-1.5 uppercase tracking-wide">
+                    <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <span>Esquema Técnico de Validación Oficial AEAT</span>
+                  </div>
+                  <span id="visualTagBadge" class="text-[10px] font-bold bg-blue-100 text-brand-blue border border-blue-200 px-2 py-0.5 rounded-md uppercase">DNI</span>
+                </div>
+
+                <div id="visualSchemeContainer" class="w-full">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Navegación entre expedientes -->
+          <div class="flex items-center justify-between pt-1">
+            <button onclick="app.prevExpediente()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-all flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              <span>Carpeta Anterior</span>
+            </button>
+
+            <span id="auditPagingText" class="text-xs font-bold text-slate-400 font-mono">1 de 16</span>
+
+            <button onclick="app.nextExpediente()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-all flex items-center gap-2">
+              <span>Siguiente Carpeta</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== DRAWER PRIVADO DEL EVALUADOR ==================== -->
+  <div id="evaluatorOverlay" onclick="app.toggleEvaluatorDrawer()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+
+  <aside id="evaluatorDrawer" class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] bg-white z-50 shadow-2xl border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+    
+    <div class="p-5 border-b border-slate-200 bg-slate-900 text-white flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <div>
+          <h3 class="font-black text-sm uppercase tracking-wider">Panel del Evaluador</h3>
+          <p class="text-[11px] text-slate-400 font-medium">Registro Privado de Calificaciones</p>
+        </div>
+      </div>
+      <button onclick="app.toggleEvaluatorDrawer()" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Expediente a Calificar:</label>
+        <select id="evaluatorExpSelect" onchange="app.onEvaluatorSelectExp(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre del Estudiante Evaluado:</label>
+        <input type="text" id="evalStudentName" placeholder="Ej. Carlos Rodríguez" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+      </div>
+
+      <!-- Calificación Pregunta 1 -->
+      <div class="bg-blue-50/70 rounded-xl p-4 border border-blue-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black text-brand-blue uppercase tracking-wide">Pilar 1: Figuras Jurídicas</span>
+          <span id="evalScoreP1Badge" class="text-xs font-black text-brand-blue font-mono bg-white px-2 py-0.5 rounded border border-blue-200">0,0 / 2,5</span>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-slate-500 block mb-1.5">Puntaje Pregunta 1:</span>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="app.setScoreP1(0)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">0,0 pts</button>
+            <button type="button" onclick="app.setScoreP1(1.25)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">1,25 pts</button>
+            <button type="button" onclick="app.setScoreP1(2.5)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">2,50 pts</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calificación Pregunta 2 -->
+      <div class="bg-orange-50/70 rounded-xl p-4 border border-orange-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black text-brand-orange uppercase tracking-wide">Pilar 2: Identificación & AEAT</span>
+          <span id="evalScoreP2Badge" class="text-xs font-black text-brand-orange font-mono bg-white px-2 py-0.5 rounded border border-orange-200">0,0 / 2,5</span>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-slate-500 block mb-1.5">Puntaje Pregunta 2:</span>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="app.setScoreP2(0)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">0,0 pts</button>
+            <button type="button" onclick="app.setScoreP2(1.25)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">1,25 pts</button>
+            <button type="button" onclick="app.setScoreP2(2.5)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">2,50 pts</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Calculado -->
+      <div class="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between">
+        <div>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Calificación Total</span>
+          <span class="text-[10px] text-slate-500 font-medium">Escala oficial de 0,0 a 5,0 puntos</span>
+        </div>
+        <div id="evalTotalScore" class="text-3xl font-black font-mono text-emerald-400">0,0 / 5,0</div>
+      </div>
+
+      <!-- Observaciones -->
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas Privadas / Observaciones:</label>
+        <textarea id="evalNotes" rows="2" placeholder="Observaciones de dicción, seguridad técnica..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+      </div>
+
+    </div>
+
+    <!-- Footer Guardar -->
+    <div class="p-5 border-t border-slate-200 bg-slate-50 flex items-center gap-3">
+      <button onclick="app.saveCurrentEvaluation()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl shadow-md shadow-emerald-600/20 text-xs flex items-center justify-center gap-2 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span>Guardar Calificación</span>
+      </button>
+
+      <button onclick="app.clearCurrentEvaluation()" title="Limpiar calificación de este caso" class="p-3 rounded-xl border border-slate-300 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ==================== MODAL: TABLA DE CALIFICACIONES ==================== -->
+  <div id="summaryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">Calificaciones</h3>
+          <p class="text-xs text-slate-500 font-medium">somostugestoría desde 1997 • SOEX VENEZUELA</p>
+        </div>
+        <button onclick="app.closeSummaryModal()" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+              <th class="p-3">Exp.</th>
+              <th class="p-3">Estudiante</th>
+              <th class="p-3">Caso / Cliente</th>
+              <th class="p-3 text-center">P1 (2.5)</th>
+              <th class="p-3 text-center">P2 (2.5)</th>
+              <th class="p-3 text-center">Total (5.0)</th>
+              <th class="p-3 text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody" class="divide-y divide-slate-100">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-4 text-slate-600">
+          <span>Auditados: <strong id="summaryModalAudited" class="text-emerald-600 font-mono">0/16</strong></span>
+          <span>Promedio: <strong id="summaryModalAvg" class="text-brand-blue font-mono">-- / 5.0</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="app.exportToCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Exportar CSV</span>
+          </button>
+          <button onclick="app.closeSummaryModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-all">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== MODAL: GESTIÓN DEL BANCO DE EXPEDIENTES ==================== -->
+  <div id="bankModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand-blue flex items-center justify-center text-white font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Banco de Expedientes Técnicos</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Revisa, modifica las preguntas o elimina casos para ajustar el tamaño del grupo</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="app.closeBankModal(); app.openNewExpedienteModal();" class="bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+            <span>+ Agregar Caso</span>
+          </button>
+          <button onclick="app.closeBankModal()" class="p-2 text-slate-400 hover:text-white rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra informativa -->
+      <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="text-slate-600">
+          <span>Total en banco: <strong id="bankTotalCount" class="text-slate-900 font-mono font-bold">16</strong> expedientes activos.</span>
+        </div>
+        <span class="text-[11px] text-slate-500 font-medium italic">Puedes eliminar carpetas para que sean menos o editarlas antes de la evaluación.</span>
+      </div>
+
+      <!-- Lista de Expedientes -->
+      <div class="flex-1 overflow-y-auto p-5">
+        <div id="bankExpedientesList" class="space-y-3">
+          <!-- Inyección dinámica -->
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
+        <button onclick="app.restoreDefaultExpedientes()" class="text-slate-500 hover:text-rose-600 font-bold transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>Recuperar los 16 Casos Originales</span>
+        </button>
+
+        <button onclick="app.closeBankModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl transition-all">
+          Listo / Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: MODIFICAR / EDITAR EXPEDIENTE ==================== -->
+  <div id="editExpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-brand-blue text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white font-black text-sm">
+            ✎
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Modificar Expediente <span id="editExpIdBadge">#01</span></h3>
+            <p class="text-[11px] text-blue-100 font-medium">Actualiza preguntas, respuestas homologadas o datos del titular</p>
+          </div>
+        </div>
+        <button onclick="app.closeEditExpModal()" class="p-2 text-white/80 hover:text-white rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        <input type="hidden" id="editExpId">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre / Razón Social *</label>
+            <input type="text" id="editClientName" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Metadato / Perfil</label>
+            <input type="text" id="editClientMeta" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Situación Operativa</label>
+          <textarea id="editSituation" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Tipo Documento</label>
+            <select id="editDocType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+              <option value="DNI">DNI Ordinario</option>
+              <option value="DNI_PERM">DNI Permanente</option>
+              <option value="NIE">NIE / Tarjeta TIE</option>
+              <option value="NIF_SL">NIF Sociedad Limitada (S.L.)</option>
+              <option value="NIF_SA">NIF Sociedad Anónima (S.A.)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Número Documento</label>
+            <input type="text" id="editDocNumber" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Dato Registrado</label>
+            <input type="text" id="editDocExtra" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <!-- Pregunta 1 -->
+        <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-blue uppercase tracking-wider block text-[11px]">Pregunta 1 • Figuras Jurídicas (2,5 pts) *</span>
+          <textarea id="editQuestion1" rows="2" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+          <textarea id="editSol1" rows="2" class="w-full bg-white border border-blue-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="p-3.5 bg-orange-50/70 border border-orange-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-orange uppercase tracking-wider block text-[11px]">Pregunta 2 • Identificación & AEAT (2,5 pts) *</span>
+          <textarea id="editQuestion2" rows="2" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+          <textarea id="editSol2" rows="2" class="w-full bg-white border border-orange-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2 text-xs">
+        <button type="button" onclick="app.closeEditExpModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button type="button" onclick="app.saveEditedExpediente()" class="px-5 py-2.5 rounded-xl bg-brand-blue hover:bg-brand-darkblue text-white font-extrabold shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <span>Guardar Cambios</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: NUEVO EXPEDIENTE ==================== -->
+  <div id="newExpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white font-black text-sm">
+            +
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Crear Nuevo Expediente Técnico</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Añade un caso para la evaluación práctica individual</p>
+          </div>
+        </div>
+        <button onclick="app.closeNewExpedienteModal()" class="p-2 text-slate-400 hover:text-white rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre / Razón Social *</label>
+            <input type="text" id="newClientName" placeholder="Ej. Pedro Luis Alarcón" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Metadato / Perfil</label>
+            <input type="text" id="newClientMeta" placeholder="Ej. Nacionalidad española, 40 años" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Situación Operativa</label>
+          <textarea id="newSituation" rows="2" placeholder="Describe brevemente la actividad económica o mercantil..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Tipo Documento</label>
+            <select id="newDocType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+              <option value="DNI">DNI Ordinario</option>
+              <option value="DNI_PERM">DNI Permanente</option>
+              <option value="NIE">NIE / Tarjeta TIE</option>
+              <option value="NIF_SL">NIF Sociedad Limitada (S.L.)</option>
+              <option value="NIF_SA">NIF Sociedad Anónima (S.A.)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Número Documento</label>
+            <input type="text" id="newDocNumber" placeholder="Ej. 52.345.678-K" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Dato Registrado</label>
+            <input type="text" id="newDocExtra" placeholder="Ej. Validez: 20/11/2030" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <!-- Pregunta 1 -->
+        <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-blue uppercase tracking-wider block text-[11px]">Pregunta 1 • Figuras Jurídicas (2,5 pts) *</span>
+          <textarea id="newQuestion1" rows="2" placeholder="Texto de la pregunta..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+          <textarea id="newSol1" rows="2" placeholder="Solución técnica oficial homologada..." class="w-full bg-white border border-blue-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="p-3.5 bg-orange-50/70 border border-orange-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-orange uppercase tracking-wider block text-[11px]">Pregunta 2 • Identificación & AEAT (2,5 pts) *</span>
+          <textarea id="newQuestion2" rows="2" placeholder="Texto de la pregunta..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+          <textarea id="newSol2" rows="2" placeholder="Solución técnica oficial homologada..." class="w-full bg-white border border-orange-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2 text-xs">
+        <button type="button" onclick="app.closeNewExpedienteModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button type="button" onclick="app.saveNewExpediente()" class="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-orange-600 text-white font-extrabold shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <span>Guardar Expediente</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: CONFIRMACIÓN DE RESTAURAR ==================== -->
+  <div id="restoreConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900">¿Restaurar Todo el Tablero?</h3>
+          <p class="text-xs text-slate-500 font-medium">Esta acción limpiará todas las calificaciones y devolverá los expedientes a su estado inicial para una nueva sesión.</p>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800">
+        ✔ Todas las carpetas volverán a estado <strong>Pendiente</strong> (sin sello de auditado).<br>
+        ✔ Se restablecerán las estadísticas y el promedio a <strong>0</strong>.
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 text-xs">
+        <button onclick="app.closeRestoreModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button onclick="app.executeRestoreAll()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold shadow-md shadow-rose-600/20 transition-all">
+          Sí, Restaurar Ahora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-bold border border-slate-800">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="toastMessage">Operación realizada con éxito</span>
+  </div>
+
+  <script>
+    function playBeep(freq = 520, type = 'sine', duration = 0.15) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+  </script>
+
+  <script>
+    const SCHEME_TEMPLATES = {
+      DNI: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-blue-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+              DNI 4.0 / 3.0 • Persona Física Nacional
+            </span>
+            <span class="text-[10px] font-bold bg-white text-slate-600 px-2 py-0.5 rounded border border-slate-200">8 Dígitos + 1 Letra</span>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Estructura del Identificador:</span>
+              <span class="font-mono text-sm sm:text-base font-black text-slate-900 block mt-0.5">8 Números + Letra de Control</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Letra calculada mediante el algoritmo matemático del módulo 23.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-orange-50/80 border border-brand-orange/40">
+              <span class="text-[10px] font-black text-brand-orange uppercase tracking-wide block">Dato de Contraste AEAT:</span>
+              <span class="font-mono text-sm sm:text-base font-black text-slate-900 block mt-0.5">Fecha de Validez</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Formato <code class="font-bold text-brand-blue">[DD/MM/AAAA]</code> ubicado en el anverso del documento.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      DNI_PERM: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-amber-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              DNI Permanente • Supuestos Reglamentarios
+            </span>
+            <span class="text-[10px] font-bold bg-white text-amber-800 px-2 py-0.5 rounded border border-amber-200">Validez Sin Vencimiento</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Supuesto 1 (Edad):</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Cumplir los 70 Años</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-0.5">Concesión automática por edad cumplida.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Supuesto 2 (Invalidez):</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Mayor de 30 Años</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-0.5">Acreditando legalmente Gran Invalidez o incapacidad.</p>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-emerald-50/80 border border-emerald-300">
+            <span class="text-[10px] font-black text-emerald-800 uppercase tracking-wide block">Dato de Contraste en la AEAT para Permanente:</span>
+            <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Fecha de Expedición o Clave de Sistema [ 01/01/9999 ]</span>
+            <p class="text-[11px] text-emerald-700 font-medium mt-0.5 leading-snug">Se digita la fecha de expedición o la fecha fija del sistema según la pantalla del trámite.</p>
+          </div>
+        </div>
+      `,
+      NIE: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-emerald-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Extranjería • Tarjeta TIE / NIE
+            </span>
+            <span class="text-[10px] font-bold bg-white text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">Soporte con Prefijo 'E'</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Estructura del Identificador:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-brand-blue block mt-0.5">[X, Y o Z] + 7 Números + Letra</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">La serie 'Z' identifica asignaciones de extranjería más recientes tras agotarse las series X e Y.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-orange-50/80 border border-brand-orange/40">
+              <span class="text-[10px] font-black text-brand-orange uppercase tracking-wide block">Dato de Contraste Obligatorio AEAT:</span>
+              <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Número de Soporte (Letra E + 8 dígitos)</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Filtro de seguridad física que cambia en cada plástico emitido.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      NIF_SL: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-blue-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+              AEAT • NIF de Sociedad Limitada (S.L.)
+            </span>
+            <span class="text-[10px] font-bold bg-white text-brand-blue px-2 py-0.5 rounded border border-blue-200">Letra Inicial 'B'</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Estructura (9 Caracteres):</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Letra 'B' + 7 Dígitos + Control</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">El término CIF fue derogado en 2008 (RD 1065/2007) pasando a denominarse NIF de personas jurídicas.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-blue-50/80 border border-blue-200">
+              <span class="text-[10px] font-black text-brand-blue uppercase tracking-wide block">Tributación y Régimen:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Modelo 200 (Impuesto Sociedades)</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Tipo impositivo general y fijo del 25% sobre el beneficio neto contable.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      NIF_SA: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-purple-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-purple-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              AEAT • NIF de Sociedad Anónima (S.A.)
+            </span>
+            <span class="text-[10px] font-bold bg-white text-purple-800 px-2 py-0.5 rounded border border-purple-200">Letra Inicial 'A'</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Capital y Transmisión:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Mínimo 60.000 € (25% inicio)</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Dividido en acciones de libre transmisión con aptitud para cotizar en Bolsa de Valores.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-purple-50/80 border border-purple-200">
+              <span class="text-[10px] font-black text-purple-900 uppercase tracking-wide block">Identificación Tributaria:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Letra 'A' + 7 Dígitos + Control</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Distingue formalmente a las Sociedades Anónimas frente a las Sociedades Limitadas (letra 'B').</p>
+            </div>
+          </div>
+        </div>
+      `
+    };
+  </script>
+
+  <script>
+    const DEFAULT_EXPEDIENTES = [
+      {
+        id: 1,
+        client: "Juan Francisco Morales",
+        meta: "Nacionalidad española, 38 años",
+        situation: "Electricista que realiza trabajos de instalaciones de forma habitual a su propio nombre, sin socios ni estructura mercantil.",
+        docType: "DNI",
+        docNumber: "48.765.432-R",
+        docExtra: "Validez: 15/09/2028",
+        q1: "¿Bajo qué figura jurídica opera en España y mediante qué modelo de impuesto rinde cuentas tributarias anualmente? ¿Este impuesto es fijo o progresivo?",
+        sol1: "Opera como Trabajador Autónomo (persona física). Rinde cuentas anualmente a través del IRPF (Impuesto sobre la Renta de las Personas Físicas) mediante el Modelo 100. Es un impuesto de carácter progresivo (a mayor nivel de ganancia neta, mayor porcentaje de tributación).",
+        q2: "Explica a nivel de dígitos cómo se compone su identificador fiscal. Si debes ingresar a la sede de la AEAT a descargar sus datos fiscales, ¿cuál es el dato de contraste obligatorio que debes introducir junto a su número de documento?",
+        sol2: "Está compuesto por 8 números seguidos de 1 letra final de control. La letra 'R' se obtiene mediante un cálculo matemático denominado algoritmo del módulo 23 aplicado sobre los 8 dígitos. En la sede de la AEAT, el dato de contraste obligatorio a introducir junto al número es su Fecha de Validez (15/09/2028)."
+      },
+      {
+        id: 2,
+        client: "\"TecnoLogística Ibérica, S.L.\"",
+        meta: "Constituida por 3 socios",
+        situation: "Los socios constituyeron la sociedad aportando capital social al inicio.",
+        docType: "NIF_SL",
+        docNumber: "B-87.654.321",
+        docExtra: "Tarjeta censal AEAT",
+        q1: "¿Qué modelo tributario presentará la empresa para liquidar sus beneficios?",
+        sol1: "Liquida mediante el Modelo 200 (Impuesto sobre Sociedades - IS).",
+        q2: "¿Por qué el código de la empresa comienza con la letra 'B' y cuántos caracteres componen este identificador? ¿Por qué en la práctica mercantil diaria muchos le dicen 'CIF', a pesar de que legalmente esa denominación fue derogada?",
+        sol2: "La letra inicial 'B' identifica formalmente a las Sociedades de Responsabilidad Limitada (S.L.). El código consta de 9 caracteres en total (1 letra inicial + 7 dígitos numéricos + 1 carácter de control). Se le sigue llamando 'CIF' porque durante décadas fue el término tradicional asignado a personas jurídicas en España, y aunque fue derogado el 1 de enero de 2008 por el RD 1065/2007 (pasando a llamarse NIF de personas jurídicas), se mantiene en el lenguaje cotidiano, comercial y de facturación."
+      },
+      {
+        id: 3,
+        client: "James Robert Wilson",
+        meta: "Ciudadano británico residente, 42 años",
+        situation: "Presta servicios de consultoría informática a empresas de la Unión Europea desde su oficina personal.",
+        docType: "NIE",
+        docNumber: "Y-3456789K",
+        docExtra: "Soporte: E00987654",
+        q1: "¿Qué figura jurídica tiene este profesional en España?",
+        sol1: "Opera como Autónomo (persona física).",
+        q2: "¿Cuál es la diferencia principal entre un DNI y un NIE? ¿Qué representa el código E00987654, para qué sirve como medida de seguridad y cuál es el dato de contraste exacto requerido para autenticar a este cliente en la AEAT?",
+        sol2: "El DNI es el documento de identidad nacional exclusivo para ciudadanos españoles, mientras que el NIE es el identificador personal y tributario asignado a personas de nacionalidad extranjera con vínculo económico o de residencia en España. El código E00987654 es el Número de Soporte: un código secuencial que identifica de manera única la tarjeta física expedida y confirma que el usuario posee el documento original vigente para evitar suplantaciones. En la AEAT, el dato de contraste requerido es el Número de NIE + Número de Soporte."
+      },
+      {
+        id: 4,
+        client: "Antonio Fernández Ruiz",
+        meta: "Nacionalidad española, 74 años",
+        situation: "Titular de un local comercial alquilado que percibe rentas inmobiliarias y requiere gestionar su borrador fiscal ante Hacienda.",
+        docType: "DNI_PERM",
+        docNumber: "09876543M",
+        docExtra: "Validez: PERMANENTE",
+        q1: "Al actuar como persona física con ingresos personales, ¿cuál es el impuesto directo mediante el cual tributa y cuál es el modelo oficial de declaración?",
+        sol1: "Tributa a través del IRPF (Impuesto sobre la Renta de las Personas Físicas) mediante el Modelo 100.",
+        q2: "¿Bajo cuáles dos condiciones oficiales un ciudadano obtiene un DNI permanente? Al ingresar a la sede telemática de la AEAT, ¿qué valor o dato de contraste se debe ingresar en el sistema si el documento es permanente?",
+        sol2: "Se obtiene al: 1) Cumplir los 70 años de edad, o 2) A partir de los 30 años de edad acreditando legalmente gran invalidez / incapacidad. En la AEAT, al ser permanente, se debe ingresar la Fecha de Expedición (ubicada en el reverso en el DNI 4.0) o, según solicite el formulario telemático, la clave estándar de sistema 01/01/9999 (o 31.12.9999)."
+      },
+      {
+        id: 5,
+        client: "\"Inversiones y Alquileres de Capital, S.A.\"",
+        meta: "Sociedad Anónima de Inversión",
+        situation: "Gran empresa patrimonial que planea en el mediano plazo cotizar sus acciones en la Bolsa de Valores española.",
+        docType: "NIF_SA",
+        docNumber: "A-76543210",
+        docExtra: "NIF Provisional AEAT",
+        q1: "¿Cuál es el capital social mínimo obligatorio que exige la ley española para constituir una Sociedad Anónima (S.A.) y qué porcentaje de ese capital debe estar desembolsado como mínimo desde el primer momento? ¿En qué se divide su capital (acciones o participaciones)?",
+        sol1: "El capital social mínimo obligatorio es de 60.000 €. Debe estar desembolsado al menos en un 25% al momento de su constitución. Su capital se divide en Acciones (de libre transmisión, aptas para cotizar en bolsa), a diferencia de la S.L. que se divide en Participaciones.",
+        q2: "¿Qué indica la letra inicial 'A' en su identificador fiscal? ¿En qué año y mediante qué reforma reglamentaria se sustituyó formalmente el término 'CIF' por el de NIF de personas jurídicas?",
+        sol2: "La letra inicial 'A' identifica exclusivamente a las Sociedades Anónimas (S.A.). El término CIF fue reemplazado a partir del 1 de enero de 2008 mediante la reforma tributaria del Real Decreto 1065/2007."
+      },
+      {
+        id: 6,
+        client: "Valentina Rossi",
+        meta: "Ciudadana italiana residente en España",
+        situation: "Diseñadora gráfica que va a comenzar a emitir facturas a clientes particulares por cuenta propia.",
+        docType: "NIE",
+        docNumber: "Z-1234567P",
+        docExtra: "Soporte: E01234567",
+        q1: "¿Qué denominación técnica recibe Valentina al trabajar por cuenta propia de forma habitual y cómo tributará según el nivel de beneficios?",
+        sol1: "Es una Trabajadora Autónoma. Tributará por el IRPF (Modelo 100) con carácter progresivo.",
+        q2: "¿Cómo está estructurado el NIE a nivel de letras y cifras? ¿Por qué su documento comienza con la letra 'Z' en lugar de 'X' o 'Y'? ¿Qué dato de contraste le solicitará la AEAT para descargar sus datos fiscales en internet?",
+        sol2: "El NIE se estructura con 1 letra inicial (X, Y o Z) + 7 dígitos numéricos + 1 letra final de control. Comienza por 'Z' porque las series históricas iniciadas con 'X' y posteriormente con 'Y' se agotaron en el sistema de asignación de extranjería, por lo que la 'Z' evidencia una asignación reciente. En la AEAT, el dato de contraste obligatorio a ingresar es su Número de NIE + Número de Soporte (E01234567)."
+      },
+      {
+        id: 7,
+        client: "\"Transportes Express del Sur, S.L.\"",
+        meta: "Constituida por 2 socios",
+        situation: "Dos socios fundadores aportaron el mínimo legal permitido por la Ley Crea y Crece (1,00 € entre los dos).",
+        docType: "NIF_SL",
+        docNumber: "B-99887766",
+        docExtra: "NIF de Persona Jurídica",
+        q1: "¿A través de qué modelo tributario liquida sus beneficios una Sociedad Limitada (S.L.) ante Hacienda?",
+        sol1: "Tributa mediante el Impuesto sobre Sociedades (IS) a través del Modelo 200, aplicando un tipo general habitual del 25% sobre el beneficio contable.",
+        q2: "Explica detalladamente la estructura del NIF B-99887766: qué representa la letra B, qué representan los dígitos siguientes y cuántos caracteres tiene en total.",
+        sol2: "Posee 9 caracteres en total. La letra inicial 'B' identifica que es una Sociedad Limitada (S.L.); los 7 dígitos intermedios (9988776) corresponden a la identificación correlativa de registro mercantil/territorial, y el último dígito (6) es el carácter numérico de control tributario."
+      },
+      {
+        id: 8,
+        client: "Manuel Gómez Vidal",
+        meta: "Nacionalidad española, 34 años",
+        situation: "Abogado en ejercicio libre que además cuenta con una resolución oficial del Instituto Nacional de la Seguridad Social que le reconoce la condición de gran invalidez.",
+        docType: "DNI_PERM",
+        docNumber: "76543210H",
+        docExtra: "Validez: PERMANENTE",
+        q1: "Al ejercer su actividad profesional a título individual, ¿opera como autónomo o como sociedad? ¿A través de qué modelo tributario rinde cuentas de sus ingresos profesionales ante Hacienda?",
+        sol1: "Opera como Trabajador Autónomo (profesional independiente por cuenta propia). Rinde cuentas anualmente a través del Modelo 100 del IRPF.",
+        q2: "Manuel tiene solo 34 años; ¿por qué su DNI tiene validez permanente sin haber cumplido los 70 años? Al ingresar a la sede de la AEAT, si el formulario no le permite dejar la fecha de validez vacía, ¿qué fecha estándar o dato de expedición se debe suministrar?",
+        sol2: "Porque la normativa de la Policía Nacional contempla que los ciudadanos mayores de 30 años que acrediten documentalmente la condición de gran invalidez / gran incapacidad obtienen DNI permanente sin necesidad de esperar a los 70 años. En el sistema de la AEAT, se debe ingresar su Fecha de Expedición o bien la fecha estándar de sistema para documentos permanentes: 01/01/9999 (o 31.12.9999)."
+      },
+      {
+        id: 9,
+        client: "Carlos Eduardo Mendoza",
+        meta: "Ciudadano venezolano residente, 35 años",
+        situation: "El cliente indica que en Venezuela tenía una 'Firma Personal' y desea registrar en España la misma figura exacta para su negocio de consultoría.",
+        docType: "NIE",
+        docNumber: "X-8765432W",
+        docExtra: "Soporte: E08765432",
+        q1: "¿Existe en España la figura de 'Firma Personal' o cómo se denomina formalmente el equivalente jurídico? ¿Cómo tributará este profesional en España?",
+        sol1: "No existe la 'Firma Personal' en el ordenamiento español; la figura equivalente es el Trabajador Autónomo. Tributará por IRPF (Modelo 100), que aplica tramos progresivos según el ingreso.",
+        q2: "¿Por qué el documento de Carlos tiene una letra 'X' al inicio? ¿Dónde se ubica físicamente el número de soporte en una tarjeta de extranjero y cuál es su función como filtro de seguridad en la AEAT?",
+        sol2: "La letra 'X' indica que su asignación de NIE pertenece a la serie inicial de extranjeros en España. El número de soporte se ubica en el reverso (o anverso según el diseño del documento) y empieza por la letra E. Actúa como filtro de autenticación telemática para constatar la tenencia física y vigencia del plástico original ante la AEAT."
+      },
+      {
+        id: 10,
+        client: "\"Reformas y Construcciones Ibéricas, S.L.\"",
+        meta: "Sociedad Limitada de Construcción",
+        situation: "Sociedad constituida con 1 € de capital. En el Año 1 obtuvo 5.000 € de beneficio y en el Año 2 obtuvo 5.000 € de beneficio.",
+        docType: "NIF_SL",
+        docNumber: "B-11223344",
+        docExtra: "Tarjeta Censal AEAT",
+        q1: "¿A través de qué modelo tributario declara sus beneficios una Sociedad Limitada (S.L.) ante la Agencia Tributaria y qué tipo impositivo general se le aplica habitualmente?",
+        sol1: "Liquida mediante el Modelo 200 correspondiente al Impuesto sobre Sociedades (IS), al cual se le aplica de forma general y habitual un tipo impositivo fijo del 25%",
+        q2: "El cliente te envía una factura de un proveedor donde en el campo de identificación dice 'CIF: B-11223344'. ¿Es incorrecto o ilegal que en la factura use la palabra 'CIF'? ¿Cuál es la realidad legal frente al uso cotidiano de este término?",
+        sol2: "No es ilegal ni invalida la factura comercial. Legalmente el término 'CIF' fue derogado desde 2008 y sustituido por 'NIF de la empresa', pero en el tráfico mercantil cotidiano se admite su uso como sinónimo comercial."
+      },
+      {
+        id: 11,
+        client: "Laura Cristina Sanabria",
+        meta: "Nacionalidad española, 29 años",
+        situation: "Fotógrafa profesional independiente que ha emitido facturas durante todo el ejercicio.",
+        docType: "DNI",
+        docNumber: "34567891D",
+        docExtra: "Validez: 22/04/2031",
+        q1: "Al ejercer como profesional a título personal y de forma habitual, ¿bajo qué figura opera y qué significa técnicamente que su impuesto (IRPF) sea progresivo?",
+        sol1: "Opera bajo la figura de Autónoma. Que el IRPF sea progresivo implica que se incrementa a medida que aumenta la base imponible o rentabilidad neta generada.",
+        q2: "¿Cuáles son los dos datos exactos que te solicitará la web de la AEAT para descargar sus datos fiscales?",
+        sol2: "La web de la AEAT le solicitará su Número de DNI (34567891D) + Fecha de Validez (22/04/2031)."
+      },
+      {
+        id: 12,
+        client: "\"Soluciones Digitales de España, S.L.\" vs \"Corporación Industrial Ibérica, S.A.\"",
+        meta: "Comparativa de figuras societarias",
+        situation: "Dos clientes consultan cuál es la figura societaria idónea para sus proyectos.",
+        docType: "NIF_SL",
+        docNumber: "B-44556677 / A-88990011",
+        docExtra: "Cotejo Censal NIF",
+        q1: "¿Cómo se divide el capital en una Sociedad Limitada frente a una Sociedad Anónima (participaciones o acciones) y cuál de las dos figuras tiene permitido por ley cotizar en la Bolsa de Valores?",
+        sol1: "En la Sociedad Limitada el capital se divide en Participaciones sociales, mientras que en la Sociedad Anónima se divide en Acciones. La única que tiene permitido cotizar en Bolsa es la Sociedad Anónima (S.A.); la S.L. lo tiene expresamente prohibido.",
+        q2: "Analiza los dos códigos fiscales: ¿cuál corresponde a cada sociedad basándote en la letra inicial y por qué? ¿Cuántos dígitos numéricos y de control siguen a esa letra?",
+        sol2: "B-44556677 es la S.L. porque la letra inicial 'B' reserva esta forma jurídica; A-88990011 es la S.A. porque la letra inicial 'A' designa a sociedades anónimas. A la letra le siguen exactamente 8 caracteres (7 números de registro + 1 carácter de control), totalizando 9 caracteres."
+      },
+      {
+        id: 13,
+        client: "Pedro Pablo Castillo",
+        meta: "Nacionalidad española, 71 años",
+        situation: "Jubilado que percibe ingresos por alquileres y venta de fondos patrimoniales.",
+        docType: "DNI_PERM",
+        docNumber: "23456789S",
+        docExtra: "Validez: PERMANENTE 31.12.9999",
+        q1: "Como persona física titular de rendimientos patrimoniales, ¿qué modelo anual debe presentar?",
+        sol1: "Presenta el Modelo 100 de IRPF como persona física.",
+        q2: "¿Por qué el DNI de Pedro Pablo es permanente? Si al tramitar la declaración en la web de la AEAT el sistema rechaza la fecha 31.12.9999, ¿qué dato alternativo de contraste exige la administración?",
+        sol2: "Es permanente porque ya ha superado los 70 años de edad. El dato alternativo de contraste es la Fecha de Expedición."
+      },
+      {
+        id: 14,
+        client: "Andrés Felipe Gómez",
+        meta: "Ciudadano colombiano residente, 40 años",
+        situation: "Quiere constituir una empresa de transporte junto a un socio español.",
+        docType: "NIE",
+        docNumber: "Y-6543210T",
+        docExtra: "Soporte: E05432109",
+        q1: "Si constituyen la Sociedad Limitada, ¿mediante qué impuesto y qué número de modelo oficial tributarán anualmente los beneficios generados por la empresa ante Hacienda?",
+        sol1: "Tributarán mediante el Impuesto sobre Sociedades (IS) a través del Modelo 200, aplicando un tipo general habitual del 25%",
+        q2: "¿Por qué el documento del socio no es un DNI? ¿Por qué el número de soporte E05432109 se cambia cada vez que renueva la tarjeta?",
+        sol2: "No es DNI porque el titular no es ciudadano español, ni es CIF porque no es una persona jurídica, sino una persona física extranjera identificada con NIE. El número de soporte identifica la tarjeta física expedida; se localiza en el reverso y cambia en cada renovación o duplicado para certificar que el titular cuenta con el plástico físico activo y vigente."
+      },
+      {
+        id: 15,
+        client: "\"Moda y Textil Madrileña, S.L.\"",
+        meta: "Empresa Textil • Admin: 51234567Z",
+        situation: "Empresa que factura confección textil y solicita a la gestoría emitir sus declaraciones trimestrales.",
+        docType: "NIF_SL",
+        docNumber: "B-55667788",
+        docExtra: "NIF Persona Jurídica",
+        q1: "¿A través de qué impuesto y qué número de modelo tributan los beneficios de una Sociedad Limitada (S.L.) ante la Agencia Tributaria? ¿Este impuesto aplica un tipo fijo o es progresivo?",
+        sol1: "Tributa mediante el Impuesto sobre Sociedades (IS) a través del Modelo 200. Aplica un impuesto de tipo fijo (habitualmente el 25%).",
+        q2: "En la factura de un proveedor colocaron 'CIF: B-55667788'. ¿Cuál es la diferencia real entre el término NIF y el término CIF, y por qué se le sigue diciendo CIF en la calle?",
+        sol2: "Desde el año 2008 el término legal 'CIF' fue derogado y pasó a llamarse formalmente NIF de personas jurídicas. Sin embargo, en el lenguaje comercial, facturas y contratos de toda España se le sigue llamando coloquialmente 'CIF' para distinguir rápidamente el código de una empresa del NIF de una persona física."
+      },
+      {
+        id: 16,
+        client: "Elena María Torres",
+        meta: "Nacionalidad española, 45 años",
+        situation: "Diseñadora de interiores que trabaja por cuenta propia y evalúa si le conviene continuar como autónoma o crear una S.L.",
+        docType: "DNI",
+        docNumber: "78901234L",
+        docExtra: "Validez: 10/05/2029",
+        q1: "¿Cuál es la figura jurídica con la que opera Elena al trabajar a título individual y cómo rinde cuentas de sus ingresos (mediante qué impuesto y qué modelo)?",
+        sol1: "Opera bajo la figura de Autónoma (persona física). Rinde cuentas anualmente a través del IRPF (Impuesto sobre la Renta de las Personas Físicas) mediante el Modelo 100, el cual es un impuesto progresivo.",
+        q2: "Si la gestoría necesita entrar a la sede electrónica de la AEAT para descargar los datos fiscales de Elena, ¿qué datos exactos solicita la pantalla de acceso como contraste? ¿Por qué su NIF coincide exactamente con su DNI?",
+        sol2: "La sede de la AEAT solicita como dato de contraste el Número de DNI (78901234L) + Fecha de Validez (10/05/2029). Su NIF coincide con su DNI porque en España el número de identificación fiscal para las personas físicas españolas es exactamente su DNI."
+      }
+    ];
+
+    class AppController {
+      constructor() {
+        this.expedientes = [];
+        this.evaluations = {};
+        this.currentExpId = 1;
+        this.defaultDuration = 90;
+        this.timeLeft = 90;
+        this.timerInterval = null;
+        this.isTimerRunning = false;
+        this.isEvaluatorDrawerOpen = false;
+        this.isSolutionRevealed = false;
+        this.currentP1 = 0;
+        this.currentP2 = 0;
+
+        this.init();
+      }
+
+      init() {
+        const savedExp = localStorage.getItem('soex_expedientes_tema2_v3');
+        if (savedExp) {
+          try {
+            this.expedientes = JSON.parse(savedExp);
+          } catch (e) {
+            this.expedientes = [...DEFAULT_EXPEDIENTES];
+          }
+        } else {
+          this.expedientes = [...DEFAULT_EXPEDIENTES];
+          this.saveExpedientesToStorage();
+        }
+
+        const savedEval = localStorage.getItem('soex_evaluations_tema2_v3');
+        if (savedEval) {
+          try {
+            this.evaluations = JSON.parse(savedEval);
+          } catch (e) {
+            this.evaluations = {};
+          }
+        }
+
+        this.renderFoldersGrid();
+        this.updateStats();
+        this.populateEvaluatorSelect();
+
+        window.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+            e.preventDefault();
+            this.toggleEvaluatorDrawer();
+          }
+        });
+      }
+
+      showToast(msg) {
+        const toast = document.getElementById('toastNotification');
+        document.getElementById('toastMessage').textContent = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 2500);
+      }
+
+      saveExpedientesToStorage() {
+        localStorage.setItem('soex_expedientes_tema2_v3', JSON.stringify(this.expedientes));
+      }
+
+      saveEvaluationsToStorage() {
+        localStorage.setItem('soex_evaluations_tema2_v3', JSON.stringify(this.evaluations));
+        this.updateStats();
+        this.renderFoldersGrid();
+      }
+
+      showHomeView() {
+        this.pauseTimer();
+        document.getElementById('homeView').classList.remove('hidden');
+        document.getElementById('auditView').classList.add('hidden');
+        this.updateStats();
+        this.renderFoldersGrid();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      showAuditView(expId) {
+        this.currentExpId = parseInt(expId);
+        document.getElementById('homeView').classList.add('hidden');
+        document.getElementById('auditView').classList.remove('hidden');
+        this.hideOfficialSolution();
+        this.renderCurrentAudit();
+        this.resetTimer();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      getCurrentExpediente() {
+        return this.expedientes.find(e => e.id === this.currentExpId) || this.expedientes[0];
+      }
+
+      prevExpediente() {
+        const idx = this.expedientes.findIndex(e => e.id === this.currentExpId);
+        const prevIdx = idx > 0 ? idx - 1 : this.expedientes.length - 1;
+        this.showAuditView(this.expedientes[prevIdx].id);
+      }
+
+      nextExpediente() {
+        const idx = this.expedientes.findIndex(e => e.id === this.currentExpId);
+        const nextIdx = idx < this.expedientes.length - 1 ? idx + 1 : 0;
+        this.showAuditView(this.expedientes[nextIdx].id);
+      }
+
+      pickRandomExpediente() {
+        const pending = this.expedientes.filter(e => !this.evaluations[e.id]);
+        const pool = pending.length > 0 ? pending : this.expedientes;
+        const randomExp = pool[Math.floor(Math.random() * pool.length)];
+        this.showAuditView(randomExp.id);
+      }
+
+      renderFoldersGrid() {
+        const container = document.getElementById('foldersGrid');
+        container.innerHTML = '';
+
+        this.expedientes.forEach((exp) => {
+          const isAudited = !!this.evaluations[exp.id];
+
+          const card = document.createElement('div');
+          card.className = "folder-wrapper group cursor-pointer select-none";
+          card.onclick = () => this.showAuditView(exp.id);
+
+          card.innerHTML = `
+            <div class="relative transition-all duration-300 transform group-hover:-translate-y-1.5">
+              
+              <div class="w-24 h-5 bg-[#FDE68A] rounded-t-lg ml-3 border-t border-l border-r border-amber-300/80 flex items-center justify-center shadow-2xs">
+                <span class="text-[9px] font-mono font-bold text-amber-900/80 uppercase tracking-widest">
+                  CONFIDENCIAL
+                </span>
+              </div>
+
+              <div class="folder-body w-full h-44 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden shadow-folderLight group-hover:shadow-folderHover transition-shadow">
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></div>
+                    <span class="text-[10px] font-mono font-bold text-amber-900/80 tracking-wider">DOC • CLASIFICADO</span>
+                  </div>
+                  
+                  <span class="text-xs font-mono font-black text-amber-950 bg-white/80 px-2.5 py-0.5 rounded-md border border-amber-200/80 shadow-2xs">
+                    #${String(exp.id).padStart(2, '0')}
+                  </span>
+                </div>
+
+                <div class="folder-pocket rounded-xl p-3 relative flex flex-col items-center justify-center text-center">
+                  <div class="folder-badge-blue text-white rounded-lg px-3 py-1.5 w-full flex items-center justify-center gap-1.5 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-white/95" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <span class="text-xs font-black tracking-wider uppercase font-mono">EXPEDIENTE #${String(exp.id).padStart(2, '0')}</span>
+                  </div>
+
+                  <span class="text-[10px] font-bold text-slate-500 mt-1.5 uppercase tracking-wide">
+                    Documento Oficial
+                  </span>
+                </div>
+
+                ${isAudited 
+                  ? `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-2xl flex items-center justify-center p-3 pointer-events-none">
+                      <div class="stamp-audited bg-white/95 px-3 py-1.5 rounded-lg shadow-md text-center font-black text-xs uppercase tracking-wider flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                        <span>AUDITADO</span>
+                      </div>
+                    </div>`
+                  : `<div class="flex items-center justify-between text-[10px] font-bold text-amber-900/80 pt-1">
+                      <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        Secreto
+                      </span>
+                      <span class="group-hover:translate-x-1 transition-transform font-bold text-brand-blue">Abrir →</span>
+                    </div>`
+                }
+
+              </div>
+
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      renderCurrentAudit() {
+        const exp = this.getCurrentExpediente();
+        const isAudited = !!this.evaluations[exp.id];
+
+        document.getElementById('auditExpBadge').textContent = `EXPEDIENTE #${String(exp.id).padStart(2, '0')}`;
+        
+        const statusBadge = document.getElementById('auditStatusBadge');
+        const auditBtn = document.getElementById('quickAuditToggleBtn');
+
+        if (isAudited) {
+          statusBadge.textContent = "Auditado";
+          statusBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 uppercase tracking-wide";
+          
+          auditBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all cursor-pointer";
+          auditBtn.innerHTML = `
+            <svg class="w-4 h-4 text-emerald-100" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            <span>✓ Auditado (Quitar Sello)</span>
+          `;
+          auditBtn.title = "Clic para desmarcar el sello de auditado";
+        } else {
+          statusBadge.textContent = "Pendiente";
+          statusBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 uppercase tracking-wide";
+          
+          auditBtn.className = "bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer";
+          auditBtn.innerHTML = `
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Marcar como Auditado</span>
+          `;
+          auditBtn.title = "Sellar carpeta como auditada sin necesidad de calificar";
+        }
+
+        document.getElementById('auditClientTitle').textContent = exp.client;
+        document.getElementById('cardClientName').textContent = exp.client;
+        document.getElementById('cardClientMeta').textContent = exp.meta;
+        document.getElementById('cardSituation').textContent = exp.situation;
+        document.getElementById('cardDocType').textContent = exp.docType.replace('_', ' ');
+        document.getElementById('cardDocNumber').textContent = exp.docNumber;
+        document.getElementById('cardDocExtra').textContent = exp.docExtra || 'En trámite';
+
+        document.getElementById('auditQuestion1').textContent = exp.q1;
+        document.getElementById('auditQuestion2').textContent = exp.q2;
+
+        document.getElementById('auditSol1').textContent = exp.sol1;
+        document.getElementById('auditSol2').textContent = exp.sol2;
+
+        const idx = this.expedientes.findIndex(e => e.id === exp.id);
+        document.getElementById('auditPagingText').textContent = `${idx + 1} de ${this.expedientes.length}`;
+
+        const schemeKey = exp.docType in SCHEME_TEMPLATES ? exp.docType : 'DNI';
+        document.getElementById('visualSchemeContainer').innerHTML = SCHEME_TEMPLATES[schemeKey] || SCHEME_TEMPLATES.DNI;
+        document.getElementById('visualTagBadge').textContent = exp.docType.replace('_', ' ');
+
+        if (this.isEvaluatorDrawerOpen) {
+          this.syncEvaluatorDrawer(exp.id);
+        }
+      }
+
+      toggleOfficialSolution() {
+        if (this.isSolutionRevealed) {
+          this.hideOfficialSolution();
+        } else {
+          this.revealOfficialSolution();
+        }
+      }
+
+      revealOfficialSolution() {
+        this.isSolutionRevealed = true;
+        document.getElementById('solutionBox').classList.remove('hidden');
+        document.getElementById('solutionBtnText').textContent = 'Ocultar Solución';
+        document.getElementById('solutionBtnIcon').textContent = '✕';
+        playBeep(650, 'sine', 0.15);
+      }
+
+      hideOfficialSolution() {
+        this.isSolutionRevealed = false;
+        document.getElementById('solutionBox').classList.add('hidden');
+        document.getElementById('solutionBtnText').textContent = 'Revelar Solución Oficial';
+        document.getElementById('solutionBtnIcon').textContent = '👁';
+      }
+
+      changeDefaultTime(seconds) {
+        this.defaultDuration = parseInt(seconds);
+        this.resetTimer();
+      }
+
+      startTimer() {
+        if (this.isTimerRunning) return;
+        this.isTimerRunning = true;
+        playBeep(520, 'sine', 0.1);
+
+        document.getElementById('timerPlayBtn').classList.add('opacity-50');
+        document.getElementById('timerPauseBtn').classList.remove('opacity-50');
+
+        this.timerInterval = setInterval(() => {
+          this.timeLeft--;
+
+          if (this.timeLeft === 10) {
+            playBeep(620, 'square', 0.25);
+          }
+
+          if (this.timeLeft <= 0) {
+            this.timeLeft = 0;
+            this.pauseTimer();
+            playBeep(320, 'sawtooth', 0.5);
+          }
+
+          this.updateTimerDisplay();
+        }, 1000);
+      }
+
+      pauseTimer() {
+        this.isTimerRunning = false;
+        clearInterval(this.timerInterval);
+        document.getElementById('timerPlayBtn').classList.remove('opacity-50');
+        document.getElementById('timerPauseBtn').classList.add('opacity-50');
+      }
+
+      resetTimer() {
+        this.pauseTimer();
+        this.timeLeft = this.defaultDuration;
+        this.updateTimerDisplay();
+      }
+
+      updateTimerDisplay() {
+        const mins = Math.floor(this.timeLeft / 60);
+        const secs = this.timeLeft % 60;
+        const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        
+        const display = document.getElementById('timerDisplay');
+        display.textContent = formatted;
+
+        const bar = document.getElementById('timerProgressBar');
+        const percent = (this.timeLeft / this.defaultDuration) * 100;
+        bar.style.width = `${percent}%`;
+
+        if (this.timeLeft <= 10) {
+          display.className = "font-mono text-2xl font-black tracking-wider text-rose-400 animate-pulse";
+          bar.className = "h-full bg-rose-500 transition-all duration-300";
+        } else if (this.timeLeft <= 30) {
+          display.className = "font-mono text-2xl font-black tracking-wider text-amber-400";
+          bar.className = "h-full bg-amber-500 transition-all duration-300";
+        } else {
+          display.className = "font-mono text-2xl font-black tracking-wider text-emerald-400";
+          bar.className = "h-full bg-emerald-500 transition-all duration-300";
+        }
+      }
+
+      toggleEvaluatorDrawer() {
+        const drawer = document.getElementById('evaluatorDrawer');
+        const overlay = document.getElementById('evaluatorOverlay');
+        
+        this.isEvaluatorDrawerOpen = !this.isEvaluatorDrawerOpen;
+
+        if (this.isEvaluatorDrawerOpen) {
+          drawer.classList.remove('translate-x-full');
+          overlay.classList.remove('hidden');
+          this.syncEvaluatorDrawer(this.currentExpId);
+        } else {
+          drawer.classList.add('translate-x-full');
+          overlay.classList.add('hidden');
+        }
+      }
+
+      openEvaluatorForCurrent() {
+        if (!this.isEvaluatorDrawerOpen) {
+          this.toggleEvaluatorDrawer();
+        }
+        this.syncEvaluatorDrawer(this.currentExpId);
+      }
+
+      populateEvaluatorSelect() {
+        const select = document.getElementById('evaluatorExpSelect');
+        select.innerHTML = '';
+        this.expedientes.forEach(exp => {
+          const opt = document.createElement('option');
+          opt.value = exp.id;
+          opt.textContent = `Expediente #${String(exp.id).padStart(2, '0')} - ${exp.client}`;
+          select.appendChild(opt);
+        });
+      }
+
+      onEvaluatorSelectExp(expId) {
+        this.syncEvaluatorDrawer(parseInt(expId));
+      }
+
+      syncEvaluatorDrawer(expId) {
+        const select = document.getElementById('evaluatorExpSelect');
+        select.value = expId;
+
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        const saved = this.evaluations[exp.id] || { student: '', p1: 0, p2: 0, total: 0, notes: '' };
+        document.getElementById('evalStudentName').value = saved.student || '';
+        document.getElementById('evalNotes').value = saved.notes || '';
+
+        this.setScoreP1(saved.p1 || 0);
+        this.setScoreP2(saved.p2 || 0);
+      }
+
+      setScoreP1(val) {
+        this.currentP1 = parseFloat(val);
+        document.getElementById('evalScoreP1Badge').textContent = `${this.currentP1.toFixed(2)} / 2,5`;
+        
+        document.querySelectorAll('.score-p1-btn').forEach(btn => {
+          const btnVal = parseFloat(btn.textContent.replace(',', '.'));
+          if (btnVal === this.currentP1) {
+            btn.className = 'score-p1-btn py-1.5 rounded-lg border-2 border-brand-blue text-xs font-black bg-brand-blue text-white shadow-2xs';
+          } else {
+            btn.className = 'score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100';
+          }
+        });
+
+        this.updateDrawerTotal();
+      }
+
+      setScoreP2(val) {
+        this.currentP2 = parseFloat(val);
+        document.getElementById('evalScoreP2Badge').textContent = `${this.currentP2.toFixed(2)} / 2,5`;
+
+        document.querySelectorAll('.score-p2-btn').forEach(btn => {
+          const btnVal = parseFloat(btn.textContent.replace(',', '.'));
+          if (btnVal === this.currentP2) {
+            btn.className = 'score-p2-btn py-1.5 rounded-lg border-2 border-brand-orange text-xs font-black bg-brand-orange text-white shadow-2xs';
+          } else {
+            btn.className = 'score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100';
+          }
+        });
+
+        this.updateDrawerTotal();
+      }
+
+      updateDrawerTotal() {
+        const total = (this.currentP1 || 0) + (this.currentP2 || 0);
+        document.getElementById('evalTotalScore').textContent = `${total.toFixed(2)} / 5,0`;
+      }
+
+      saveCurrentEvaluation() {
+        const select = document.getElementById('evaluatorExpSelect');
+        const expId = parseInt(select.value);
+        const student = document.getElementById('evalStudentName').value.trim();
+        const notes = document.getElementById('evalNotes').value.trim();
+        const p1 = this.currentP1 || 0;
+        const p2 = this.currentP2 || 0;
+        const total = p1 + p2;
+
+        this.evaluations[expId] = {
+          student: student || `Estudiante Exp #${expId}`,
+          p1,
+          p2,
+          total,
+          notes,
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        this.saveEvaluationsToStorage();
+        playBeep(880, 'sine', 0.2);
+        this.showToast(`¡Expediente #${expId} calificado correctamente!`);
+
+        setTimeout(() => {
+          this.toggleEvaluatorDrawer();
+          this.renderCurrentAudit();
+        }, 500);
+      }
+
+      clearCurrentEvaluation() {
+        const select = document.getElementById('evaluatorExpSelect');
+        const expId = parseInt(select.value);
+
+        delete this.evaluations[expId];
+        this.saveEvaluationsToStorage();
+
+        document.getElementById('evalStudentName').value = '';
+        document.getElementById('evalNotes').value = '';
+        this.setScoreP1(0);
+        this.setScoreP2(0);
+        this.renderCurrentAudit();
+        this.showToast(`Calificación del Expediente #${expId} eliminada`);
+      }
+
+      updateStats() {
+        const totalExp = this.expedientes.length;
+        const auditedCount = Object.keys(this.evaluations).length;
+        const pendingCount = totalExp - auditedCount;
+
+        document.getElementById('statTotalExp').textContent = totalExp;
+        document.getElementById('statAuditedExp').textContent = auditedCount;
+        document.getElementById('statPendingExp').textContent = pendingCount;
+        document.getElementById('headerAuditedBadge').textContent = `${auditedCount}/${totalExp}`;
+
+        let avg = '--';
+        const gradedEvals = Object.values(this.evaluations).filter(ev => !ev.auditedOnly || ev.total > 0);
+        if (gradedEvals.length > 0) {
+          const sum = gradedEvals.reduce((acc, curr) => acc + (curr.total || 0), 0);
+          avg = (sum / gradedEvals.length).toFixed(2);
+        }
+        document.getElementById('statAverageScore').textContent = `${avg} / 5.0`;
+      }
+
+      showSummaryModal() {
+        this.updateStats();
+        const tbody = document.getElementById('summaryTableBody');
+        tbody.innerHTML = '';
+
+        this.expedientes.forEach(exp => {
+          const ev = this.evaluations[exp.id];
+          const isAudited = !!ev;
+
+          const row = document.createElement('tr');
+          row.className = "hover:bg-slate-50 transition-colors";
+          row.innerHTML = `
+            <td class="p-3 font-mono font-black text-slate-900">#${String(exp.id).padStart(2, '0')}</td>
+            <td class="p-3 font-bold text-slate-800">${ev ? ev.student : '<span class="text-slate-400 italic font-normal">Pendiente</span>'}</td>
+            <td class="p-3 text-slate-600 font-medium">${exp.client}</td>
+            <td class="p-3 text-center font-mono font-bold text-brand-blue">${ev ? (ev.auditedOnly && ev.total === 0 ? '-' : ev.p1.toFixed(2)) : '-'}</td>
+            <td class="p-3 text-center font-mono font-bold text-brand-orange">${ev ? (ev.auditedOnly && ev.total === 0 ? '-' : ev.p2.toFixed(2)) : '-'}</td>
+            <td class="p-3 text-center font-mono font-black ${ev && ev.total >= 3.0 ? 'text-emerald-600' : 'text-slate-800'}">
+              ${ev ? (ev.auditedOnly && ev.total === 0 ? '<span class="text-emerald-600 text-[10px] font-bold">Auditado</span>' : ev.total.toFixed(2)) : '-'}
+            </td>
+            <td class="p-3 text-center">
+              ${isAudited 
+                ? '<span class="inline-block px-2 py-0.5 text-[10px] font-black rounded bg-emerald-100 text-emerald-800 uppercase">Auditado</span>' 
+                : '<span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-500 uppercase">Pendiente</span>'}
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        const auditedCount = Object.keys(this.evaluations).length;
+        document.getElementById('summaryModalAudited').textContent = `${auditedCount}/${this.expedientes.length}`;
+        
+        let avg = '--';
+        const gradedEvals = Object.values(this.evaluations).filter(ev => !ev.auditedOnly || ev.total > 0);
+        if (gradedEvals.length > 0) {
+          const sum = gradedEvals.reduce((acc, curr) => acc + (curr.total || 0), 0);
+          avg = (sum / gradedEvals.length).toFixed(2);
+        }
+        document.getElementById('summaryModalAvg').textContent = `${avg} / 5.0`;
+
+        document.getElementById('summaryModal').classList.remove('hidden');
+      }
+
+      closeSummaryModal() {
+        document.getElementById('summaryModal').classList.add('hidden');
+      }
+
+      exportToCSV() {
+        let csv = "Expediente,Estudiante,Cliente,Documento,P1 (/2.5),P2 (/2.5),Total (/5.0),Estado,Observaciones\n";
+
+        this.expedientes.forEach(exp => {
+          const ev = this.evaluations[exp.id];
+          const student = ev ? `"${ev.student.replace(/"/g, '""')}"` : '""';
+          const client = `"${exp.client.replace(/"/g, '""')}"`;
+          const p1 = ev ? ev.p1.toFixed(2) : '0';
+          const p2 = ev ? ev.p2.toFixed(2) : '0';
+          const total = ev ? ev.total.toFixed(2) : '0';
+          const status = ev ? 'Auditado' : 'Pendiente';
+          const notes = ev ? `"${(ev.notes || '').replace(/"/g, '""')}"` : '""';
+
+          csv += `${exp.id},${student},${client},"${exp.docNumber}",${p1},${p2},${total},${status},${notes}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Calificaciones_Tema2_SOEX_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+
+      // ---------------- MARCAR / DESMARCAR AUDITADO DIRECTO ----------------
+      toggleAuditStatus(expId = this.currentExpId) {
+        const id = parseInt(expId);
+        const exp = this.expedientes.find(e => e.id === id);
+        if (!exp) return;
+
+        if (this.evaluations[id]) {
+          // Desmarcar
+          delete this.evaluations[id];
+          this.showToast(`Expediente #${String(id).padStart(2, '0')} devuelto a Pendiente`);
+          playBeep(420, 'triangle', 0.15);
+        } else {
+          // Marcar como auditado sin nota obligatoria
+          this.evaluations[id] = {
+            student: 'Participante (Auditado)',
+            p1: 0,
+            p2: 0,
+            total: 0,
+            notes: 'Auditado en sesión',
+            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            auditedOnly: true
+          };
+          this.showToast(`Expediente #${String(id).padStart(2, '0')} sellado como AUDITADO`);
+          playBeep(880, 'sine', 0.2);
+        }
+
+        this.saveEvaluationsToStorage();
+        if (this.currentExpId === id) {
+          this.renderCurrentAudit();
+        }
+        if (!document.getElementById('bankModal').classList.contains('hidden')) {
+          this.renderBankList();
+        }
+      }
+
+      // ---------------- GESTIÓN DEL BANCO DE EXPEDIENTES (VER, MODIFICAR, ELIMINAR) ----------------
+      openBankModal() {
+        this.renderBankList();
+        document.getElementById('bankModal').classList.remove('hidden');
+      }
+
+      closeBankModal() {
+        document.getElementById('bankModal').classList.add('hidden');
+      }
+
+      renderBankList() {
+        const container = document.getElementById('bankExpedientesList');
+        container.innerHTML = '';
+        document.getElementById('bankTotalCount').textContent = this.expedientes.length;
+
+        if (this.expedientes.length === 0) {
+          container.innerHTML = '<div class="p-8 text-center text-slate-400 font-medium">No hay expedientes en el banco. Añade uno nuevo o restaura los originales.</div>';
+          return;
+        }
+
+        this.expedientes.forEach((exp, idx) => {
+          const isAudited = !!this.evaluations[exp.id];
+          const item = document.createElement('div');
+          item.className = "p-3.5 bg-slate-50 hover:bg-white rounded-xl border border-slate-200 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs";
+          
+          item.innerHTML = `
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="font-mono text-xs font-black bg-slate-900 text-white px-2.5 py-1 rounded-lg shrink-0">
+                #${String(exp.id).padStart(2, '0')}
+              </span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-extrabold text-slate-900 text-xs sm:text-sm truncate">${exp.client}</h4>
+                  <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-brand-blue uppercase">${exp.docType.replace('_', ' ')}: ${exp.docNumber}</span>
+                  ${isAudited ? '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 uppercase">Auditado</span>' : '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 uppercase">Pendiente</span>'}
+                </div>
+                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">${exp.situation}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button onclick="app.toggleAuditStatus(${exp.id})" class="px-2.5 py-1.5 ${isAudited ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border-slate-300'} border font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Alternar sello de auditado">
+                <span>${isAudited ? '✓ Auditado' : '○ Sellar'}</span>
+              </button>
+
+              <button onclick="app.openEditExpModal(${exp.id})" class="px-2.5 py-1.5 bg-white hover:bg-blue-50 text-brand-blue border border-blue-200 font-bold rounded-lg text-xs flex items-center gap-1 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <span>Modificar</span>
+              </button>
+              
+              <button onclick="app.deleteExpediente(${exp.id})" class="px-2.5 py-1.5 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Quitar este caso del tablero">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <span>Quitar</span>
+              </button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      deleteExpediente(expId) {
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        if (confirm(`¿Estás seguro de que deseas quitar el expediente #${String(expId).padStart(2, '0')} (${exp.client})? El tablero tendrá una carpeta menos.`)) {
+          this.expedientes = this.expedientes.filter(e => e.id !== expId);
+          delete this.evaluations[expId];
+          
+          this.saveExpedientesToStorage();
+          this.saveEvaluationsToStorage();
+          this.populateEvaluatorSelect();
+          this.renderBankList();
+          this.renderFoldersGrid();
+          this.updateStats();
+
+          // Si estábamos viendo ese caso, volver a home
+          if (this.currentExpId === expId) {
+            this.showHomeView();
+          }
+
+          this.showToast(`Expediente #${expId} eliminado del banco`);
+          playBeep(380, 'sine', 0.2);
+        }
+      }
+
+      openEditExpModal(expId) {
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        document.getElementById('editExpId').value = exp.id;
+        document.getElementById('editExpIdBadge').textContent = `#${String(exp.id).padStart(2, '0')}`;
+        document.getElementById('editClientName').value = exp.client;
+        document.getElementById('editClientMeta').value = exp.meta || '';
+        document.getElementById('editSituation').value = exp.situation || '';
+        document.getElementById('editDocType').value = exp.docType || 'DNI';
+        document.getElementById('editDocNumber').value = exp.docNumber || '';
+        document.getElementById('editDocExtra').value = exp.docExtra || '';
+        document.getElementById('editQuestion1').value = exp.q1 || '';
+        document.getElementById('editSol1').value = exp.sol1 || '';
+        document.getElementById('editQuestion2').value = exp.q2 || '';
+        document.getElementById('editSol2').value = exp.sol2 || '';
+
+        document.getElementById('editExpModal').classList.remove('hidden');
+      }
+
+      closeEditExpModal() {
+        document.getElementById('editExpModal').classList.add('hidden');
+      }
+
+      saveEditedExpediente() {
+        const id = parseInt(document.getElementById('editExpId').value);
+        const exp = this.expedientes.find(e => e.id === id);
+        if (!exp) return;
+
+        const client = document.getElementById('editClientName').value.trim();
+        const q1 = document.getElementById('editQuestion1').value.trim();
+        const q2 = document.getElementById('editQuestion2').value.trim();
+
+        if (!client || !q1 || !q2) {
+          alert('Por favor completa al menos el Nombre del Cliente y las dos Preguntas.');
+          return;
+        }
+
+        exp.client = client;
+        exp.meta = document.getElementById('editClientMeta').value.trim();
+        exp.situation = document.getElementById('editSituation').value.trim();
+        exp.docType = document.getElementById('editDocType').value;
+        exp.docNumber = document.getElementById('editDocNumber').value.trim();
+        exp.docExtra = document.getElementById('editDocExtra').value.trim();
+        exp.q1 = q1;
+        exp.sol1 = document.getElementById('editSol1').value.trim();
+        exp.q2 = q2;
+        exp.sol2 = document.getElementById('editSol2').value.trim();
+
+        this.saveExpedientesToStorage();
+        this.populateEvaluatorSelect();
+        this.renderBankList();
+        this.renderFoldersGrid();
+        
+        if (this.currentExpId === id) {
+          this.renderCurrentAudit();
+        }
+
+        this.closeEditExpModal();
+        this.showToast(`¡Expediente #${id} actualizado correctamente!`);
+        playBeep(700, 'sine', 0.15);
+      }
+
+      restoreDefaultExpedientes() {
+        if (confirm("¿Deseas restaurar la lista predeterminada con los 16 expedientes oficiales completos?")) {
+          this.expedientes = JSON.parse(JSON.stringify(DEFAULT_EXPEDIENTES));
+          this.evaluations = {};
+          this.saveExpedientesToStorage();
+          this.saveEvaluationsToStorage();
+          this.populateEvaluatorSelect();
+          this.renderBankList();
+          this.renderFoldersGrid();
+          this.updateStats();
+          this.showToast("Banco restaurado a los 16 expedientes originales");
+          playBeep(520, 'sine', 0.2);
+        }
+      }
+
+      openRestoreModal() {
+        document.getElementById('restoreConfirmModal').classList.remove('hidden');
+      }
+
+      closeRestoreModal() {
+        document.getElementById('restoreConfirmModal').classList.add('hidden');
+      }
+
+      executeRestoreAll() {
+        this.evaluations = {};
+        this.saveEvaluationsToStorage();
+        this.closeRestoreModal();
+        this.showToast('¡Tablero y carpetas restaurados a su estado inicial!');
+        playBeep(440, 'triangle', 0.25);
+      }
+
+      openNewExpedienteModal() {
+        const modal = document.getElementById('newExpModal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('newClientName').focus();
+        }, 50);
+      }
+
+      closeNewExpedienteModal() {
+        document.getElementById('newExpModal').classList.add('hidden');
+      }
+
+      saveNewExpediente() {
+        const client = document.getElementById('newClientName').value.trim();
+        const meta = document.getElementById('newClientMeta').value.trim();
+        const situation = document.getElementById('newSituation').value.trim();
+        const docType = document.getElementById('newDocType').value;
+        const docNumber = document.getElementById('newDocNumber').value.trim();
+        const docExtra = document.getElementById('newDocExtra').value.trim();
+        const q1 = document.getElementById('newQuestion1').value.trim();
+        const sol1 = document.getElementById('newSol1').value.trim();
+        const q2 = document.getElementById('newQuestion2').value.trim();
+        const sol2 = document.getElementById('newSol2').value.trim();
+
+        if (!client || !q1 || !q2) {
+          alert('Por favor completa al menos el Nombre del Cliente y las dos Preguntas Técnicas.');
+          return;
+        }
+
+        const newId = this.expedientes.length > 0 ? Math.max(...this.expedientes.map(e => e.id)) + 1 : 1;
+
+        const newExp = {
+          id: newId,
+          client,
+          meta: meta || 'Caso confidencial',
+          situation: situation || 'Actividad profesional en España.',
+          docType,
+          docNumber: docNumber || 'B-00000000',
+          docExtra: docExtra || 'En trámite',
+          q1,
+          sol1: sol1 || 'Respuesta técnica oficial homologada.',
+          q2,
+          sol2: sol2 || 'Respuesta técnica oficial homologada.'
+        };
+
+        this.expedientes.push(newExp);
+        this.saveExpedientesToStorage();
+        this.populateEvaluatorSelect();
+        this.renderFoldersGrid();
+        this.updateStats();
+
+        document.getElementById('newClientName').value = '';
+        document.getElementById('newClientMeta').value = '';
+        document.getElementById('newSituation').value = '';
+        document.getElementById('newDocNumber').value = '';
+        document.getElementById('newDocExtra').value = '';
+        document.getElementById('newQuestion1').value = '';
+        document.getElementById('newSol1').value = '';
+        document.getElementById('newQuestion2').value = '';
+        document.getElementById('newSol2').value = '';
+
+        this.closeNewExpedienteModal();
+        this.showToast(`¡Expediente #${newId} registrado con éxito!`);
+        playBeep(750, 'sine', 0.2);
+      }
+    }
+
+    let app;
+    window.addEventListener('DOMContentLoaded', () => {
+      app = new AppController();
+    });
+  </script>
+
+</body>
+</html>

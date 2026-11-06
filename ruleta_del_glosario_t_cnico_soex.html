@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruleta del Glosario Técnico - somostugestoría & SOEX</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            stg: {
+              blue: '#0066FF',
+              darkBlue: '#004cd8',
+              orange: '#FF6A00',
+              hoverOrange: '#e55f00',
+              navy: '#0f172a',
+              accent: '#EAF3FF',
+              bg: '#F4F7FB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F4F7FB;
+      font-family: 'Inter', sans-serif;
+    }
+    .logo-brand {
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.04em;
+    }
+    .wheel-pointer-shadow {
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+    }
+    @keyframes pulseSpinBtn {
+      0%, 100% { transform: scale(1); box-shadow: 0 10px 25px -5px rgba(255, 106, 0, 0.45); }
+      50% { transform: scale(1.03); box-shadow: 0 16px 32px -4px rgba(255, 106, 0, 0.65); }
+    }
+    .spin-pulse {
+      animation: pulseSpinBtn 2s infinite ease-in-out;
+    }
+    @keyframes timerWarning {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .timer-alert {
+      animation: timerWarning 0.85s infinite ease-in-out;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+  <!-- HEADER OFICIAL -->
+  <header class="bg-white border-b border-slate-200/80 shadow-xs sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- LOGOTIPO CORPORATIVO EXACTO A LA IMAGEN DE REFERENCIA -->
+      <div class="flex items-center gap-4">
+        <div class="flex flex-col">
+          <div class="flex items-baseline text-2xl sm:text-3xl font-black logo-brand leading-none select-none tracking-tight">
+            <span class="text-stg-blue">somos</span><span class="text-stg-orange">tu</span><span class="text-stg-blue">gestoría</span>
+          </div>
+          <!-- 'desde 1997' alineado a la derecha en naranja negrita -->
+          <div class="text-right text-[11px] sm:text-[12px] font-black text-stg-orange tracking-normal mt-1 leading-none">
+            desde 1997
+          </div>
+        </div>
+        
+        <!-- Línea divisoria vertical gris clara -->
+        <div class="h-8 w-px bg-slate-200"></div>
+        
+        <!-- Pastilla azul sólida 'SOEX VENEZUELA' idéntica a la imagen -->
+        <div class="flex items-center bg-stg-blue text-white px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-xs select-none">
+          SOEX VENEZUELA
+        </div>
+      </div>
+
+      <!-- BARRA DE ESTADO & GESTIÓN -->
+      <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 px-3 md:px-4 py-1.5 rounded-2xl text-xs shadow-xs">
+        <div class="text-center px-1.5">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Términos</span>
+          <span id="stat-terms-ratio" class="text-sm md:text-base font-black text-stg-blue">16 / 16</span>
+        </div>
+        <div class="h-7 w-px bg-slate-200"></div>
+        <div class="text-center px-1.5">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Escala Máx</span>
+          <span id="stat-scale-max" class="text-sm md:text-base font-black text-emerald-600">2 pts</span>
+        </div>
+        <div class="h-7 w-px bg-slate-200"></div>
+        
+        <!-- Botones de Acción Superior -->
+        <div class="flex items-center gap-1.5">
+          <button onclick="openScoreScaleModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 sm:px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-colors shadow-xs" title="Gestionar escala de evaluación">
+            <i class="fa-solid fa-star"></i>
+            <span class="hidden lg:inline">Gestionar Valor</span>
+          </button>
+          <button onclick="openTermsManager()" class="bg-stg-blue hover:bg-stg-darkBlue text-white px-2.5 sm:px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-colors shadow-xs" title="Gestionar términos">
+            <i class="fa-solid fa-sliders"></i>
+            <span class="hidden lg:inline">Glosario</span>
+          </button>
+          <button onclick="confirmResetRound()" class="text-slate-400 hover:text-rose-600 p-2 rounded-xl hover:bg-slate-200/60 transition-colors" title="Reiniciar evaluaciones">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- CUERPO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+    
+    <!-- BARRA DE CONFIGURACIÓN RÁPIDA -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6 bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-orange-50 text-stg-orange flex items-center justify-center font-bold text-xl shadow-2xs">
+          <i class="fa-solid fa-dharmachakra"></i>
+        </div>
+        <div>
+          <h2 class="text-sm sm:text-base font-black text-slate-800">Ruleta del Glosario Técnico</h2>
+          <p class="text-xs text-slate-500 font-medium">Gira la ruleta con el botón o con la barra <strong>Espacio</strong> para seleccionar un término al azar.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600">
+          <i class="fa-regular fa-clock text-stg-orange"></i>
+          <span>Temporizador:</span>
+          <select id="timer-global-select" class="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer">
+            <option value="30">30 s</option>
+            <option value="45" selected>45 s</option>
+            <option value="60">60 s</option>
+            <option value="90">90 s</option>
+          </select>
+        </div>
+
+        <button onclick="exportToCSV()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-xs">
+          <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i>
+          <span>Descargar Notas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- REJILLA PRINCIPAL -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- SECCIÓN RULETA CANVAS (COLUMNA IZQUIERDA) -->
+      <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-7 shadow-xs flex flex-col items-center">
+        
+        <!-- CONTENEDOR CANVAS ADAPTATIVO -->
+        <div class="relative w-full max-w-[490px] aspect-square flex items-center justify-center select-none">
+          
+          <!-- Puntero superior en naranja corporativo -->
+          <div class="wheel-pointer-shadow absolute -top-3 z-20 text-stg-orange text-4xl sm:text-5xl pointer-events-none">
+            <i class="fa-solid fa-location-pin"></i>
+          </div>
+
+          <!-- Canvas interactivo -->
+          <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full cursor-pointer shadow-md hover:shadow-lg transition-shadow" onclick="spinWheel()"></canvas>
+
+          <!-- Centro blanco puro (TOTALMENTE BLANCO SIN TEXTO) -->
+          <div class="absolute w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full shadow-2xl border-4 border-slate-100 flex items-center justify-center select-none pointer-events-none z-10">
+          </div>
+        </div>
+
+        <!-- BOTÓN DE ACCIÓN Y CONTROLES -->
+        <div class="mt-6 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <button id="btn-spin" onclick="spinWheel()" class="spin-pulse w-full sm:w-auto bg-gradient-to-r from-stg-orange to-amber-500 hover:from-stg-hoverOrange hover:to-amber-600 text-white font-black text-sm uppercase tracking-wider px-9 py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i>
+            <span>¡Girar Ruleta!</span>
+          </button>
+          
+          <button onclick="restoreAllDiscardedTerms()" class="text-xs font-bold text-slate-600 hover:text-stg-blue bg-slate-100 hover:bg-slate-200/80 px-4 py-3 rounded-2xl transition-colors flex items-center gap-1.5" title="Regresar todos los términos a la ruleta">
+            <i class="fa-solid fa-rotate"></i>
+            <span>Reactivar Todos</span>
+          </button>
+        </div>
+        
+        <p class="text-[11px] text-slate-400 mt-2.5 font-medium">Puedes presionar la barra espaciadora en cualquier momento para girar.</p>
+      </section>
+
+      <!-- PANELES LATERALES (COLUMNA DERECHA) -->
+      <section class="lg:col-span-5 flex flex-col gap-5">
+        
+        <!-- REGISTRO DE EVALUADOS -->
+        <div class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col max-h-[360px]">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-user-check text-stg-orange"></i>
+              <h3 class="text-sm font-black text-slate-800">Calificaciones Registradas</h3>
+            </div>
+            <span id="badge-total-evals" class="text-xs font-bold bg-stg-accent text-stg-blue px-2.5 py-0.5 rounded-full">0 evaluados</span>
+          </div>
+
+          <div id="eval-records-container" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+            <!-- Cargado vía JS -->
+          </div>
+        </div>
+
+        <!-- ESTADO Y CONTROL DE TÉRMINOS -->
+        <div class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col max-h-[350px]">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-stg-blue"></i>
+              <h3 class="text-sm font-black text-slate-800">Términos en Ruleta</h3>
+            </div>
+            <span id="badge-discarded-count" class="text-xs font-semibold text-slate-400">0 descartados</span>
+          </div>
+
+          <div id="terms-status-container" class="flex-1 overflow-y-auto space-y-1.5 pr-1 text-xs">
+            <!-- Cargado vía JS -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="bg-white border-t border-slate-200/80 py-4 mt-6">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 font-medium">
+      somostugestoría.es &copy; Desde 1997 • Programa de Líderes y Asesores SOEX Venezuela
+    </div>
+  </footer>
+
+  <!-- ==================== MODALES ==================== -->
+
+  <!-- MODAL 1: RESULTADO DEL GIRO & EVALUACIÓN SÍNCRONA -->
+  <div id="evaluation-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all flex flex-col max-h-[92vh]">
+      
+      <!-- Cabecera del Modal -->
+      <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-stg-orange text-white font-black text-lg flex items-center justify-center shadow-xs">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-stg-blue">Término Seleccionado</span>
+            <h3 id="modal-term-name" class="text-base sm:text-lg font-black text-slate-900 leading-tight">IVA Soportado</h3>
+          </div>
+        </div>
+        <button onclick="closeEvaluationModal()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Contenido del Modal -->
+      <div class="p-6 overflow-y-auto space-y-5">
+        
+        <!-- Temporizador activo -->
+        <div class="flex flex-col items-center bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+          <div id="modal-timer-number" class="text-4xl md:text-5xl font-black font-mono px-6 py-2 rounded-2xl border-2 border-stg-orange text-stg-orange bg-white shadow-xs tracking-tight transition-all">
+            00:45
+          </div>
+          <p id="modal-timer-label" class="text-xs text-slate-500 mt-2 font-medium">Temporizador activo</p>
+          
+          <div class="flex gap-2 mt-3">
+            <button onclick="startModalTimer()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition-colors">
+              <i class="fa-solid fa-play"></i> Iniciar
+            </button>
+            <button onclick="pauseModalTimer()" class="text-xs bg-amber-500 hover:bg-amber-400 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition-colors">
+              <i class="fa-solid fa-pause"></i> Pausar
+            </button>
+            <button onclick="resetModalTimer()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition-colors">
+              <i class="fa-solid fa-rotate-left"></i> Reiniciar
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón para Desvelar Significado Oficial en España -->
+        <div class="border border-amber-200 bg-amber-50/50 rounded-2xl p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-book-bookmark text-amber-500"></i>
+              <span class="text-xs font-bold text-amber-900">Significado Oficial en España</span>
+            </div>
+            <button id="btn-toggle-meaning" onclick="toggleMeaningContent()" class="bg-stg-orange hover:bg-stg-hoverOrange text-white text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 shadow-xs">
+              <i id="toggle-meaning-icon" class="fa-solid fa-eye"></i>
+              <span id="toggle-meaning-text">Mostrar Significado Oficial</span>
+            </button>
+          </div>
+          <div id="modal-term-meaning-box" class="mt-3 pt-3 border-t border-amber-200/70 text-xs sm:text-sm text-slate-800 font-medium leading-relaxed hidden">
+            <!-- Definición inyectada vía JS -->
+          </div>
+        </div>
+
+        <!-- Datos del Participante y Calificación Dinámica -->
+        <div class="bg-stg-accent/40 border border-stg-blue/20 rounded-2xl p-4 space-y-3">
+          <div class="text-xs font-bold text-stg-blue uppercase tracking-wider">
+            Calificar Participante
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nombre del participante:</label>
+            <input type="text" id="eval-input-participant" placeholder="Ej. Carlos Mendoza" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-stg-blue">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Observaciones / Feedback (opcional):</label>
+            <input type="text" id="eval-input-note" placeholder="Ej. Buen uso de terminología, seguro al responder" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-stg-blue">
+          </div>
+
+          <!-- Casilla de descarte -->
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="eval-checkbox-discard" checked class="w-4 h-4 text-stg-blue rounded border-slate-300 focus:ring-stg-blue cursor-pointer">
+            <label for="eval-checkbox-discard" class="text-xs font-semibold text-slate-700 cursor-pointer">
+              Descartar término de la ruleta tras calificar (no volverá a salir)
+            </label>
+          </div>
+
+          <!-- Botones dinámicos de calificación con base en el valor configurado -->
+          <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-blue-100">
+            <span class="text-xs font-bold text-slate-700">Asignar Nota:</span>
+            <div id="dynamic-grade-buttons" class="flex items-center gap-2">
+              <!-- Generado dinámicamente según la escala -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Pie del Modal -->
+      <div class="bg-slate-50 border-t border-slate-200 px-6 py-3 flex justify-end">
+        <button onclick="closeEvaluationModal()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl transition-colors">
+          Cerrar sin calificar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 2: GESTIONAR VALOR DE LA EVALUACIÓN (NUEVA FUNCIÓN) -->
+  <div id="score-scale-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all flex flex-col">
+      
+      <!-- Cabecera -->
+      <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">Gestionar Valor de la Evaluación</h3>
+            <p class="text-xs text-slate-500">Configura los puntos asignados a cada nivel de respuesta.</p>
+          </div>
+        </div>
+        <button onclick="closeScoreScaleModal()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Contenido de Gestión de Escala -->
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Preajustes habituales de evaluación:</label>
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <button onclick="setPresetScale(2, 1, 0, 'Escala 2 - 1 - 0 pts')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold p-2.5 rounded-xl border border-slate-200 text-center transition-colors">
+              2 - 1 - 0 pts
+              <span class="block text-[10px] text-slate-400 font-normal">Estándar SOEX</span>
+            </button>
+            <button onclick="setPresetScale(5, 2.5, 0, 'Escala 5 - 2.5 - 0 pts')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold p-2.5 rounded-xl border border-slate-200 text-center transition-colors">
+              5 - 2.5 - 0 pts
+              <span class="block text-[10px] text-slate-400 font-normal">Base 5 pts</span>
+            </button>
+            <button onclick="setPresetScale(20, 10, 0, 'Escala 20 - 10 - 0 pts')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold p-2.5 rounded-xl border border-slate-200 text-center transition-colors">
+              20 - 10 - 0 pts
+              <span class="block text-[10px] text-slate-400 font-normal">Base 20 pts</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 pt-4 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Personalizar Valores Individuales:</h4>
+          
+          <div class="flex items-center justify-between gap-3 bg-emerald-50/60 p-3 rounded-2xl border border-emerald-200">
+            <div>
+              <span class="text-xs font-bold text-emerald-900 block">Nivel Excelente / Sobresaliente:</span>
+              <span class="text-[10px] text-emerald-700">Respuesta certera, técnica y segura</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="0.5" id="scale-input-high" class="w-20 bg-white border border-emerald-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 text-right focus:outline-none">
+              <span class="text-xs font-bold text-emerald-900">pts</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
+            <div>
+              <span class="text-xs font-bold text-amber-900 block">Nivel Regular / Aceptable:</span>
+              <span class="text-[10px] text-amber-700">Dudas menores o imprecisión léxica</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="0.5" id="scale-input-mid" class="w-20 bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 text-right focus:outline-none">
+              <span class="text-xs font-bold text-amber-900">pts</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 bg-rose-50/60 p-3 rounded-2xl border border-rose-200">
+            <div>
+              <span class="text-xs font-bold text-rose-900 block">Nivel Por Reforzar / Deficiente:</span>
+              <span class="text-[10px] text-rose-700">Desconoce el concepto o modismo erróneo</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="0.5" id="scale-input-low" class="w-20 bg-white border border-rose-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 text-right focus:outline-none">
+              <span class="text-xs font-bold text-rose-900">pts</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pie -->
+      <div class="bg-slate-50 border-t border-slate-200 px-6 py-3.5 flex justify-between items-center">
+        <button onclick="closeScoreScaleModal()" class="text-xs text-slate-500 hover:text-slate-700 font-bold px-3 py-1.5">
+          Cancelar
+        </button>
+        <button onclick="saveScoreScaleConfig()" class="bg-stg-blue hover:bg-stg-darkBlue text-white text-xs font-bold px-5 py-2 rounded-xl transition-colors shadow-xs">
+          Guardar Escala
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 3: GESTOR DE TÉRMINOS DEL GLOSARIO -->
+  <div id="terms-manager-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all flex flex-col max-h-[92vh]">
+      
+      <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-stg-blue text-white flex items-center justify-center font-bold">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">Gestionar Términos del Glosario</h3>
+            <p class="text-xs text-slate-500">Edita definiciones, añade nuevos términos o restaura los 16 oficiales.</p>
+          </div>
+        </div>
+        <button onclick="closeTermsManager()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Acciones de cabecera -->
+      <div class="bg-slate-50 border-b border-slate-200 p-3 md:px-6 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <button onclick="addNewTermModalAction()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors shadow-xs">
+            <i class="fa-solid fa-plus"></i> Añadir Término
+          </button>
+          <button onclick="restoreOfficialDefaultTerms()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-rotate-left text-stg-orange"></i> Restaurar los 16 Oficiales
+          </button>
+        </div>
+        <span id="terms-count-indicator" class="font-bold text-slate-500">16 términos</span>
+      </div>
+
+      <!-- Lista editable -->
+      <div id="terms-editor-list" class="p-6 overflow-y-auto space-y-3.5 flex-1 bg-slate-50/50">
+        <!-- Renderizado dinámico -->
+      </div>
+
+      <!-- Pie -->
+      <div class="bg-white border-t border-slate-200 px-6 py-3.5 flex justify-end">
+        <button onclick="closeTermsManager()" class="bg-stg-blue hover:bg-stg-darkBlue text-white font-bold text-xs px-5 py-2 rounded-xl transition-colors shadow-xs">
+          Guardar y Aplicar a Ruleta
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST FLOTANTE -->
+  <div id="toast-box" class="fixed bottom-6 right-6 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toast-message">Notificación</span>
+  </div>
+
+  <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
+  <script>
+    // 16 TÉRMINOS OFICIALES PRECARGADOS
+    const OFFICIAL_TERMS = [
+      {
+        id: 1,
+        term: "IVA Soportado",
+        meaning: "El IVA pagado en compras y gastos necesarios para la actividad económica, susceptible de deducción."
+      },
+      {
+        id: 2,
+        term: "IVA Repercutido",
+        meaning: "El IVA facturado y cobrado directamente a los clientes por la venta de productos o servicios."
+      },
+      {
+        id: 3,
+        term: "Retención de IRPF",
+        meaning: "Porcentaje que se deduce en factura a profesionales autónomos y se ingresa a Hacienda a cuenta de su impuesto sobre la renta."
+      },
+      {
+        id: 4,
+        term: "Certificado Digital",
+        meaning: "Fichero informático oficial instalado en el navegador que acredita la identidad de una persona física o jurídica para acceder, consultar y firmar trámites telemáticos oficiales ante la AEAT, TGSS o Registro Mercantil."
+      },
+      {
+        id: 5,
+        term: "AEAT",
+        meaning: "Agencia Estatal de Administración Tributaria (organismo de la Hacienda pública española encargado de la gestión e inspección de tributos)."
+      },
+      {
+        id: 6,
+        term: "TGSS",
+        meaning: "Tesorería General de la Seguridad Social, ente responsable de la afiliación, cotizaciones y altas/bajas de trabajadores y autónomos."
+      },
+      {
+        id: 7,
+        term: "NIF vs. CIF",
+        meaning: "NIF es el Número de Identificación Fiscal para personas físicas (autónomos) y jurídicas; CIF es la denominación tradicional aún usada en el mercado para referirse al NIF de empresas/sociedades."
+      },
+      {
+        id: 8,
+        term: "Autónomo",
+        meaning: "Persona física que realiza de forma habitual y directa una actividad económica a título lucrativo por cuenta propia."
+      },
+      {
+        id: 9,
+        term: "Sociedad Limitada (S.L.)",
+        meaning: "Sociedad de carácter mercantil donde la responsabilidad está limitada al capital aportado, siendo la figura jurídica más común para PYMES en España."
+      },
+      {
+        id: 10,
+        term: "Administrador Solidario",
+        meaning: "Órgano de administración donde cada administrador tiene facultades individuales para representar, firmar y obligar legalmente a la sociedad por separado."
+      },
+      {
+        id: 11,
+        term: "Administrador Mancomunado",
+        meaning: "Régimen donde se exige la firma conjunta y simultánea de dos o más administradores para que cualquier acto o contrato tenga validez legal frente a terceros."
+      },
+      {
+        id: 12,
+        term: "Importe",
+        meaning: "Cuantía, valor o cifra económica de una transacción, operación o factura."
+      },
+      {
+        id: 13,
+        term: "Fichero",
+        meaning: "Conjunto estructurado de datos en soporte digital o informático."
+      },
+      {
+        id: 14,
+        term: "Alta y Baja",
+        meaning: "Actos formales de inicio o cese de una actividad económica en Hacienda (Censo), o de un empleado en la Seguridad Social."
+      },
+      {
+        id: 15,
+        term: "Comunidad Autónoma",
+        meaning: "Entidad territorial dotada de autonomía política, legislativa y de gestión en España (existen 17, más Ceuta y Melilla)."
+      },
+      {
+        id: 16,
+        term: "Provincia",
+        meaning: "División territorial intermedia integrada por municipios dentro de una Comunidad Autónoma (España cuenta con 50 provincias)."
+      }
+    ];
+
+    // ESTADO DE LA APLICACIÓN
+    let currentTerms = [];
+    let discardedIds = new Set();
+    let evaluationsHistory = [];
+    let activeWheelTerm = null;
+
+    // CONFIGURACIÓN DE ESCALA DE PUNTUACIÓN (GESTIÓN DEL VALOR)
+    let scoreScale = {
+      high: 2,
+      mid: 1,
+      low: 0,
+      label: "Escala 2 - 1 - 0 pts"
+    };
+
+    // MOTOR RULETA CANVAS
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    let startAngle = 0;
+    let arc = 0;
+    let spinTimeout = null;
+    let spinAngleStart = 0;
+    let spinTime = 0;
+    let spinTimeTotal = 0;
+    let isSpinning = false;
+
+    // PALETA CORPORATIVA DE SECTORES
+    const SECTOR_PALETTE = [
+      '#0066FF', // Azul STG
+      '#FF6A00', // Naranja STG
+      '#0f172a', // Azul Marino STG
+      '#1d4ed8', // Azul Medio
+      '#ea580c', // Naranja Quemado
+      '#334155'  // Pizarra
+    ];
+
+    // SINTETIZADOR DE AUDIO (Web Audio API)
+    let audioCtx = null;
+    function playWheelTick() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.045);
+      } catch (e) {}
+    }
+
+    // PERSISTENCIA Y CARGA
+    function initializeApplication() {
+      // Cargar términos
+      try {
+        const saved = localStorage.getItem('soex_terms_v2');
+        currentTerms = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(OFFICIAL_TERMS));
+      } catch(e) {
+        currentTerms = JSON.parse(JSON.stringify(OFFICIAL_TERMS));
+      }
+
+      // Cargar descartados
+      try {
+        const savedDisc = localStorage.getItem('soex_discarded_v2');
+        discardedIds = savedDisc ? new Set(JSON.parse(savedDisc)) : new Set();
+      } catch(e) {
+        discardedIds = new Set();
+      }
+
+      // Cargar escala de puntajes
+      try {
+        const savedScale = localStorage.getItem('soex_scale_v2');
+        if (savedScale) {
+          scoreScale = JSON.parse(savedScale);
+        }
+      } catch(e) {}
+
+      // Cargar evaluaciones
+      try {
+        const savedEvals = localStorage.getItem('soex_evals_v2');
+        evaluationsHistory = savedEvals ? JSON.parse(savedEvals) : [];
+      } catch(e) {
+        evaluationsHistory = [];
+      }
+
+      updateUIElements();
+      drawWheelCanvas();
+    }
+
+    function saveAllToStorage() {
+      localStorage.setItem('soex_terms_v2', JSON.stringify(currentTerms));
+      localStorage.setItem('soex_discarded_v2', JSON.stringify(Array.from(discardedIds)));
+      localStorage.setItem('soex_scale_v2', JSON.stringify(scoreScale));
+      localStorage.setItem('soex_evals_v2', JSON.stringify(evaluationsHistory));
+    }
+
+    function getActiveTerms() {
+      return currentTerms.filter(t => !discardedIds.has(t.id));
+    }
+
+    // DIBUJO DE LA RULETA (CON TEXTOS EN VERTICAL RADIAL Y CENTRO 100% BLANCO)
+    function drawWheelCanvas() {
+      const active = getActiveTerms();
+      const numSegments = active.length;
+      const width = canvas.width; // 600
+      const center = width / 2;   // 300
+      const outsideRadius = center - 12; // 288
+      const insideRadius = 70;    // Radio del centro blanco
+
+      ctx.clearRect(0, 0, width, width);
+
+      // Si no quedan términos activos
+      if (numSegments === 0) {
+        ctx.beginPath();
+        ctx.arc(center, center, outsideRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fill();
+        ctx.fillStyle = '#64748b';
+        ctx.font = 'bold 22px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('¡Todos los términos han sido evaluados!', center, center);
+        return;
+      }
+
+      arc = (Math.PI * 2) / numSegments;
+
+      // Dibujar sectores
+      for (let i = 0; i < numSegments; i++) {
+        const angle = startAngle + i * arc;
+        const color = SECTOR_PALETTE[i % SECTOR_PALETTE.length];
+
+        // Relleno sector
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(center, center, outsideRadius, angle, angle + arc, false);
+        ctx.arc(center, center, insideRadius, angle + arc, angle, true);
+        ctx.fill();
+
+        // Borde blanco sutil entre sectores
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // DIBUJO DE TEXTOS EN VERTICAL (ORIENTACIÓN RADIAL DESDE EL BORRE HACIA EL CENTRO)
+        ctx.save();
+        ctx.fillStyle = "#ffffff";
+        
+        // Mover el contexto al radio medio del sector orientado
+        const midAngle = angle + arc / 2;
+        const textCenterRadius = insideRadius + (outsideRadius - insideRadius) * 0.55;
+        
+        ctx.translate(center + Math.cos(midAngle) * textCenterRadius, 
+                      center + Math.sin(midAngle) * textCenterRadius);
+        
+        // Rotación para colocar el texto en orientación vertical pura relativa al radio (de afuera hacia adentro)
+        ctx.rotate(midAngle);
+
+        // Truncar si es demasiado largo
+        let termText = active[i].term;
+        if (numSegments > 12 && termText.length > 18) {
+          termText = termText.substring(0, 16) + '...';
+        }
+
+        // Tipografía dinámica según la cantidad de sectores
+        const fontSize = numSegments > 14 ? 13 : (numSegments > 10 ? 14 : 16);
+        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 4;
+        
+        // Dibujar el texto verticalmente alineado en el sector
+        ctx.fillText(termText, 0, 0);
+
+        ctx.restore();
+      }
+
+      // CENTRO DE LA RULETA TOTALMENTE BLANCO (SIN TEXTO)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(center, center, insideRadius, 0, Math.PI * 2, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.18)';
+      ctx.shadowBlur = 12;
+      ctx.fill();
+
+      // Borde del círculo central
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // ANIMACIÓN DE GIRO DE LA RULETA
+    function spinWheel() {
+      if (isSpinning) return;
+      
+      const active = getActiveTerms();
+      if (active.length === 0) {
+        showToast('No quedan términos activos en la ruleta', 'fa-triangle-exclamation');
+        return;
+      }
+
+      isSpinning = true;
+      const spinBtn = document.getElementById('btn-spin');
+      spinBtn.disabled = true;
+      spinBtn.classList.remove('spin-pulse');
+
+      spinAngleStart = Math.random() * 15 + 25;
+      spinTime = 0;
+      spinTimeTotal = Math.random() * 2000 + 4000; // 4 a 6 segundos
+      
+      rotateWheelLoop();
+    }
+
+    function rotateWheelLoop() {
+      spinTime += 30;
+      if (spinTime >= spinTimeTotal) {
+        finishWheelSpin();
+        return;
+      }
+
+      // Desaceleración cúbica (easeOut)
+      const currentSpeed = spinAngleStart - easeOutCubic(spinTime, 0, spinAngleStart, spinTimeTotal);
+      startAngle += (currentSpeed * Math.PI / 180);
+      drawWheelCanvas();
+
+      if (Math.random() > 0.65) {
+        playWheelTick();
+      }
+
+      spinTimeout = setTimeout(rotateWheelLoop, 30);
+    }
+
+    function finishWheelSpin() {
+      clearTimeout(spinTimeout);
+      isSpinning = false;
+      
+      const spinBtn = document.getElementById('btn-spin');
+      spinBtn.disabled = false;
+      spinBtn.classList.add('spin-pulse');
+
+      const active = getActiveTerms();
+      if (active.length === 0) return;
+
+      // El puntero está en la parte superior (270 grados o -PI/2)
+      const degrees = (startAngle * 180 / Math.PI) + 90;
+      const arcDegrees = arc * 180 / Math.PI;
+      const index = Math.floor((360 - (degrees % 360)) % 360 / arcDegrees);
+
+      const selected = active[index] || active[0];
+      openEvaluationModal(selected);
+    }
+
+    function easeOutCubic(t, b, c, d) {
+      const ts = (t /= d) * t;
+      const tc = ts * t;
+      return b + c * (tc + -3 * ts + 3 * t);
+    }
+
+    // ==================== MODAL DE EVALUACIÓN ====================
+    let modalTimerSeconds = 45;
+    let modalTimerInterval = null;
+    let isModalTimerRunning = false;
+
+    function openEvaluationModal(termObj) {
+      activeWheelTerm = termObj;
+
+      document.getElementById('modal-term-name').innerText = termObj.term;
+      document.getElementById('modal-term-meaning-box').innerText = termObj.meaning;
+      document.getElementById('modal-term-meaning-box').classList.add('hidden');
+      document.getElementById('toggle-meaning-text').innerText = 'Mostrar Significado Oficial';
+      document.getElementById('toggle-meaning-icon').className = 'fa-solid fa-eye';
+
+      // Configurar tiempo según selector
+      const duration = parseInt(document.getElementById('timer-global-select').value) || 45;
+      modalTimerSeconds = duration;
+      resetModalTimer();
+
+      document.getElementById('eval-input-participant').value = '';
+      document.getElementById('eval-input-note').value = '';
+      document.getElementById('eval-checkbox-discard').checked = true;
+
+      // Generar botones de calificación dinámicos basados en la escala actual
+      renderDynamicGradeButtons();
+
+      document.getElementById('evaluation-modal').classList.remove('hidden');
+      startModalTimer();
+    }
+
+    function closeEvaluationModal() {
+      pauseModalTimer();
+      document.getElementById('evaluation-modal').classList.add('hidden');
+    }
+
+    function toggleMeaningContent() {
+      const box = document.getElementById('modal-term-meaning-box');
+      const text = document.getElementById('toggle-meaning-text');
+      const icon = document.getElementById('toggle-meaning-icon');
+
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        text.innerText = 'Ocultar Significado';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        box.classList.add('hidden');
+        text.innerText = 'Mostrar Significado Oficial';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    // TEMPORIZADOR DEL MODAL
+    function updateTimerModalDisplay() {
+      const display = document.getElementById('modal-timer-number');
+      const mins = Math.floor(modalTimerSeconds / 60);
+      const secs = modalTimerSeconds % 60;
+      display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      if (modalTimerSeconds <= 10 && modalTimerSeconds > 0) {
+        display.classList.add('timer-alert', 'text-rose-600', 'border-rose-600', 'bg-rose-50');
+        display.classList.remove('text-stg-orange', 'border-stg-orange', 'bg-white');
+      } else {
+        display.classList.remove('timer-alert', 'text-rose-600', 'border-rose-600', 'bg-rose-50');
+        display.classList.add('text-stg-orange', 'border-stg-orange', 'bg-white');
+      }
+    }
+
+    function startModalTimer() {
+      if (isModalTimerRunning) return;
+      isModalTimerRunning = true;
+      document.getElementById('modal-timer-label').innerText = 'Temporizador en curso...';
+
+      modalTimerInterval = setInterval(() => {
+        if (modalTimerSeconds > 0) {
+          modalTimerSeconds--;
+          updateTimerModalDisplay();
+        } else {
+          pauseModalTimer();
+          document.getElementById('modal-timer-label').innerText = '¡Tiempo concluido!';
+          showToast('Tiempo agotado para responder', 'fa-clock');
+        }
+      }, 1000);
+    }
+
+    function pauseModalTimer() {
+      isModalTimerRunning = false;
+      clearInterval(modalTimerInterval);
+      document.getElementById('modal-timer-label').innerText = 'En pausa';
+    }
+
+    function resetModalTimer() {
+      pauseModalTimer();
+      const duration = parseInt(document.getElementById('timer-global-select').value) || 45;
+      modalTimerSeconds = duration;
+      document.getElementById('modal-timer-label').innerText = `Listo (${modalTimerSeconds}s)`;
+      const display = document.getElementById('modal-timer-number');
+      display.classList.remove('timer-alert', 'text-rose-600', 'border-rose-600', 'bg-rose-50');
+      display.classList.add('text-stg-orange', 'border-stg-orange', 'bg-white');
+      updateTimerModalDisplay();
+    }
+
+    // BOTONES DINÁMICOS DE CALIFICACIÓN (GESTIÓN DEL VALOR)
+    function renderDynamicGradeButtons() {
+      const container = document.getElementById('dynamic-grade-buttons');
+      container.innerHTML = `
+        <button onclick="commitEvaluation(${scoreScale.high})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition-colors shadow-xs flex items-center gap-1">
+          <i class="fa-solid fa-check"></i> ${scoreScale.high} pts (Excelente)
+        </button>
+        <button onclick="commitEvaluation(${scoreScale.mid})" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition-colors shadow-xs flex items-center gap-1">
+          <i class="fa-solid fa-minus"></i> ${scoreScale.mid} pts (Regular)
+        </button>
+        <button onclick="commitEvaluation(${scoreScale.low})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition-colors shadow-xs flex items-center gap-1">
+          <i class="fa-solid fa-xmark"></i> ${scoreScale.low} pts (Por Reforzar)
+        </button>
+      `;
+    }
+
+    // GUARDAR CALIFICACIÓN
+    function commitEvaluation(points) {
+      if (!activeWheelTerm) return;
+
+      const participantName = document.getElementById('eval-input-participant').value.trim() || `Participante (${activeWheelTerm.term})`;
+      const note = document.getElementById('eval-input-note').value.trim();
+      const shouldDiscard = document.getElementById('eval-checkbox-discard').checked;
+
+      evaluationsHistory.push({
+        id: Date.now(),
+        term: activeWheelTerm.term,
+        participant: participantName,
+        points: points,
+        maxPoints: scoreScale.high,
+        note: note,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      if (shouldDiscard) {
+        discardedIds.add(activeWheelTerm.id);
+      }
+
+      saveAllToStorage();
+      updateUIElements();
+      drawWheelCanvas();
+      closeEvaluationModal();
+      showToast(`Evaluación guardada: ${points} pts`, 'fa-circle-check');
+    }
+
+    // GESTIÓN DEL VALOR / ESCALA DE EVALUACIÓN
+    function openScoreScaleModal() {
+      document.getElementById('scale-input-high').value = scoreScale.high;
+      document.getElementById('scale-input-mid').value = scoreScale.mid;
+      document.getElementById('scale-input-low').value = scoreScale.low;
+      document.getElementById('score-scale-modal').classList.remove('hidden');
+    }
+
+    function closeScoreScaleModal() {
+      document.getElementById('score-scale-modal').classList.add('hidden');
+    }
+
+    function setPresetScale(h, m, l, label) {
+      document.getElementById('scale-input-high').value = h;
+      document.getElementById('scale-input-mid').value = m;
+      document.getElementById('scale-input-low').value = l;
+    }
+
+    function saveScoreScaleConfig() {
+      const h = parseFloat(document.getElementById('scale-input-high').value) || 2;
+      const m = parseFloat(document.getElementById('scale-input-mid').value) || 1;
+      const l = parseFloat(document.getElementById('scale-input-low').value) || 0;
+
+      scoreScale = {
+        high: h,
+        mid: m,
+        low: l,
+        label: `Escala ${h} - ${m} - ${l} pts`
+      };
+
+      saveAllToStorage();
+      updateUIElements();
+      closeScoreScaleModal();
+      showToast('Escala de evaluación actualizada', 'fa-star');
+    }
+
+    // DESCARTAR O REACTIVAR TÉRMINOS
+    function toggleDiscardStatus(id) {
+      if (discardedIds.has(id)) {
+        discardedIds.delete(id);
+        showToast('Término reactivado en la ruleta', 'fa-rotate-left');
+      } else {
+        discardedIds.add(id);
+        showToast('Término descartado', 'fa-eye-slash');
+      }
+      saveAllToStorage();
+      updateUIElements();
+      drawWheelCanvas();
+    }
+
+    function restoreAllDiscardedTerms() {
+      discardedIds.clear();
+      saveAllToStorage();
+      updateUIElements();
+      drawWheelCanvas();
+      showToast('Todos los términos han sido reactivados', 'fa-arrows-rotate');
+    }
+
+    // ACTUALIZAR INTERFAZ Y PANELES
+    function updateUIElements() {
+      const active = getActiveTerms();
+      document.getElementById('stat-terms-ratio').innerText = `${active.length} / ${currentTerms.length}`;
+      document.getElementById('stat-scale-max').innerText = `${scoreScale.high} pts`;
+      document.getElementById('badge-total-evals').innerText = `${evaluationsHistory.length} evaluados`;
+      document.getElementById('badge-discarded-count').innerText = `${discardedIds.size} descartados`;
+
+      // Renderizar Evaluaciones Realizadas
+      const evContainer = document.getElementById('eval-records-container');
+      if (evaluationsHistory.length === 0) {
+        evContainer.innerHTML = `
+          <div class="text-center py-8 text-slate-400">
+            <i class="fa-regular fa-id-badge text-3xl mb-2 opacity-40 block"></i>
+            Gira la ruleta para registrar la primera evaluación.
+          </div>
+        `;
+      } else {
+        evContainer.innerHTML = '';
+        evaluationsHistory.slice().reverse().forEach(ev => {
+          let badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          if (ev.points < ev.maxPoints && ev.points > 0) badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+          if (ev.points === 0) badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
+
+          const item = document.createElement('div');
+          item.className = 'bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between hover:bg-slate-100 transition-colors';
+          item.innerHTML = `
+            <div class="truncate pr-2">
+              <p class="font-bold text-slate-800 truncate">${escapeSafeHTML(ev.participant)}</p>
+              <p class="text-[10px] text-slate-500">${escapeSafeHTML(ev.term)} • ${ev.time}</p>
+            </div>
+            <div class="shrink-0 flex items-center gap-1.5">
+              <span class="text-[11px] font-black px-2 py-0.5 rounded-full border ${badgeClass}">
+                ${ev.points} pts
+              </span>
+            </div>
+          `;
+          evContainer.appendChild(item);
+        });
+      }
+
+      // Renderizar Estado de Términos
+      const termsContainer = document.getElementById('terms-status-container');
+      termsContainer.innerHTML = '';
+      currentTerms.forEach(t => {
+        const isDisc = discardedIds.has(t.id);
+        const row = document.createElement('div');
+        row.className = `flex items-center justify-between p-2 rounded-xl border text-xs ${isDisc ? 'bg-slate-50 border-slate-200 text-slate-400 opacity-60' : 'bg-white border-slate-200 text-slate-800'}`;
+        row.innerHTML = `
+          <div class="flex items-center gap-2 truncate pr-2">
+            <span class="w-2 h-2 rounded-full ${isDisc ? 'bg-slate-300' : 'bg-emerald-500'}"></span>
+            <span class="font-medium truncate ${isDisc ? 'line-through' : ''}">${escapeSafeHTML(t.term)}</span>
+          </div>
+          <button onclick="toggleDiscardStatus(${t.id})" class="text-[11px] font-bold px-2 py-0.5 rounded-lg border transition-colors shrink-0 ${isDisc ? 'text-stg-blue border-stg-blue/30 hover:bg-blue-50' : 'text-slate-400 border-slate-200 hover:text-rose-600 hover:border-rose-200'}">
+            ${isDisc ? 'Activar' : 'Descartar'}
+          </button>
+        `;
+        termsContainer.appendChild(row);
+      });
+    }
+
+    // EXPORTACIÓN A ARCHIVO CSV
+    function exportToCSV() {
+      if (evaluationsHistory.length === 0) {
+        showToast('No hay calificaciones para exportar', 'fa-triangle-exclamation');
+        return;
+      }
+
+      let csv = "data:text/csv;charset=utf-8,\uFEFF";
+      csv += "Participante;Termino;Puntaje_Obtenido;Puntaje_Maximo;Observaciones;Hora\r\n";
+
+      evaluationsHistory.forEach(ev => {
+        const safePart = (ev.participant || '').replace(/;/g, ',');
+        const safeTerm = (ev.term || '').replace(/;/g, ',');
+        const safeNote = (ev.note || '').replace(/;/g, ',');
+        csv += `${safePart};${safeTerm};${ev.points};${ev.maxPoints};${safeNote};${ev.time}\r\n`;
+      });
+
+      const uri = encodeURI(csv);
+      const link = document.createElement('a');
+      link.setAttribute('href', uri);
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+      link.setAttribute('download', `${dateStr}_Evaluacion_Glosario_SOEX.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Archivo CSV descargado con éxito', 'fa-download');
+    }
+
+    // REINICIAR EVALUACIONES
+    function confirmResetRound() {
+      const ok = window.confirm('¿Deseas reiniciar todas las calificaciones y reactivar todos los términos de la ruleta?');
+      if (ok) {
+        evaluationsHistory = [];
+        discardedIds.clear();
+        saveAllToStorage();
+        updateUIElements();
+        drawWheelCanvas();
+        showToast('Tablero reiniciado para una nueva ronda', 'fa-arrow-rotate-left');
+      }
+    }
+
+    // ==================== GESTOR DE TÉRMINOS ====================
+    function openTermsManager() {
+      renderTermsEditorList();
+      document.getElementById('terms-manager-modal').classList.remove('hidden');
+    }
+
+    function closeTermsManager() {
+      document.getElementById('terms-manager-modal').classList.add('hidden');
+      updateUIElements();
+      drawWheelCanvas();
+    }
+
+    function renderTermsEditorList() {
+      const container = document.getElementById('terms-editor-list');
+      container.innerHTML = '';
+      document.getElementById('terms-count-indicator').innerText = `${currentTerms.length} términos`;
+
+      currentTerms.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-2';
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+            <span class="text-xs font-bold text-stg-blue">Término #${i + 1}</span>
+            <button onclick="removeTermFromList(${t.id})" class="text-slate-400 hover:text-rose-600 text-xs transition-colors p-1" title="Eliminar">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase">Término:</label>
+            <input type="text" value="${escapeSafeHTML(t.term)}" onchange="updateTermField(${t.id}, 'term', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-none focus:border-stg-blue">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase">Significado Oficial en España:</label>
+            <textarea rows="2" onchange="updateTermField(${t.id}, 'meaning', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none focus:border-stg-blue">${escapeSafeHTML(t.meaning)}</textarea>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateTermField(id, field, val) {
+      const item = currentTerms.find(t => t.id === id);
+      if (item) {
+        item[field] = val;
+        saveAllToStorage();
+      }
+    }
+
+    function addNewTermModalAction() {
+      const termName = window.prompt('Escribe el nombre del nuevo término técnico:');
+      if (!termName || !termName.trim()) return;
+      const def = window.prompt('Escribe el significado oficial en España:');
+      
+      const newId = currentTerms.length > 0 ? Math.max(...currentTerms.map(t => t.id)) + 1 : 1;
+      currentTerms.push({
+        id: newId,
+        term: termName.trim(),
+        meaning: def ? def.trim() : "Definición pendiente de registrar."
+      });
+
+      saveAllToStorage();
+      renderTermsEditorList();
+      showToast('Nuevo término añadido al glosario', 'fa-plus');
+    }
+
+    function removeTermFromList(id) {
+      if (currentTerms.length <= 2) {
+        showToast('Debe haber al menos 2 términos para la ruleta', 'fa-triangle-exclamation');
+        return;
+      }
+      currentTerms = currentTerms.filter(t => t.id !== id);
+      discardedIds.delete(id);
+      saveAllToStorage();
+      renderTermsEditorList();
+      showToast('Término eliminado', 'fa-trash');
+    }
+
+    function restoreOfficialDefaultTerms() {
+      const ok = window.confirm('¿Deseas restaurar la lista a los 16 términos oficiales del Glosario Técnico?');
+      if (ok) {
+        currentTerms = JSON.parse(JSON.stringify(OFFICIAL_TERMS));
+        discardedIds.clear();
+        saveAllToStorage();
+        renderTermsEditorList();
+        showToast('16 Términos oficiales restaurados', 'fa-rotate-left');
+      }
+    }
+
+    // UTILIDADES: TOAST Y ESCAPE HTML
+    function showToast(msg, icon = 'fa-check') {
+      const toast = document.getElementById('toast-box');
+      document.getElementById('toast-message').innerText = msg;
+      document.getElementById('toast-icon').className = `fa-solid ${icon} text-emerald-400`;
+
+      toast.classList.remove('opacity-0', 'translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-20');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2500);
+    }
+
+    function escapeSafeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // EVENTO TECLA ESPACIADORA
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+        const isEvalOpen = !document.getElementById('evaluation-modal').classList.contains('hidden');
+        const isTermsOpen = !document.getElementById('terms-manager-modal').classList.contains('hidden');
+        const isScaleOpen = !document.getElementById('score-scale-modal').classList.contains('hidden');
+        
+        if (!isEvalOpen && !isTermsOpen && !isScaleOpen) {
+          e.preventDefault();
+          spinWheel();
+        }
+      }
+    });
+
+    // INICIALIZACIÓN AL CARGAR
+    window.onload = function() {
+      initializeApplication();
+    };
+  </script>
+</body>
+</html>

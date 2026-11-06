@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Rompecabezas del PGC y Régimen de IVA | somostugestoría</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Canvas Confetti for Completion Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Inter Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandBlue: '#0055FF',
+            brandOrange: '#FF5500',
+            brandDark: '#0B1329',
+            brandSlate: '#1E293B',
+            brandBorder: '#E2E8F0',
+            brandLight: '#F8FAFC',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Puzzle Container */
+    .puzzle-grid-box {
+      position: relative;
+      background: #FFFFFF;
+      box-shadow: 0 10px 30px -10px rgba(0, 85, 255, 0.12);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+    }
+
+    /* Logo behind puzzle pieces */
+    .puzzle-underlay-logo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      user-select: none;
+      z-index: 1;
+      padding: 1.5rem;
+    }
+
+    /* 4x4 or responsive grid */
+    .puzzle-pieces-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      z-index: 10;
+    }
+
+    /* Individual Puzzle Card */
+    .puzzle-card {
+      position: relative;
+      border: 1.5px dashed #CBD5E1;
+      background: #F1F5F9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    .puzzle-card:hover:not(.solved) {
+      background: #E2E8F0;
+      border-color: #0055FF;
+      transform: scale(0.98);
+      z-index: 12;
+      box-shadow: inset 0 0 12px rgba(0, 85, 255, 0.18);
+    }
+    .puzzle-card.solved {
+      background: transparent !important;
+      border: 1px solid rgba(0, 85, 255, 0.15) !important;
+      cursor: pointer;
+    }
+    .puzzle-card.solved .lock-badge {
+      display: none;
+    }
+    .puzzle-card.solved:hover {
+      box-shadow: inset 0 0 0 2px rgba(255, 85, 0, 0.5);
+    }
+
+    /* Account Badge unlocked state */
+    .account-badge-unlocked {
+      background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+      border: 1.5px solid #0055FF !important;
+      box-shadow: 0 4px 12px -2px rgba(0, 85, 255, 0.2);
+      animation: pulseHighlight 0.6s ease-out;
+    }
+
+    @keyframes pulseHighlight {
+      0% { transform: scale(0.97); box-shadow: 0 0 0 0 rgba(255, 85, 0, 0.7); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(255, 85, 0, 0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-brandLight text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brandBlue selection:text-white">
+
+  <!-- ================= TOP NAVIGATION / HEADER ================= -->
+  <header class="bg-white border-b border-brandBorder sticky top-0 z-40 shadow-sm">
+    <div class="max-w-[1780px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Institutional Corporate Identity (Exact as Reference) -->
+      <div class="flex items-center gap-3.5 select-none py-1">
+        <div class="flex flex-col items-end">
+          <div class="flex items-baseline tracking-[-0.04em] font-[900] text-2xl sm:text-[32px] leading-none">
+            <span class="text-[#0055FF]">somos</span><span class="text-[#FF5500]">tu</span><span class="text-[#0055FF]">gestoría</span>
+          </div>
+          <div class="text-[#FF5500] font-[900] text-xs sm:text-[13px] tracking-tight leading-none mt-1 pr-1">
+            desde 1997
+          </div>
+        </div>
+        <div class="h-8 w-[1.5px] bg-slate-300 mx-1"></div>
+        <div class="bg-[#0055FF] text-white font-[900] text-[11px] sm:text-xs px-4 py-1.5 rounded-full shadow-sm tracking-wider uppercase">
+          SOEX VENEZUELA
+        </div>
+      </div>
+
+      <!-- Live Counters & Action Hub -->
+      <div class="flex items-center flex-wrap gap-2.5">
+        
+        <!-- Progress Counter -->
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold">
+          <span class="text-slate-500">Progreso:</span>
+          <span id="headerProgressText" class="font-bold text-brandBlue font-mono text-sm">0 / 16</span>
+          <div class="w-20 h-2 bg-slate-200 rounded-full overflow-hidden ml-1">
+            <div id="headerProgressBar" class="h-full bg-gradient-to-r from-brandBlue to-brandOrange w-0 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <!-- Question Bank Manager Button -->
+        <button onclick="openQuestionBankModal()" class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-brandBorder text-slate-700 hover:text-brandBlue px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition">
+          <i class="ph-bold ph-list-dashes text-base text-brandBlue"></i>
+          <span>📋 Ver Banco de Preguntas</span>
+        </button>
+
+        <!-- Private Grades Modal Button -->
+        <button onclick="openScoreboardModal()" class="inline-flex items-center gap-1.5 bg-brandDark hover:bg-brandSlate text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition">
+          <i class="ph-bold ph-chart-bar text-base text-brandOrange"></i>
+          <span>📊 Calificaciones (<span id="evaluatedStudentsCount">0</span>)</span>
+        </button>
+
+        <!-- Reset Button -->
+        <button onclick="confirmResetAll()" title="Reiniciar actividad" class="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-red-50 border border-transparent hover:border-red-200 transition">
+          <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE (SPLIT LAYOUT) ================= -->
+  <main class="flex-1 max-w-[1780px] w-full mx-auto px-4 sm:px-6 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- LEFT PANEL: EL DESAFÍO DEL ROMPECABEZAS (5 Cols) -->
+    <section class="lg:col-span-5 flex flex-col gap-4">
+      <div class="bg-white border border-brandBorder rounded-2xl p-4 sm:p-5 shadow-sm">
+        
+        <!-- Header of Puzzle Box -->
+        <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+          <div>
+            <span class="text-[11px] font-bold tracking-wider uppercase text-brandBlue flex items-center gap-1">
+              <i class="ph-bold ph-sparkle text-brandOrange"></i> Dinámica de Evaluación
+            </span>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+              EL DESAFÍO DEL ROMPECABEZAS
+            </h2>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-50 text-brandOrange border border-orange-200">
+            10,0 Pts (7,0 PGC + 3,0 IVA)
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-3">
+          Haz clic en una pieza para abrir el caso de evaluación oral. Al encajar la pieza se revelará su cuadrante en el logo corporativo y se activará en el Cuadro de Cuentas Contables.
+        </p>
+
+        <!-- PUZZLE CONTAINER -->
+        <div class="puzzle-grid-box border border-slate-200 relative">
+          
+          <!-- FULL UNDERLYING VECTOR LOGO -->
+          <div class="puzzle-underlay-logo" id="underlayLogo">
+            <div class="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+              
+              <!-- Exact Matching Corporate Brand Lockup -->
+              <div class="flex flex-col items-end select-none">
+                <div class="flex items-baseline tracking-[-0.04em] font-[900] text-3xl sm:text-4xl md:text-5xl leading-none">
+                  <span class="text-[#0055FF]">somos</span><span class="text-[#FF5500]">tu</span><span class="text-[#0055FF]">gestoría</span>
+                </div>
+                <div class="text-[#FF5500] font-[900] text-sm sm:text-base md:text-lg tracking-tight leading-none mt-2 pr-1">
+                  desde 1997
+                </div>
+              </div>
+
+              <!-- Official Completion Banner -->
+              <div id="fullCompletionBanner" class="hidden mt-6 flex-col items-center gap-2 animate-bounce">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 font-extrabold text-xs sm:text-sm uppercase tracking-wide shadow-md">
+                  <i class="ph-bold ph-seal-check text-lg text-emerald-600"></i>
+                  ¡ROMPECABEZAS COMPLETADO AL 100%!
+                </span>
+                <span class="text-xs text-slate-600 font-bold">Cuadro de Cuentas Contables Consolidado con Éxito</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DYNAMIC GRID OF PUZZLE PIECES -->
+          <div class="puzzle-pieces-grid" id="puzzlePiecesGrid">
+            <!-- Dynamic pieces injected via JS -->
+          </div>
+
+        </div>
+
+        <!-- Legend / Progress Indicator -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div class="flex items-center gap-3">
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block"></span> Pendiente
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-brandBlue inline-block"></span> Encajada / Auditada
+            </span>
+          </div>
+          <span id="completionPercentage" class="font-mono font-bold text-slate-700">0% Desbloqueado</span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANEL: CUADRO DE CUENTAS CONTABLES (7 Cols) -->
+    <section class="lg:col-span-7 flex flex-col gap-4">
+      <div class="bg-white border border-brandBorder rounded-2xl p-4 sm:p-5 shadow-sm">
+        
+        <!-- Header of Accounts Board -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base sm:text-xl font-black text-slate-900 tracking-tight">
+              CUADRO DE CUENTAS CONTABLES
+            </h2>
+            <p class="text-xs text-slate-500 font-medium">Los 9 Grupos del Plan General de Contabilidad</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-semibold">
+            <span class="text-slate-500">Cuentas Clave:</span>
+            <span id="unlockedAccountsCount" class="px-3 py-1 bg-blue-50 text-brandBlue border border-blue-200 rounded-lg font-bold font-mono">
+              0 / 16 Activas
+            </span>
+          </div>
+        </div>
+
+        <!-- 9 Groups Tabs Filters -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 text-xs scrollbar-none" id="groupFilterNav">
+          <button onclick="filterAccountsGrid('all')" class="group-tab-btn active px-3 py-1.5 rounded-xl font-bold bg-brandBlue text-white shrink-0 transition" data-group="all">
+            Todos (1 - 9)
+          </button>
+          <button onclick="filterAccountsGrid('G1')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G1">
+            G1 Financiación
+          </button>
+          <button onclick="filterAccountsGrid('G2')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G2">
+            G2 Inmovilizado
+          </button>
+          <button onclick="filterAccountsGrid('G3')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G3">
+            G3 Existencias
+          </button>
+          <button onclick="filterAccountsGrid('G4')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G4">
+            G4 Deudores/Acreedores
+          </button>
+          <button onclick="filterAccountsGrid('G5')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G5">
+            G5 Financieras
+          </button>
+          <button onclick="filterAccountsGrid('G6')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G6">
+            G6 Compras/Gastos
+          </button>
+          <button onclick="filterAccountsGrid('G7')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G7">
+            G7 Ventas/Ingresos
+          </button>
+          <button onclick="filterAccountsGrid('G89')" class="group-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" data-group="G89">
+            G8/9 PN Directo
+          </button>
+        </div>
+
+        <!-- ACCOUNTS MATRIX GRID (Text-wrap enabled, no overflow, flexible height) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 max-h-[660px] overflow-y-auto pr-1" id="chartOfAccountsGrid">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: FICHA TÉCNICA DE EVALUACIÓN ORAL ================= -->
+  <div id="evaluationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto max-h-[94vh]">
+      
+      <!-- Modal Top Header -->
+      <div class="bg-gradient-to-r from-brandBlue to-blue-700 text-white px-5 sm:px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 rounded-xl bg-white/15 flex items-center justify-center font-mono font-black text-sm sm:text-base text-white border border-white/20" id="modalPieceBadge">
+            PIEZA #01
+          </span>
+          <h3 class="text-base sm:text-lg font-extrabold leading-snug" id="modalPieceTitle">
+            Título de la Operación
+          </h3>
+        </div>
+
+        <button onclick="closeEvaluationModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-5 text-sm">
+        
+        <!-- Timer + Participant Field -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-4">
+          <!-- Participant Name -->
+          <div class="flex-1 min-w-[220px]">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Participante:</label>
+            <input type="text" id="studentNameInput" placeholder="Nombre completo del participante..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-brandBlue focus:ring-1 focus:ring-brandBlue">
+          </div>
+
+          <!-- Countdown Timer -->
+          <div class="flex items-center gap-2">
+            <div class="text-center">
+              <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Temporizador</span>
+              <div id="timerDisplay" class="font-mono text-2xl font-black text-brandDark">01:00</div>
+            </div>
+            <div class="flex items-center gap-1 ml-2">
+              <button onclick="startTimer()" title="Iniciar" class="w-8 h-8 rounded-lg bg-brandBlue text-white hover:bg-blue-600 flex items-center justify-center font-bold text-xs shadow-sm transition">
+                <i class="ph-fill ph-play"></i>
+              </button>
+              <button onclick="pauseTimer()" title="Pausar" class="w-8 h-8 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center justify-center font-bold text-xs transition">
+                <i class="ph-fill ph-pause"></i>
+              </button>
+              <button onclick="resetTimer()" title="Reiniciar" class="w-8 h-8 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center justify-center font-bold text-xs transition">
+                <i class="ph-bold ph-arrow-counter-clockwise"></i>
+              </button>
+            </div>
+            <!-- Preset buttons -->
+            <div class="flex flex-col gap-1 text-[10px] font-bold text-slate-500">
+              <button onclick="setTimerDuration(30)" class="hover:text-brandBlue">30s</button>
+              <button onclick="setTimerDuration(60)" class="hover:text-brandBlue">60s</button>
+              <button onclick="setTimerDuration(90)" class="hover:text-brandBlue">90s</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hecho Económico / Factura Box -->
+        <div class="border-l-4 border-brandBlue bg-blue-50/40 p-4 rounded-r-xl">
+          <div class="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-brandBlue mb-1">
+            <i class="ph-bold ph-receipt text-base text-brandOrange"></i> Hecho Económico / Factura Comercial
+          </div>
+          <p id="modalFactDescription" class="text-slate-800 font-medium text-sm sm:text-base leading-relaxed">
+            Descripción de la factura...
+          </p>
+        </div>
+
+        <!-- QUESTIONS SECTION (PUBLIC DISPLAY - NO VISIBLE GRADE INPUTS) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          
+          <!-- Pillar 1: PGC Question (7,0 pts) -->
+          <div class="md:col-span-7 bg-white border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-brandBlue uppercase tracking-wider flex items-center gap-1">
+                  <i class="ph-bold ph-notebook"></i> 1. PREGUNTA PGC
+                </span>
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-brandBlue">
+                  7,0 pts
+                </span>
+              </div>
+              <p id="modalPGCQuestion" class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                ¿En qué grupo, subgrupo y cuenta oficial del PGC...?
+              </p>
+            </div>
+          </div>
+
+          <!-- Pillar 2: IVA Question (3,0 pts) -->
+          <div class="md:col-span-5 bg-white border border-orange-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-brandOrange uppercase tracking-wider flex items-center gap-1">
+                  2. PREGUNTA IVA AEAT
+                </span>
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-orange-100 text-brandOrange">
+                  3,0 pts
+                </span>
+              </div>
+              <p id="modalIVAQuestion" class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                ¿Qué tipo impositivo de IVA aplica...?
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PRIVATE TEACHER GRADING SUBPANEL (Hidden toggle for screen-sharing) -->
+        <div id="privateGradingPanel" class="hidden bg-slate-100 border border-slate-300 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+              <i class="ph-bold ph-lock-key text-brandOrange"></i> Panel Confidencial de Calificación Docente
+            </span>
+            <span class="text-[11px] font-mono text-slate-500">Solo visible para el profesor</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Nota PGC (0.0 - 7.0):</label>
+              <input type="number" id="privatePgcInput" min="0" max="7" step="0.5" value="7.0" oninput="calculatePrivateTotal()" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 font-mono text-sm font-bold text-center focus:outline-none focus:border-brandBlue">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Nota IVA (0.0 - 3.0):</label>
+              <input type="number" id="privateIvaInput" min="0" max="3" step="0.5" value="3.0" oninput="calculatePrivateTotal()" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 font-mono text-sm font-bold text-center focus:outline-none focus:border-brandOrange">
+            </div>
+            <div class="text-center sm:text-right">
+              <span class="block text-[11px] font-bold text-slate-500 uppercase">Total Obtenido</span>
+              <span id="privateTotalDisplay" class="font-mono text-xl font-black text-brandBlue">10.0 / 10.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OFFICIAL SOLUTION BLOCK (Dark Mode Style) -->
+        <div id="solutionDrawer" class="hidden bg-[#0b1329] text-white rounded-xl p-4 sm:p-5 space-y-3.5 border border-slate-800 shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+              <i class="ph-bold ph-check-circle text-base"></i> SOLUCIÓN TÉCNICA
+            </span>
+            <span class="text-[11px] text-slate-400 font-mono">Normativa PGC & LIVA España</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <!-- PGC Solution Card -->
+            <div class="bg-slate-900/90 p-3.5 rounded-lg border-l-4 border-brandBlue">
+              <span class="font-bold text-blue-400 uppercase tracking-wider block mb-1">DICTAMEN CONTABLE (PGC):</span>
+              <p id="modalPGCSolution" class="text-slate-200 leading-relaxed font-sans">
+                ...
+              </p>
+            </div>
+
+            <!-- IVA Solution Card -->
+            <div class="bg-slate-900/90 p-3.5 rounded-lg border-l-4 border-brandOrange">
+              <span class="font-bold text-orange-400 uppercase tracking-wider block mb-1">DICTAMEN TRIBUTARIO (IVA):</span>
+              <p id="modalIVASolution" class="text-slate-200 leading-relaxed font-sans">
+                ...
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-5 sm:px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <!-- Reveal Solution Button -->
+          <button onclick="toggleSolutionDrawer()" id="revealSolBtn" class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">
+            <i class="ph-bold ph-eye text-base text-brandOrange"></i>
+            <span id="revealSolBtnText">👁 Revelar Solución Técnica</span>
+          </button>
+
+          <!-- Hidden Teacher Grading Toggle Button -->
+          <button onclick="togglePrivateGrading()" class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">
+            <i class="ph-bold ph-lock-simple text-sm text-brandBlue"></i>
+            <span>🔒 Calificar (Privado)</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeEvaluationModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold transition">
+            Cerrar
+          </button>
+          <button onclick="lockAndFitPiece()" class="inline-flex items-center gap-2 bg-gradient-to-r from-brandBlue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-2 rounded-xl text-xs font-extrabold shadow-md shadow-blue-500/20 transition">
+            <i class="ph-bold ph-puzzle-piece text-base text-orange-300"></i>
+            <span>🧩 Encajar Pieza en el Rompecabezas</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: GESTIÓN DEL BANCO DE PREGUNTAS Y PIEZAS ================= -->
+  <div id="questionBankModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-5xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      
+      <!-- Top Bar -->
+      <div class="bg-brandDark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="ph-bold ph-database text-brandOrange text-2xl"></i>
+          <div>
+            <h3 class="text-base font-extrabold leading-none">Gestión del Banco de Preguntas y Piezas</h3>
+            <span class="text-xs text-slate-400">Edita, sustituye, elimina o añade nuevos casos para ampliar la clase</span>
+          </div>
+        </div>
+        <button onclick="closeQuestionBankModal()" class="text-slate-400 hover:text-white transition">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Action subheader -->
+      <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-slate-600 font-semibold">
+          Total de piezas activas en el tablero: <span id="bankTotalCount" class="font-bold text-brandBlue">16</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openPieceEditor(null)" class="inline-flex items-center gap-1.5 bg-brandOrange hover:bg-orange-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-extrabold shadow-sm transition">
+            <i class="ph-bold ph-plus-circle text-base"></i>
+            <span>+ Agregar Nueva Pieza</span>
+          </button>
+          <button onclick="resetBankToOriginal()" class="inline-flex items-center gap-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+            <i class="ph-bold ph-arrow-counter-clockwise text-sm text-red-500"></i>
+            <span>Restablecer Banco Original</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body / List of Questions -->
+      <div class="p-6 overflow-y-auto space-y-3 flex-1">
+        <div id="questionBankList" class="space-y-3">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+        <button onclick="closeQuestionBankModal()" class="px-5 py-2 rounded-xl bg-brandBlue text-white text-xs font-bold hover:bg-blue-600 transition">
+          Listo / Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: FORMULARIO AGREGAR / EDITAR PIEZA ================= -->
+  <div id="pieceEditorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      
+      <div class="bg-brandDark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="ph-bold ph-pencil-simple text-brandOrange text-xl"></i>
+          <h3 class="text-base font-extrabold" id="pieceEditorModalTitle">Crear / Editar Pieza</h3>
+        </div>
+        <button onclick="closePieceEditor()" class="text-slate-400 hover:text-white transition">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 text-xs">
+        <input type="hidden" id="editPieceId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Código / Número:</label>
+            <input type="text" id="editCode" placeholder="Ej: PIEZA #17" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-mono font-bold focus:outline-none focus:border-brandBlue">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-bold text-slate-700 mb-1">Título de la Operación:</label>
+            <input type="text" id="editTitle" placeholder="Ej: Venta de Existencias al Contado..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-medium focus:outline-none focus:border-brandBlue">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Hecho Económico / Factura Comercial:</label>
+          <textarea id="editFact" rows="2" placeholder="Describe la factura o transacción comercial..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-medium focus:outline-none focus:border-brandBlue"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-brandBlue mb-1">1. Pregunta PGC (7,0 pts):</label>
+            <input type="text" id="editQPGC" placeholder="¿En qué cuenta y subgrupo del PGC...?" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-brandBlue">
+          </div>
+          <div>
+            <label class="block font-bold text-brandOrange mb-1">2. Pregunta IVA AEAT (3,0 pts):</label>
+            <input type="text" id="editQIVA" placeholder="¿Qué tipo impositivo de IVA aplica...?" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-brandOrange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-brandBlue mb-1">Dictamen Contable Oficial (PGC):</label>
+            <textarea id="editSolPGC" rows="2" placeholder="Grupo X, Subgrupo XX, Cuenta XXX..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-brandBlue"></textarea>
+          </div>
+          <div>
+            <label class="block font-bold text-brandOrange mb-1">Dictamen Tributario Oficial (IVA):</label>
+            <textarea id="editSolIVA" rows="2" placeholder="21% (Tipo General)..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-brandOrange"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Código Cuenta PGC:</label>
+            <input type="text" id="editAccCode" placeholder="Ej: 430" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-mono font-bold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nombre Cuenta:</label>
+            <input type="text" id="editAccName" placeholder="Ej: Clientes" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-medium">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Grupo PGC:</label>
+            <select id="editAccGroup" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold">
+              <option value="G1">Grupo 1 - Financiación</option>
+              <option value="G2">Grupo 2 - Activo No Corriente</option>
+              <option value="G3">Grupo 3 - Existencias</option>
+              <option value="G4">Grupo 4 - Comerciales</option>
+              <option value="G5">Grupo 5 - Cuentas Financieras</option>
+              <option value="G6">Grupo 6 - Compras y Gastos</option>
+              <option value="G7">Grupo 7 - Ventas e Ingresos</option>
+              <option value="G89">Grupos 8 y 9 - PN Directo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end gap-2">
+        <button onclick="closePieceEditor()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs">
+          Cancelar
+        </button>
+        <button onclick="savePieceFromEditor()" class="px-5 py-2 rounded-xl bg-brandBlue text-white font-extrabold text-xs shadow-sm hover:bg-blue-600 transition">
+          Guardar Pieza
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ACTA DE CALIFICACIONES (PRIVADO) ================= -->
+  <div id="scoreboardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto max-h-[90vh]">
+      
+      <div class="bg-brandDark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="ph-bold ph-table text-brandOrange text-xl"></i>
+          <div>
+            <h3 class="text-base font-extrabold">Acta Privada de Calificaciones</h3>
+            <span class="text-xs text-slate-400">Ponderación Oficial: 7,0 pts PGC + 3,0 pts IVA = 10,0 pts Total</span>
+          </div>
+        </div>
+        <button onclick="closeScoreboardModal()" class="text-slate-400 hover:text-white transition">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1">
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Pieza</th>
+                <th class="py-3 px-4">Participante</th>
+                <th class="py-3 px-4">Operación</th>
+                <th class="py-3 px-4 text-center">PGC (7p)</th>
+                <th class="py-3 px-4 text-center">IVA (3p)</th>
+                <th class="py-3 px-4 text-center">Total (10p)</th>
+                <th class="py-3 px-4 text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboardTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <span class="text-xs text-slate-600 font-semibold" id="averageScoreText">
+          Alumnos evaluados: 0 | Promedio: -- / 10,0 pts
+        </span>
+        <div class="flex items-center gap-2">
+          <button onclick="exportScoresToCSV()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold shadow-sm transition">
+            <i class="ph-bold ph-download-simple text-sm text-brandBlue"></i>
+            <span>Exportar CSV</span>
+          </button>
+          <button onclick="closeScoreboardModal()" class="px-4 py-2 rounded-xl bg-brandBlue text-white text-xs font-bold hover:bg-blue-600 transition">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+  <script>
+    /* =================================================================
+       1. 16 OFFICIAL PIECES (INCORPORATING ACCOUNTS 430 & 572)
+       ================================================================= */
+    const MASTER_DEFAULT_PIECES = [
+      {
+        id: 1,
+        code: "PIEZA #01",
+        title: "Compra de Furgoneta de Reparto",
+        fact: "La empresa adquiere una furgoneta nueva para el reparto y distribución de sus pedidos comerciales por un importe de 24.000 €.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta oficial del PGC (código y nombre a 3 dígitos) se registra el vehículo? Justifica su naturaleza contable.",
+        solPGC: "Grupo 2 (Activo No Corriente), Subgrupo 21 (Inmovilizaciones materiales), Cuenta 218 (Elementos de transporte). Naturaleza: Bien tangible duradero que permanece en la empresa más de un ejercicio y está sujeto a depreciación y amortización sistemática (cuenta 281).",
+        qIVA: "¿Qué tipo impositivo de IVA aplica a la compra de esta furgoneta comercial según la AEAT?",
+        solIVA: "21% (Tipo General). Los vehículos comerciales y turismos estándar tributan a la alícuota general supletoria del impuesto (art. 90 LIVA).",
+        accCode: "218",
+        accName: "Elementos de transporte",
+        accGroup: "G2",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 2,
+        code: "PIEZA #02",
+        title: "Minuta de Abogado Mercantil",
+        fact: "Factura emitida por un abogado colegiado en ejercicio libre por la redacción de contratos mercantiles y asesoramiento societario por 850 €.",
+        qPGC: "¿A qué grupo, subgrupo y cuenta oficial del PGC pertenece esta factura profesional?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 623 (Servicios de profesionales independientes).",
+        qIVA: "¿Qué calificación de IVA corresponde a los servicios de asesoría jurídica prestados por el abogado?",
+        solIVA: "21% (Tipo General). Los servicios jurídicos, fiscales y de gestoría no disfrutan de exención médica o social ni de gravamen reducido, aplicando la tasa general ordinaria.",
+        accCode: "623",
+        accName: "Servicios de profesionales independientes",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 3,
+        code: "PIEZA #03",
+        title: "Aceite de Oliva y Pan Comedor",
+        fact: "Ticket/factura de supermercado con la compra de 10 garrafas de aceite de oliva virgen extra y 20 barras de pan tradicional para el comedor interno de los empleados.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta del PGC se contabiliza este consumo corriente para el personal de la empresa?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 629 (Otros servicios) o alternativamente subgrupo 64, cuenta 649 (Otros gastos sociales). No es compra de mercaderías (600) porque no se adquirió para su reventa comercial.",
+        qIVA: "¿Qué tipo impositivo de IVA grava el aceite de oliva y el pan tradicional según el régimen vigente de la AEAT?",
+        solIVA: "4% (Tipo Superreducido). El pan común y el aceite de oliva (incorporado de manera fija a la cesta básica) tributan formalmente al tipo superreducido del 4% (art. 91.Dos LIVA).",
+        accCode: "629",
+        accName: "Otros servicios / Cesta Básica",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 4,
+        code: "PIEZA #04",
+        title: "Suministro Eléctrico de Oficina",
+        fact: "Factura emitida por la compañía comercializadora eléctrica correspondiente al consumo de luz del mes en la oficina central.",
+        qPGC: "¿A qué grupo, subgrupo y cuenta del PGC corresponde el suministro eléctrico de la actividad? Justifica por qué no es una existencia.",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 628 (Suministros). Justificación: Es un coste de energía y fluido no almacenable de consumo continuo e inmediato en el ejercicio.",
+        qIVA: "¿Qué tipo impositivo de IVA aplica ordinariamente al suministro de electricidad?",
+        solIVA: "21% (Tipo General ordinario).",
+        accCode: "628",
+        accName: "Suministros (Luz y Gas)",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 5,
+        code: "PIEZA #05",
+        title: "Constitución Notarial S.L.",
+        fact: "Escritura de constitución notarial de la sociedad en la que los socios fundadores aportan 3.000 € en efectivo en la cuenta bancaria de la empresa para suscribir las participaciones.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta oficial se registra la aportación inicial de los socios?",
+        solPGC: "Grupo 1 (Financiación Básica), Subgrupo 10 (Capital), Cuenta 100 (Capital social).",
+        qIVA: "¿Qué tipo impositivo de IVA se aplica a la aportación de capital dinerario y emisión de participaciones en la constitución societaria?",
+        solIVA: "No sujeta a IVA. Las operaciones societarias de constitución y ampliación de capital no constituyen entrega de bienes ni prestación de servicios comerciales.",
+        accCode: "100",
+        accName: "Capital social",
+        accGroup: "G1",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 6,
+        code: "PIEZA #06",
+        title: "Autobús Interurbano Convención",
+        fact: "Factura de una empresa de autobuses interurbanos por el traslado de los asesores fiscales de la firma a una convención profesional en Madrid.",
+        qPGC: "¿En qué cuenta y subgrupo del PGC se registra el gasto de transporte de personas?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 629 (Otros servicios - Gastos de viaje y desplazamiento) o Cuenta 624 (Transportes) si se destina a tráfico general.",
+        qIVA: "¿Qué tipo impositivo de IVA grava el transporte de viajeros y sus equipajes según la Ley del IVA?",
+        solIVA: "10% (Tipo Reducido). El servicio regular o discrecional de transporte terrestre, aéreo o marítimo de pasajeros tributa con alícuota reducida.",
+        accCode: "624",
+        accName: "Transportes de personas",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 7,
+        code: "PIEZA #07",
+        title: "Venta al Contado de Mercaderías",
+        fact: "Factura emitida por la empresa a un cliente por la venta al contado de un lote de mercancías destinadas a su comercio por importe de 5.000 €.",
+        qPGC: "¿A qué grupo, subgrupo y cuenta oficial corresponde el ingreso por venta de mercancías?",
+        solPGC: "Grupo 7 (Ventas e ingresos), Subgrupo 70 (Ventas de mercaderías, de producción propia, etc.), Cuenta 700 (Ventas de mercaderías).",
+        qIVA: "¿Qué alícuota de IVA debe repercutir la empresa en la factura comercial emitida a su cliente en España?",
+        solIVA: "21% (Tipo General).",
+        accCode: "700",
+        accName: "Ventas de mercaderías",
+        accGroup: "G7",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 8,
+        code: "PIEZA #08",
+        title: "Alquiler Mensual del Local",
+        fact: "Recibo/factura mensual del arrendamiento del local comercial donde funciona la sede administrativa y de atención de la empresa.",
+        qPGC: "¿Qué cuenta del PGC recoge el coste del alquiler de las oficinas? ¿A qué grupo pertenece?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 621 (Arrendamientos y cánones). Refleja el alquiler de bienes muebles o inmuebles al servicio de la actividad económica.",
+        qIVA: "¿Cuál es el tipo de IVA aplicable al arrendamiento de un local comercial?",
+        solIVA: "21% (Tipo General). A diferencia de los arrendamientos de viviendas para uso particular (que gozan de exención técnica), el alquiler de inmuebles para uso profesional o comercial siempre tributa al 21%.",
+        accCode: "621",
+        accName: "Arrendamientos y cánones",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 9,
+        code: "PIEZA #09",
+        title: "Póliza de Seguros contra Riesgos",
+        fact: "Cargo bancario de la prima anual de la póliza de seguros de responsabilidad civil profesional y daños materiales de la oficina por 1.200 €.",
+        qPGC: "¿En qué cuenta y subgrupo oficial del PGC se contabiliza la prima del seguro contra riesgos?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 62 (Servicios exteriores), Cuenta 625 (Primas de seguros).",
+        qIVA: "¿Qué tratamiento tributario respecto al IVA recibe la póliza de seguro emitida por la compañía aseguradora?",
+        solIVA: "Operación Exenta de IVA (Exención plena de gravamen). Las operaciones de seguro, reaseguro y capitalización están exentas de IVA (tributan bajo el Impuesto sobre Primas de Seguro).",
+        accCode: "625",
+        accName: "Primas de seguros",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 10,
+        code: "PIEZA #10",
+        title: "Intereses Préstamo Bancario",
+        fact: "Liquidación bancaria mensual con un cargo de 180 € en concepto de intereses devengados por un préstamo comercial a 4 años.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta del PGC se reconocen los intereses devengados por deudas bancarias?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 66 (Gastos financieros), Cuenta 662 (Intereses de deudas).",
+        qIVA: "¿Qué tipo impositivo de IVA grava la liquidación de intereses y concesión de préstamos por parte de un banco?",
+        solIVA: "Operación Exenta de IVA. Conforme a la Ley del IVA, las operaciones y servicios financieros de crédito y préstamo están expresamente exentos.",
+        accCode: "662",
+        accName: "Intereses de deudas",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 11,
+        code: "PIEZA #11",
+        title: "Software Contable en la Nube",
+        fact: "Factura de compra de una licencia de software de contabilidad avanzada en la nube por 3.500 € para uso continuado durante 5 años.",
+        qPGC: "¿Qué código y nombre de cuenta oficial del PGC le corresponde a este programa? ¿En qué grupo se encuadra?",
+        solPGC: "Grupo 2 (Activo No Corriente), Subgrupo 20 (Inmovilizaciones intangibles), Cuenta 206 (Aplicaciones informáticas). Naturaleza: Activo intangible no monetario identificable, sujeto a amortización en la cuenta 280.",
+        qIVA: "¿Qué tipo impositivo de IVA debe liquidar la empresa en la adquisición de licencias informáticas y servicios de software?",
+        solIVA: "21% (Tipo General). La cesión de licencias informáticas y prestación de servicios digitales tributa a la tarifa general supletoria.",
+        accCode: "206",
+        accName: "Aplicaciones informáticas",
+        accGroup: "G2",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 12,
+        code: "PIEZA #12",
+        title: "Materia Prima Harina Panificable",
+        fact: "Factura de compra al por mayor de 2.000 kg de harina panificable para una fábrica de pan por 1.600 €.",
+        qPGC: "¿En qué cuenta y subgrupo oficial del PGC se registran las materias primas para elaboración industrial? ¿A qué grupo pertenece?",
+        solPGC: "Grupo 6 (Compras y gastos), Subgrupo 60 (Compras), Cuenta 601 (Compras de materias primas). Criterio PGC: Todo aprovisionamiento entra por gasto del Grupo 6 y al cierre del ejercicio se regulariza el stock en la cuenta 310 vía variación de existencias (cuenta 611).",
+        qIVA: "¿Qué alícuota de IVA aplica a la entrega de harinas panificables y cereales básicos?",
+        solIVA: "4% (Tipo Superreducido). Las harinas panificables y granos naturales para consumo humano son bienes de primera necesidad catalogados con gravamen superreducido.",
+        accCode: "601",
+        accName: "Compras de materias primas",
+        accGroup: "G6",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 13,
+        code: "PIEZA #13",
+        title: "Préstamo Bancario a 6 Años",
+        fact: "El banco abona en la cuenta corriente de la empresa 50.000 € correspondientes a la concesión de un préstamo comercial con devolución a 6 años.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta oficial del PGC se refleja la obligación de pago del préstamo a largo plazo?",
+        solPGC: "Grupo 1 (Financiación Básica), Subgrupo 17 (Deudas a largo plazo por préstamos recibidos y otros conceptos), Cuenta 170 (Deudas a largo plazo con entidades de crédito). Naturaleza: Pasivo no corriente exigible con vencimiento superior a un año.",
+        qIVA: "¿Por qué la concesión e ingreso del importe del préstamo no genera ninguna liquidación de IVA?",
+        solIVA: "No sujeta a IVA. Constituye un flujo exclusivamente dinerario/financiero de pasivo que no involucra entrega de bienes ni prestaciones de servicios comerciales sujetos a tributación.",
+        accCode: "170",
+        accName: "Deudas a LP con entidades de crédito",
+        accGroup: "G1",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 14,
+        code: "PIEZA #14",
+        title: "Venta a Crédito Aplazado [Cta 430]",
+        fact: "La empresa emite y envía una factura por 6.000 € a un cliente habitual por la venta de mercaderías, acordando un plazo de pago aplazado a 60 días sin formalizar efecto comercial.",
+        qPGC: "¿En qué grupo, subgrupo y cuenta oficial del PGC (código a 3 dígitos y denominación formal) se registra el derecho de cobro nacido de esta operación comercial a crédito?",
+        solPGC: "Grupo 4 (Acreedores y deudores por operaciones comerciales), Subgrupo 43 (Clientes), Cuenta 430 (Clientes). Naturaleza: Crédito a favor de la empresa surgido del tráfico mercantil habitual por la venta de bienes o prestación de servicios con cobro aplazado a corto plazo.",
+        qIVA: "¿Qué tipo impositivo de IVA debe liquidar la empresa en esta factura de venta comercial en territorio de régimen general?",
+        solIVA: "21% (Tipo General). La entrega de bienes y venta de mercancías en el ejercicio de la actividad empresarial tributa a la alícuota general ordinaria (art. 90 Ley del IVA).",
+        accCode: "430",
+        accName: "Clientes",
+        accGroup: "G4",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 15,
+        code: "PIEZA #15",
+        title: "Ordenadores e Impresoras Oficina",
+        fact: "Factura de compra de 4 ordenadores portátiles y 2 impresoras multifunción para el área contable y tributaria de la empresa por 4.800 €.",
+        qPGC: "¿Cuál es el código y nombre formal de la cuenta del PGC que acoge los equipos informáticos? ¿En qué grupo se ubica?",
+        solPGC: "Grupo 2 (Activo No Corriente), Subgrupo 21 (Inmovilizaciones materiales), Cuenta 217 (Equipos para procesos de información). Es un activo material de explotación con vida útil estimada superior a un ejercicio contable.",
+        qIVA: "¿Qué tipo impositivo de IVA aplica a la compraventa de equipos informáticos, periféricos e impresoras?",
+        solIVA: "21% (Tipo General). El equipamiento tecnológico de oficina tributa a la tarifa general ordinaria.",
+        accCode: "217",
+        accName: "Equipos para procesos de información",
+        accGroup: "G2",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      },
+      {
+        id: 16,
+        code: "PIEZA #16",
+        title: "Cobro Transferencia Bancaria [Cta 572]",
+        fact: "El extracto bancario de la entidad financiera acredita la recepción de una transferencia bancaria electrónica por 4.840 € emitida por un cliente para liquidar íntegramente una factura pendiente.",
+        qPGC: "¿Qué grupo, subgrupo y cuenta oficial a 3 dígitos recoge la entrada de fondos líquidos en la cuenta bancaria operativa a la vista de la sociedad?",
+        solPGC: "Grupo 5 (Cuentas financieras), Subgrupo 57 (Tesorería), Cuenta 572 (Bancos e instituciones de crédito c/c vista, euros). Naturaleza: Activo financiero disponible de liquidez inmediata que integra la tesorería de la empresa.",
+        qIVA: "¿Genera el cobro o transferencia bancaria en la cuenta corriente una nueva repercusión o liquidación de IVA en el momento de la entrada del dinero?",
+        solIVA: "No genera IVA (No sujeta / Sin incidencia tributaria propia en el cobro). El IVA se devengó con la entrega del bien o expedición de la factura original (principio de devengo); el cobro posterior por transferencia bancaria es un movimiento estrictamente financiero.",
+        accCode: "572",
+        accName: "Bancos e instituciones crédito c/c",
+        accGroup: "G5",
+        solved: false,
+        student: "",
+        scorePGC: 7.0,
+        scoreIVA: 3.0
+      }
+    ];
+
+    /* Official Master Chart of Accounts Groups */
+    const PGC_GROUPS = [
+      { id: "G1", name: "Grupo 1: Financiación Básica", desc: "Recursos propios y pasivo a largo plazo" },
+      { id: "G2", name: "Grupo 2: Activo No Corriente", desc: "Inmovilizado intangible, material y financiero LP" },
+      { id: "G3", name: "Grupo 3: Existencias", desc: "Mercaderías, materias primas y aprovisionamientos" },
+      { id: "G4", name: "Grupo 4: Acreedores y Deudores", desc: "Proveedores, clientes, personal y Hacienda Pública" },
+      { id: "G5", name: "Grupo 5: Cuentas Financieras", desc: "Tesorería, entidades de crédito y cuentas con socios" },
+      { id: "G6", name: "Grupo 6: Compras y Gastos", desc: "Aprovisionamientos, servicios exteriores y personal" },
+      { id: "G7", name: "Grupo 7: Ventas e Ingresos", desc: "Ventas de mercaderías, prestaciones de servicios" },
+      { id: "G89", name: "Grupos 8 y 9: Patrimonio Neto", desc: "Gastos e ingresos imputados directamente a PN" }
+    ];
+
+    /* Base Master Accounts List */
+    const MASTER_ACCOUNTS = [
+      // Grupo 1
+      { code: "100", name: "Capital social", group: "G1" },
+      { code: "112", name: "Reserva legal", group: "G1" },
+      { code: "120", name: "Remanente", group: "G1" },
+      { code: "129", name: "Resultado del ejercicio", group: "G1" },
+      { code: "170", name: "Deudas a LP con entidades de crédito", group: "G1" },
+      // Grupo 2
+      { code: "206", name: "Aplicaciones informáticas", group: "G2" },
+      { code: "211", name: "Construcciones", group: "G2" },
+      { code: "213", name: "Maquinaria", group: "G2" },
+      { code: "217", name: "Equipos para procesos de información", group: "G2" },
+      { code: "218", name: "Elementos de transporte", group: "G2" },
+      { code: "281", name: "Amortización acumulada inmov. material", group: "G2" },
+      // Grupo 3
+      { code: "300", name: "Mercaderías A", group: "G3" },
+      { code: "310", name: "Materias primas", group: "G3" },
+      { code: "328", name: "Material sanitario y consumos", group: "G3" },
+      // Grupo 4
+      { code: "400", name: "Proveedores", group: "G4" },
+      { code: "410", name: "Acreedores por prestaciones servicios", group: "G4" },
+      { code: "430", name: "Clientes", group: "G4" },
+      { code: "472", name: "Hacienda Pública, IVA soportado", group: "G4" },
+      { code: "477", name: "Hacienda Pública, IVA repercutido", group: "G4" },
+      // Grupo 5
+      { code: "570", name: "Caja, euros", group: "G5" },
+      { code: "572", name: "Bancos e instituciones crédito c/c", group: "G5" },
+      { code: "551", name: "Cuenta corriente con socios", group: "G5" },
+      // Grupo 6
+      { code: "600", name: "Compras de mercaderías", group: "G6" },
+      { code: "601", name: "Compras de materias primas", group: "G6" },
+      { code: "621", name: "Arrendamientos y cánones", group: "G6" },
+      { code: "622", name: "Reparaciones y conservación", group: "G6" },
+      { code: "623", name: "Servicios de profesionales independientes", group: "G6" },
+      { code: "624", name: "Transportes de personas", group: "G6" },
+      { code: "625", name: "Primas de seguros", group: "G6" },
+      { code: "628", name: "Suministros (Luz y Gas)", group: "G6" },
+      { code: "629", name: "Otros servicios / Cesta Básica", group: "G6" },
+      { code: "640", name: "Sueldos y salarios", group: "G6" },
+      { code: "662", name: "Intereses de deudas", group: "G6" },
+      // Grupo 7
+      { code: "700", name: "Ventas de mercaderías", group: "G7" },
+      { code: "705", name: "Prestaciones de servicios", group: "G7" },
+      { code: "752", name: "Ingresos por arrendamientos", group: "G7" },
+      // Grupo 8 y 9
+      { code: "800", name: "Pérdidas instrumentos financieros", group: "G89" },
+      { code: "940", name: "Ingresos de subvenciones oficiales", group: "G89" }
+    ];
+
+    /* =================================================================
+       2. STATE MANAGEMENT & LOCAL STORAGE
+       ================================================================= */
+    let pieces = [];
+    let activePiece = null;
+    let timerInterval = null;
+    let timerSeconds = 60;
+    let isTimerRunning = false;
+    let currentFilter = 'all';
+
+    window.onload = function() {
+      loadState();
+      renderPuzzleGrid();
+      renderAccountsGrid();
+      updateProgressCounters();
+    };
+
+    function loadState() {
+      const stored = localStorage.getItem('rompecabezas_pgc_iva_v3');
+      if (stored) {
+        try {
+          pieces = JSON.parse(stored);
+        } catch (e) {
+          console.error("Error loading stored pieces", e);
+          pieces = JSON.parse(JSON.stringify(MASTER_DEFAULT_PIECES));
+        }
+      } else {
+        pieces = JSON.parse(JSON.stringify(MASTER_DEFAULT_PIECES));
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('rompecabezas_pgc_iva_v3', JSON.stringify(pieces));
+    }
+
+    /* =================================================================
+       3. PUZZLE RENDERING & DYNAMICS
+       ================================================================= */
+    function renderPuzzleGrid() {
+      const grid = document.getElementById('puzzlePiecesGrid');
+      grid.innerHTML = '';
+
+      // Set grid columns based on pieces count
+      const totalPieces = pieces.length;
+      let cols = 4;
+      if (totalPieces > 16) cols = 5;
+      if (totalPieces > 25) cols = 6;
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+      pieces.forEach(p => {
+        const card = document.createElement('div');
+        card.className = `puzzle-card ${p.solved ? 'solved' : ''}`;
+        card.setAttribute('data-id', p.id);
+        card.onclick = () => openEvaluationModal(p.id);
+
+        if (!p.solved) {
+          // Locked State
+          card.innerHTML = `
+            <div class="lock-badge flex flex-col items-center justify-center p-2 text-center select-none">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 border border-slate-200 mb-1 group-hover:text-brandBlue">
+                <i class="ph-bold ph-lock text-sm sm:text-base"></i>
+              </span>
+              <span class="font-mono font-bold text-[11px] sm:text-xs text-slate-700 leading-none">
+                ${p.code}
+              </span>
+              <span class="text-[9px] text-slate-400 font-medium truncate max-w-[70px] mt-0.5 hidden sm:block">
+                Pendiente
+              </span>
+            </div>
+          `;
+        } else {
+          // Solved State: Transparent revealing slice with small solved pin
+          card.innerHTML = `
+            <div class="absolute top-1 left-1 bg-emerald-500/95 text-white rounded px-1.5 py-0.5 text-[9px] font-mono font-bold flex items-center gap-0.5 shadow-sm">
+              <i class="ph-bold ph-check"></i> ${p.code}
+            </div>
+          `;
+        }
+
+        grid.appendChild(card);
+      });
+
+      // Check Completion
+      const allSolved = pieces.length > 0 && pieces.every(p => p.solved);
+      const completionBanner = document.getElementById('fullCompletionBanner');
+      if (allSolved) {
+        completionBanner.classList.remove('hidden');
+        completionBanner.classList.add('flex');
+        triggerConfettiCelebration();
+      } else {
+        completionBanner.classList.add('hidden');
+        completionBanner.classList.remove('flex');
+      }
+    }
+
+    function triggerConfettiCelebration() {
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch (e) {
+        // Fallback gracefully
+      }
+    }
+
+    /* =================================================================
+       4. CUADRO DE CUENTAS RENDERING (TEXT WRAP FIX)
+       ================================================================= */
+    function renderAccountsGrid() {
+      const container = document.getElementById('chartOfAccountsGrid');
+      container.innerHTML = '';
+
+      // Active accounts
+      const unlockedCodes = new Set();
+      pieces.filter(p => p.solved).forEach(p => {
+        if (p.accCode) unlockedCodes.add(p.accCode);
+      });
+
+      let displayGroups = PGC_GROUPS;
+      if (currentFilter !== 'all') {
+        displayGroups = PGC_GROUPS.filter(g => g.id === currentFilter);
+      }
+
+      displayGroups.forEach(grp => {
+        const groupAccounts = MASTER_ACCOUNTS.filter(a => a.group === grp.id);
+
+        const grpCard = document.createElement('div');
+        grpCard.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-2";
+
+        grpCard.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">${grp.name}</h4>
+              <p class="text-[10px] text-slate-500">${grp.desc}</p>
+            </div>
+            <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
+              ${grp.id}
+            </span>
+          </div>
+          <div class="space-y-1.5">
+            ${groupAccounts.map(acc => {
+              const isUnlocked = unlockedCodes.has(acc.code);
+              return `
+                <div class="p-2.5 rounded-lg border text-xs flex items-start justify-between gap-2.5 transition-all ${
+                  isUnlocked 
+                    ? 'account-badge-unlocked' 
+                    : 'bg-white border-slate-200 text-slate-400 opacity-65'
+                }">
+                  <div class="flex items-start gap-2 flex-1 min-w-0">
+                    <span class="font-mono font-bold px-1.5 py-0.5 rounded text-[11px] shrink-0 ${
+                      isUnlocked ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
+                    }">
+                      ${acc.code}
+                    </span>
+                    <span class="font-semibold text-[11px] leading-tight break-words flex-1 ${
+                      isUnlocked ? 'text-slate-800' : 'text-slate-500'
+                    }" style="white-space: normal; overflow-wrap: anywhere;">
+                      ${acc.name}
+                    </span>
+                  </div>
+                  <div class="shrink-0 pt-0.5">
+                    ${
+                      isUnlocked
+                        ? `<span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-xs">
+                            <i class="ph-bold ph-check"></i> ACTIVA
+                           </span>`
+                        : `<i class="ph-bold ph-lock-key text-slate-300 text-xs"></i>`
+                    }
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        container.appendChild(grpCard);
+      });
+
+      document.getElementById('unlockedAccountsCount').innerText = `${unlockedCodes.size} Activas`;
+    }
+
+    function filterAccountsGrid(groupKey) {
+      currentFilter = groupKey;
+      document.querySelectorAll('.group-tab-btn').forEach(btn => {
+        if (btn.getAttribute('data-group') === groupKey) {
+          btn.classList.add('bg-brandBlue', 'text-white');
+          btn.classList.remove('bg-slate-100', 'text-slate-600');
+        } else {
+          btn.classList.remove('bg-brandBlue', 'text-white');
+          btn.classList.add('bg-slate-100', 'text-slate-600');
+        }
+      });
+      renderAccountsGrid();
+    }
+
+    /* =================================================================
+       5. MODAL EVALUACIÓN ORAL (VISTA PÚBLICA + PRIVACIDAD)
+       ================================================================= */
+    function openEvaluationModal(pieceId) {
+      activePiece = pieces.find(p => p.id === pieceId);
+      if (!activePiece) return;
+
+      pauseTimer();
+      setTimerDuration(60);
+
+      // Reset hidden drawers
+      document.getElementById('solutionDrawer').classList.add('hidden');
+      document.getElementById('revealSolBtnText').innerText = "👁 Revelar Solución Oficial";
+      document.getElementById('privateGradingPanel').classList.add('hidden');
+
+      // Populate Modal Fields
+      document.getElementById('modalPieceBadge').innerText = activePiece.code;
+      document.getElementById('modalPieceTitle').innerText = activePiece.title;
+      document.getElementById('modalFactDescription').innerText = activePiece.fact;
+      
+      document.getElementById('modalPGCQuestion').innerText = activePiece.qPGC;
+      document.getElementById('modalIVAQuestion').innerText = activePiece.qIVA;
+
+      document.getElementById('modalPGCSolution').innerText = activePiece.solPGC;
+      document.getElementById('modalIVASolution').innerText = activePiece.solIVA;
+
+      document.getElementById('studentNameInput').value = activePiece.student || "";
+
+      // Private inputs
+      document.getElementById('privatePgcInput').value = activePiece.scorePGC !== undefined ? activePiece.scorePGC : 7.0;
+      document.getElementById('privateIvaInput').value = activePiece.scoreIVA !== undefined ? activePiece.scoreIVA : 3.0;
+      calculatePrivateTotal();
+
+      document.getElementById('evaluationModal').classList.remove('hidden');
+    }
+
+    function closeEvaluationModal() {
+      pauseTimer();
+      document.getElementById('evaluationModal').classList.add('hidden');
+      activePiece = null;
+    }
+
+    function toggleSolutionDrawer() {
+      const drawer = document.getElementById('solutionDrawer');
+      const btnText = document.getElementById('revealSolBtnText');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        btnText.innerText = "Ocultar Solución";
+      } else {
+        drawer.classList.add('hidden');
+        btnText.innerText = "👁 Revelar Solución Técnica";
+      }
+    }
+
+    function togglePrivateGrading() {
+      const panel = document.getElementById('privateGradingPanel');
+      panel.classList.toggle('hidden');
+    }
+
+    function calculatePrivateTotal() {
+      const pgc = parseFloat(document.getElementById('privatePgcInput').value) || 0;
+      const iva = parseFloat(document.getElementById('privateIvaInput').value) || 0;
+      const total = (Math.min(7, Math.max(0, pgc)) + Math.min(3, Math.max(0, iva))).toFixed(1);
+      document.getElementById('privateTotalDisplay').innerText = `${total} / 10.0`;
+    }
+
+    function lockAndFitPiece() {
+      if (!activePiece) return;
+
+      const studentName = document.getElementById('studentNameInput').value.trim();
+      const pgcScore = parseFloat(document.getElementById('privatePgcInput').value) || 0;
+      const ivaScore = parseFloat(document.getElementById('privateIvaInput').value) || 0;
+
+      activePiece.solved = true;
+      activePiece.student = studentName || `Participante ${activePiece.code}`;
+      activePiece.scorePGC = Math.min(7.0, Math.max(0, pgcScore));
+      activePiece.scoreIVA = Math.min(3.0, Math.max(0, ivaScore));
+
+      saveState();
+      renderPuzzleGrid();
+      renderAccountsGrid();
+      updateProgressCounters();
+
+      closeEvaluationModal();
+      showToast(`¡${activePiece.code} encajada con éxito! Cuadro de cuentas y logotipo actualizados.`);
+    }
+
+    /* =================================================================
+       6. COUNTDOWN TIMER
+       ================================================================= */
+    function setTimerDuration(seconds) {
+      pauseTimer();
+      timerSeconds = seconds;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      document.getElementById('timerDisplay').innerText = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (isTimerRunning) return;
+      isTimerRunning = true;
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+        } else {
+          pauseTimer();
+          showToast("¡Tiempo cumplido! Finaliza la intervención del participante.");
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isTimerRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 60;
+      updateTimerDisplay();
+    }
+
+    /* =================================================================
+       7. PROGRESS COUNTERS & STATS
+       ================================================================= */
+    function updateProgressCounters() {
+      const total = pieces.length;
+      const solved = pieces.filter(p => p.solved).length;
+      const pct = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+      document.getElementById('headerProgressText').innerText = `${solved} / ${total}`;
+      document.getElementById('headerProgressBar').style.width = `${pct}%`;
+      document.getElementById('completionPercentage').innerText = `${pct}% Desbloqueado`;
+      document.getElementById('evaluatedStudentsCount').innerText = solved;
+    }
+
+    /* =================================================================
+       8. GESTIÓN DEL BANCO DE PREGUNTAS Y PIEZAS (EXPANDIBLE & EDITABLE)
+       ================================================================= */
+    function openQuestionBankModal() {
+      renderQuestionBankList();
+      document.getElementById('bankTotalCount').innerText = pieces.length;
+      document.getElementById('questionBankModal').classList.remove('hidden');
+    }
+
+    function closeQuestionBankModal() {
+      document.getElementById('questionBankModal').classList.add('hidden');
+    }
+
+    function renderQuestionBankList() {
+      const container = document.getElementById('questionBankList');
+      container.innerHTML = '';
+
+      pieces.forEach(p => {
+        const item = document.createElement('div');
+        item.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-xs space-y-2.5";
+
+        item.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold text-xs px-2 py-0.5 rounded bg-blue-50 text-brandBlue border border-blue-200">${p.code}</span>
+              <h4 class="font-extrabold text-sm text-slate-800">${p.title}</h4>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openPieceEditor(${p.id})" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1">
+                <i class="ph-bold ph-pencil-simple text-sm text-brandBlue"></i> Editar
+              </button>
+              <button onclick="deletePiece(${p.id})" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition flex items-center gap-1">
+                <i class="ph-bold ph-trash text-sm"></i> Eliminar
+              </button>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600"><b class="text-slate-800">Factura:</b> ${p.fact}</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+            <div class="bg-blue-50/60 p-2 rounded-lg border border-blue-100">
+              <span class="font-bold text-brandBlue">PGC (7p):</span> ${p.qPGC}
+            </div>
+            <div class="bg-orange-50/60 p-2 rounded-lg border border-orange-100">
+              <span class="font-bold text-brandOrange">IVA AEAT (3p):</span> ${p.qIVA}
+            </div>
+          </div>
+
+          <div class="text-[11px] text-slate-500 font-mono flex items-center gap-2">
+            <span>Cuenta vinculada: <b>${p.accCode} - ${p.accName}</b></span>
+            <span>•</span>
+            <span>Estado: <b>${p.solved ? 'Encajada' : 'Pendiente'}</b></span>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    function openPieceEditor(pieceId) {
+      const isEdit = pieceId !== null;
+      document.getElementById('editPieceId').value = isEdit ? pieceId : "";
+      document.getElementById('pieceEditorModalTitle').innerText = isEdit ? "Editar Pieza del Banco" : "Agregar Nueva Pieza al Banco";
+
+      if (isEdit) {
+        const p = pieces.find(x => x.id === pieceId);
+        document.getElementById('editCode').value = p.code;
+        document.getElementById('editTitle').value = p.title;
+        document.getElementById('editFact').value = p.fact;
+        document.getElementById('editQPGC').value = p.qPGC;
+        document.getElementById('editQIVA').value = p.qIVA;
+        document.getElementById('editSolPGC').value = p.solPGC;
+        document.getElementById('editSolIVA').value = p.solIVA;
+        document.getElementById('editAccCode').value = p.accCode;
+        document.getElementById('editAccName').value = p.accName;
+        document.getElementById('editAccGroup').value = p.accGroup;
+      } else {
+        const nextNum = pieces.length + 1;
+        document.getElementById('editCode').value = `PIEZA #${String(nextNum).padStart(2, '0')}`;
+        document.getElementById('editTitle').value = "";
+        document.getElementById('editFact').value = "";
+        document.getElementById('editQPGC').value = "¿En qué cuenta y grupo del PGC se asienta?";
+        document.getElementById('editQIVA').value = "¿Qué tipo impositivo de IVA aplica según la AEAT?";
+        document.getElementById('editSolPGC').value = "";
+        document.getElementById('editSolIVA').value = "21% (Tipo General).";
+        document.getElementById('editAccCode').value = "629";
+        document.getElementById('editAccName').value = "Otros servicios";
+        document.getElementById('editAccGroup').value = "G6";
+      }
+
+      document.getElementById('pieceEditorModal').classList.remove('hidden');
+    }
+
+    function closePieceEditor() {
+      document.getElementById('pieceEditorModal').classList.add('hidden');
+    }
+
+    function savePieceFromEditor() {
+      const editId = document.getElementById('editPieceId').value;
+      const code = document.getElementById('editCode').value.trim();
+      const title = document.getElementById('editTitle').value.trim();
+      const fact = document.getElementById('editFact').value.trim();
+      const qPGC = document.getElementById('editQPGC').value.trim();
+      const qIVA = document.getElementById('editQIVA').value.trim();
+      const solPGC = document.getElementById('editSolPGC').value.trim();
+      const solIVA = document.getElementById('editSolIVA').value.trim();
+      const accCode = document.getElementById('editAccCode').value.trim();
+      const accName = document.getElementById('editAccName').value.trim();
+      const accGroup = document.getElementById('editAccGroup').value;
+
+      if (!title || !fact) {
+        showToast("Completa al menos el título y el hecho económico.");
+        return;
+      }
+
+      if (editId) {
+        // Update existing
+        const p = pieces.find(x => x.id === parseInt(editId));
+        if (p) {
+          p.code = code || p.code;
+          p.title = title;
+          p.fact = fact;
+          p.qPGC = qPGC;
+          p.qIVA = qIVA;
+          p.solPGC = solPGC;
+          p.solIVA = solIVA;
+          p.accCode = accCode;
+          p.accName = accName;
+          p.accGroup = accGroup;
+        }
+      } else {
+        // Create new
+        const newId = pieces.length > 0 ? Math.max(...pieces.map(p => p.id)) + 1 : 1;
+        pieces.push({
+          id: newId,
+          code: code || `PIEZA #${String(newId).padStart(2, '0')}`,
+          title: title,
+          fact: fact,
+          qPGC: qPGC,
+          qIVA: qIVA,
+          solPGC: solPGC,
+          solIVA: solIVA,
+          accCode: accCode,
+          accName: accName,
+          accGroup: accGroup,
+          solved: false,
+          student: "",
+          scorePGC: 7.0,
+          scoreIVA: 3.0
+        });
+      }
+
+      // Add to master accounts list if novel
+      if (accCode && !MASTER_ACCOUNTS.some(a => a.code === accCode)) {
+        MASTER_ACCOUNTS.push({
+          code: accCode,
+          name: accName || "Cuenta adicional",
+          group: accGroup
+        });
+      }
+
+      saveState();
+      renderPuzzleGrid();
+      renderAccountsGrid();
+      renderQuestionBankList();
+      updateProgressCounters();
+      document.getElementById('bankTotalCount').innerText = pieces.length;
+
+      closePieceEditor();
+      showToast("¡Pieza guardada exitosamente en el banco!");
+    }
+
+    function deletePiece(id) {
+      if (pieces.length <= 4) {
+        showToast("Se recomienda mantener al menos 4 piezas en el tablero.");
+        return;
+      }
+      pieces = pieces.filter(p => p.id !== id);
+      saveState();
+      renderPuzzleGrid();
+      renderAccountsGrid();
+      renderQuestionBankList();
+      updateProgressCounters();
+      document.getElementById('bankTotalCount').innerText = pieces.length;
+      showToast("Pieza eliminada del banco.");
+    }
+
+    function resetBankToOriginal() {
+      pieces = JSON.parse(JSON.stringify(MASTER_DEFAULT_PIECES));
+      saveState();
+      renderPuzzleGrid();
+      renderAccountsGrid();
+      renderQuestionBankList();
+      updateProgressCounters();
+      document.getElementById('bankTotalCount').innerText = pieces.length;
+      showToast("Banco restablecido con las 16 piezas oficiales.");
+    }
+
+    /* =================================================================
+       9. TABLA DE CALIFICACIONES PRIVADA (EXPORTABLE A CSV)
+       ================================================================= */
+    function openScoreboardModal() {
+      const tbody = document.getElementById('scoreboardTableBody');
+      tbody.innerHTML = '';
+
+      let totalScoreSum = 0;
+      let evaluatedCount = 0;
+
+      pieces.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        const totalScore = (p.scorePGC + p.scoreIVA).toFixed(1);
+        if (p.solved) {
+          totalScoreSum += (p.scorePGC + p.scoreIVA);
+          evaluatedCount++;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-brandBlue">${p.code}</td>
+          <td class="py-3 px-4 font-semibold text-slate-800">${p.student || '<span class="text-slate-400 italic">Sin asignar</span>'}</td>
+          <td class="py-3 px-4 text-slate-600 truncate max-w-[200px]" title="${p.fact}">${p.title}</td>
+          <td class="py-3 px-4 text-center font-mono font-bold text-slate-700">${p.solved ? p.scorePGC.toFixed(1) : '-'}</td>
+          <td class="py-3 px-4 text-center font-mono font-bold text-slate-700">${p.solved ? p.scoreIVA.toFixed(1) : '-'}</td>
+          <td class="py-3 px-4 text-center font-mono font-black ${p.solved ? 'text-brandOrange' : 'text-slate-400'}">
+            ${p.solved ? totalScore : '-'}
+          </td>
+          <td class="py-3 px-4 text-center">
+            ${
+              p.solved 
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">AUDITADA</span>' 
+                : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">PENDIENTE</span>'
+            }
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const avg = evaluatedCount > 0 ? (totalScoreSum / evaluatedCount).toFixed(2) : "--";
+      document.getElementById('averageScoreText').innerText = `Participantes evaluados: ${evaluatedCount} de ${pieces.length} | Promedio: ${avg} / 10,0 pts`;
+
+      document.getElementById('scoreboardModal').classList.remove('hidden');
+    }
+
+    function closeScoreboardModal() {
+      document.getElementById('scoreboardModal').classList.add('hidden');
+    }
+
+    function exportScoresToCSV() {
+      let csv = "Pieza,Participante,Operacion,PGC (7p),IVA (3p),Total (10p),Estado\n";
+      pieces.forEach(p => {
+        const student = (p.student || "").replace(/,/g, " ");
+        const title = (p.title || "").replace(/,/g, " ");
+        const total = p.solved ? (p.scorePGC + p.scoreIVA).toFixed(1) : "0";
+        const status = p.solved ? "AUDITADA" : "PENDIENTE";
+        csv += `${p.code},"${student}","${title}",${p.scorePGC},${p.scoreIVA},${total},${status}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Acta_Calificaciones_PGC_IVA_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Acta de calificaciones descargada en CSV.");
+    }
+
+    /* =================================================================
+       10. UTILITIES & TOASTS
+       ================================================================= */
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "bg-brandDark text-white px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0";
+      toast.innerHTML = `<i class="ph-bold ph-info text-brandOrange text-base"></i> <span>${msg}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function confirmResetAll() {
+      const choice = window.confirm("¿Deseas reiniciar todas las fichas del rompecabezas a su estado pendiente?");
+      if (choice) {
+        pieces.forEach(p => {
+          p.solved = false;
+          p.student = "";
+        });
+        saveState();
+        renderPuzzleGrid();
+        renderAccountsGrid();
+        updateProgressCounters();
+        showToast("Dinámica reiniciada.");
+      }
+    }
+  </script>
+</body>
+</html>

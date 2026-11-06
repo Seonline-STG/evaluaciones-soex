@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Evaluaciones Síncronas • somostugestoría & SOEX</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Inter, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            stg: {
+              blue: '#0055FF',
+              darkBlue: '#0040CC',
+              lightBlue: '#EAF3FF',
+              orange: '#FF5500',
+              hoverOrange: '#E04B00',
+              lightOrange: '#FFF2E8',
+              navy: '#0B1329',
+              bg: '#F4F7FB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F4F7FB;
+      font-family: 'Inter', sans-serif;
+    }
+    .logo-brand {
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.04em;
+    }
+    .activity-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .activity-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 28px -8px rgba(0, 85, 255, 0.14), 0 6px 12px -4px rgba(0, 0, 0, 0.04);
+    }
+    .chevron-icon {
+      transition: transform 0.25s ease;
+    }
+    .rotate-180-custom {
+      transform: rotate(180deg);
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between antialiased selection:bg-stg-blue selection:text-white">
+
+  <!-- ==================== HEADER CORPORATIVO OFICIAL ==================== -->
+  <header class="bg-white border-b border-slate-200/80 shadow-xs sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- LOGOTIPO CORPORATIVO EXACTO A LAS PLANTILLAS -->
+      <div class="flex items-center gap-4 select-none cursor-pointer" onclick="resetFilters()">
+        <div class="flex flex-col">
+          <div class="flex items-baseline text-2xl sm:text-3xl font-black logo-brand leading-none tracking-tight">
+            <span class="text-stg-blue">somos</span><span class="text-stg-orange">tu</span><span class="text-stg-blue">gestoría</span>
+          </div>
+          <div class="text-right text-[11px] sm:text-[12px] font-black text-stg-orange tracking-normal mt-1 leading-none">
+            desde 1997
+          </div>
+        </div>
+        
+        <div class="h-8 w-px bg-slate-200"></div>
+        
+        <div class="flex items-center bg-stg-blue text-white px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm shadow-blue-500/20">
+          SOEX VENEZUELA
+        </div>
+      </div>
+
+      <!-- CONTADORES RÁPIDOS DEL SISTEMA -->
+      <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-2xl text-xs">
+        <div class="text-center px-1.5">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Módulos</span>
+          <span id="statModules" class="text-sm font-black text-stg-blue font-mono">1</span>
+        </div>
+        <div class="h-6 w-px bg-slate-200"></div>
+        <div class="text-center px-1.5">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Temas</span>
+          <span id="statTopics" class="text-sm font-black text-slate-800 font-mono">3</span>
+        </div>
+        <div class="h-6 w-px bg-slate-200"></div>
+        <div class="text-center px-1.5">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Evaluaciones</span>
+          <span id="statActivities" class="text-sm font-black text-stg-orange font-mono">4</span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== CUERPO PRINCIPAL (DASHBOARD) ==================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 space-y-6">
+
+    <!-- BANNER DE BIENVENIDA -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-xs relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-56 h-56 bg-blue-50/70 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute right-24 -bottom-16 w-48 h-48 bg-orange-50/70 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="inline-flex items-center gap-2 bg-stg-lightBlue text-stg-blue font-black text-[11px] px-3 py-1 rounded-full border border-blue-200/60 uppercase tracking-wider">
+            <i class="fa-solid fa-layer-group text-stg-orange"></i>
+            <span>Centro de Formación y Evaluación Síncrona</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Menú Global de Evaluaciones Interactivas
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-600 font-medium">
+            Despliega cualquier <strong class="text-stg-blue">Módulo</strong> y <strong class="text-stg-orange">Tema</strong> o utiliza los menús desplegables inferiores para acceder rápidamente a cada evaluación.
+          </p>
+        </div>
+
+        <!-- Botones de Expandir / Contraer Todo -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="expandAllModules()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer" title="Desplegar todos los módulos y temas">
+            <i class="fa-solid fa-angles-down text-stg-blue"></i>
+            <span>Expandir Todo</span>
+          </button>
+          <button onclick="collapseAllModules()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer" title="Contraer todos los módulos y temas">
+            <i class="fa-solid fa-angles-up text-stg-orange"></i>
+            <span>Contraer Todo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BARRA DE FILTROS CON DROPDOWNS (MÓDULO + TEMA + BUSCADOR) -->
+    <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
+      
+      <!-- Dropdown 1: Seleccionar Módulo -->
+      <div class="md:col-span-4">
+        <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
+          <i class="fa-solid fa-cube text-stg-blue mr-1"></i> Filtrar por Módulo (Dropdown):
+        </label>
+        <div class="relative">
+          <select 
+            id="moduleDropdownSelect" 
+            onchange="handleModuleDropdownChange(this.value)"
+            class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl pl-3.5 pr-9 py-2.5 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-stg-blue focus:bg-white transition-all cursor-pointer"
+          >
+            <!-- Opciones generadas dinámicamente -->
+          </select>
+          <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+        </div>
+      </div>
+
+      <!-- Dropdown 2: Seleccionar Tema -->
+      <div class="md:col-span-4">
+        <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
+          <i class="fa-solid fa-folder-open text-stg-orange mr-1"></i> Filtrar por Tema (Dropdown):
+        </label>
+        <div class="relative">
+          <select 
+            id="topicDropdownSelect" 
+            onchange="handleTopicDropdownChange(this.value)"
+            class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl pl-3.5 pr-9 py-2.5 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-stg-orange focus:bg-white transition-all cursor-pointer"
+          >
+            <!-- Opciones generadas dinámicamente -->
+          </select>
+          <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+        </div>
+      </div>
+
+      <!-- Buscador en Vivo -->
+      <div class="md:col-span-4">
+        <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 mr-1"></i> Búsqueda Rápida:
+        </label>
+        <div class="relative">
+          <input 
+            type="text" 
+            id="searchInput" 
+            oninput="handleSearch(this.value)"
+            placeholder="Ej. Ruleta, PGC, AEAT, Cultura..." 
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3.5 pr-9 py-2.5 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-stg-blue focus:bg-white transition-all"
+          >
+          <button onclick="resetFilters()" title="Limpiar filtros" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-stg-orange p-1 text-xs">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTENEDOR DE MÓDULOS Y TEMAS DESPLEGABLES (ACORDEONES) -->
+    <div id="modulesAccordionContainer" class="space-y-5">
+      <!-- Renderizado dinámico por JS -->
+    </div>
+
+  </main>
+
+  <!-- ==================== VISOR INTEGRADO (IFRAME PANTALLA COMPLETA) ==================== -->
+  <div id="integratedViewer" class="fixed inset-0 z-50 bg-slate-900 flex flex-col hidden">
+    <div class="bg-stg-navy text-white px-4 sm:px-6 py-2.5 flex items-center justify-between border-b border-slate-800 shadow-md">
+      <div class="flex items-center gap-3">
+        <button 
+          onclick="closeActivityViewer()" 
+          class="bg-stg-orange hover:bg-stg-hoverOrange text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Volver al Menú Global</span>
+        </button>
+
+        <div class="h-5 w-px bg-slate-700 hidden sm:block"></div>
+
+        <div class="hidden sm:flex items-center gap-2 text-xs">
+          <span id="viewerTopicBadge" class="bg-slate-800 text-blue-400 font-bold px-2.5 py-1 rounded-lg border border-slate-700">
+            Tema 1
+          </span>
+          <span id="viewerActivityTitle" class="font-extrabold text-white truncate max-w-md">
+            Actividad en curso
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a 
+          id="viewerExternalLink" 
+          href="#" 
+          target="_blank" 
+          class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-3 py-2 rounded-xl border border-slate-700 transition-all flex items-center gap-1.5"
+          title="Abrir en una pestaña independiente"
+        >
+          <i class="fa-solid fa-up-right-from-square text-stg-blue"></i>
+          <span class="hidden sm:inline">Abrir en pestaña nueva</span>
+        </a>
+      </div>
+    </div>
+
+    <iframe id="activityIframe" src="" class="w-full flex-1 bg-white border-0"></iframe>
+  </div>
+
+  <!-- ==================== PIE DE PÁGINA ==================== -->
+  <footer class="bg-white border-t border-slate-200/80 py-4 mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400 font-medium">
+      <div>
+        somostugestoría.es &copy; Desde 1997 • Programa de Formación y Evaluación SOEX Venezuela
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Arquitectura Desplegable por Módulos v2.0</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== DATOS Y LÓGICA JAVASCRIPT ==================== -->
+  <script>
+    /**
+     * ============================================================================
+     * CATÁLOGO CENTRAL DE MÓDULOS, TEMAS Y ACTIVIDADES
+     * ============================================================================
+     * Cada objeto dentro de CATALOGO_MODULOS se convierte automáticamente en:
+     * 1) Una opción dentro del Dropdown superior de Módulos.
+     * 2) Un bloque desplegable (Acordeón) en la pantalla principal.
+     */
+    const CATALOGO_MODULOS = [
+      {
+        id: "modulo-1",
+        numero: "Módulo 1",
+        titulo: "Fundamentos Corporativos, Marco Jurídico y Contable",
+        descripcion: "Evaluaciones síncronas de cultura organizacional, terminología oficial, validación AEAT y Plan General de Contabilidad.",
+        temas: [
+          {
+            id: "m1-t1",
+            numero: "Tema 1",
+            titulo: "1- Bienvenida y Cultura Corporativa",
+            descripcion: "Evaluación de identidad corporativa, normativas internas, estructura de PODs y dominio del léxico fiscal español.",
+            actividades: [
+              {
+                id: "act-cultura",
+                titulo: "Evaluador de Cultura Corporativa",
+                subtitulo: "Tablero Secreto de Casos Situacionales",
+                tipo: "Tablero Secreto (16 Retos)",
+                icono: "fa-solid fa-cubes",
+                colorTema: "blue",
+                tiempo: "45 seg / reto",
+                escala: "Escala: 0 a 2 pts",
+                descripcion: "Cuadrícula interactiva de 16 tarjetas secretas con preguntas situacionales sobre nuestra historia, reglas de nomenclatura, canales formales y valores SOEX.",
+                archivo: "evaluador_de_cultura_corporativa_soex (1).html"
+              },
+              {
+                id: "act-ruleta",
+                titulo: "Ruleta del Glosario Técnico",
+                subtitulo: "Sorteo Síncrono de Terminología Oficial",
+                tipo: "Ruleta Interactiva (16 Términos)",
+                icono: "fa-solid fa-dharmachakra",
+                colorTema: "orange",
+                tiempo: "30s - 90s config.",
+                escala: "Escala configurable",
+                descripcion: "Ruleta animada en Canvas con descarte automático de términos para evaluar el significado oficial en España de conceptos como AEAT, TGSS, NIF, S.L. y cuotas de IVA.",
+                archivo: "ruleta_del_glosario_t_cnico_soex.html"
+              }
+            ]
+          },
+          {
+            id: "m1-t2",
+            numero: "Tema 2",
+            titulo: "2- Entorno Jurídico y Tipología de Clientes",
+            descripcion: "Auditoría práctica de expedientes confidenciales sobre figuras jurídicas (Autónomos, S.L., S.A.) y datos de contraste AEAT.",
+            actividades: [
+              {
+                id: "act-simulador-juridico",
+                titulo: "Simulador de Evaluación Técnica",
+                subtitulo: "Auditoría de Expedientes y Validación AEAT",
+                tipo: "Simulador Práctico (16 Carpetas)",
+                icono: "fa-solid fa-folder-open",
+                colorTema: "blue",
+                tiempo: "60s - 300s config.",
+                escala: "5,0 pts (2,5 + 2,5)",
+                descripcion: "Cotejo técnico individual de 16 expedientes clasificados para dictaminar la figura jurídica, modelo tributario (100 / 200) y validación de DNI, NIE o NIF en la sede AEAT.",
+                archivo: "simulador_de_evaluacion_tecnica_v4.html"
+              }
+            ]
+          },
+          {
+            id: "m1-t3",
+            numero: "Tema 3",
+            titulo: "3- El Plan General de Contabilidad (PGC)_ Régimen del IVA",
+            descripcion: "Clasificación de cuentas contables en los 9 grupos del PGC y determinación de tipos impositivos de IVA.",
+            actividades: [
+              {
+                id: "act-rompecabezas-pgc",
+                titulo: "El Rompecabezas del PGC y Régimen de IVA",
+                subtitulo: "Desbloqueo del Logo y Cuadro de Cuentas",
+                tipo: "Rompecabezas 4x4 (16 Piezas)",
+                icono: "fa-solid fa-puzzle-piece",
+                colorTema: "orange",
+                tiempo: "30s / 60s / 90s",
+                escala: "10,0 pts (7,0 + 3,0)",
+                descripcion: "Dinámica gamificada donde cada caso contable resuelto encaja una pieza del logotipo corporativo y desbloquea en vivo las cuentas activas de los 9 grupos del PGC.",
+                archivo: "rompecabezas_pgc_y_r_gimen_del_iva (1).html"
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // ESTADO DE FILTROS Y DESPLEGABLES
+    let filtroModuloId = "ALL"; // "ALL" o el id de un módulo (ej. "modulo-1")
+    let filtroTemaId = "ALL";   // "ALL" o el id de un tema (ej. "m1-t1")
+    let textoBusqueda = "";
+
+    // Conjuntos que guardan qué módulos y temas están desplegados (abiertos)
+    let modulosAbiertos = new Set();
+    let temasAbiertos = new Set();
+
+    // INICIALIZACIÓN AL CARGAR LA PÁGINA
+    window.addEventListener('DOMContentLoaded', () => {
+      // Abrir por defecto el primer módulo y sus temas
+      if (CATALOGO_MODULOS.length > 0) {
+        modulosAbiertos.add(CATALOGO_MODULOS[0].id);
+        CATALOGO_MODULOS[0].temas.forEach(t => temasAbiertos.add(t.id));
+      }
+
+      actualizarEstadisticasGlobales();
+      poblarDropdownModulos();
+      poblarDropdownTemas();
+      renderizarAcordeonModulos();
+    });
+
+    // ACTUALIZAR CONTADORES SUPERIORES
+    function actualizarEstadisticasGlobales() {
+      const totalModulos = CATALOGO_MODULOS.length;
+      let totalTemas = 0;
+      let totalActividades = 0;
+
+      CATALOGO_MODULOS.forEach(mod => {
+        totalTemas += mod.temas.length;
+        mod.temas.forEach(t => {
+          totalActividades += t.actividades.length;
+        });
+      });
+
+      document.getElementById('statModules').textContent = totalModulos;
+      document.getElementById('statTopics').textContent = totalTemas;
+      document.getElementById('statActivities').textContent = totalActividades;
+    }
+
+    // LLENAR EL DROPDOWN (<select>) DE MÓDULOS
+    function poblarDropdownModulos() {
+      const select = document.getElementById('moduleDropdownSelect');
+      select.innerHTML = `<option value="ALL">Todos los Módulos (${CATALOGO_MODULOS.length})</option>`;
+
+      CATALOGO_MODULOS.forEach(mod => {
+        const option = document.createElement('option');
+        option.value = mod.id;
+        option.textContent = `${mod.numero}: ${mod.titulo} (${mod.temas.length} temas)`;
+        select.appendChild(option);
+      });
+
+      select.value = filtroModuloId;
+    }
+
+    // LLENAR EL DROPDOWN (<select>) DE TEMAS SEGÚN EL MÓDULO ELEGIDO
+    function poblarDropdownTemas() {
+      const select = document.getElementById('topicDropdownSelect');
+      select.innerHTML = `<option value="ALL">Todos los Temas</option>`;
+
+      const modulosParaExtraer = filtroModuloId === "ALL"
+        ? CATALOGO_MODULOS
+        : CATALOGO_MODULOS.filter(m => m.id === filtroModuloId);
+
+      modulosParaExtraer.forEach(mod => {
+        mod.temas.forEach(tema => {
+          const option = document.createElement('option');
+          option.value = tema.id;
+          const prefijo = filtroModuloId === "ALL" ? `[${mod.numero}] ` : "";
+          option.textContent = `${prefijo}${tema.titulo} (${tema.actividades.length} eval.)`;
+          select.appendChild(option);
+        });
+      });
+
+      select.value = filtroTemaId;
+    }
+
+    // EVENTO AL CAMBIAR EL DROPDOWN DE MÓDULO
+    function handleModuleDropdownChange(modId) {
+      filtroModuloId = modId;
+      filtroTemaId = "ALL";
+
+      if (modId !== "ALL") {
+        modulosAbiertos.add(modId);
+        const mod = CATALOGO_MODULOS.find(m => m.id === modId);
+        if (mod) mod.temas.forEach(t => temasAbiertos.add(t.id));
+      }
+
+      poblarDropdownTemas();
+      renderizarAcordeonModulos();
+    }
+
+    // EVENTO AL CAMBIAR EL DROPDOWN DE TEMA
+    function handleTopicDropdownChange(temaId) {
+      filtroTemaId = temaId;
+
+      if (temaId !== "ALL") {
+        temasAbiertos.add(temaId);
+        CATALOGO_MODULOS.forEach(m => {
+          if (m.temas.some(t => t.id === temaId)) {
+            modulosAbiertos.add(m.id);
+          }
+        });
+      }
+
+      renderizarAcordeonModulos();
+    }
+
+    // EVENTO DEL BUSCADOR
+    function handleSearch(valor) {
+      textoBusqueda = valor.trim().toLowerCase();
+      if (textoBusqueda.length > 0) {
+        expandAllModules(false);
+      }
+      renderizarAcordeonModulos();
+    }
+
+    // EXPANDIR / CONTRAER MÓDULOS INDIVIDUALES (DROPDOWN ACORDEÓN)
+    function toggleModuleAccordion(modId) {
+      if (modulosAbiertos.has(modId)) {
+        modulosAbiertos.delete(modId);
+      } else {
+        modulosAbiertos.add(modId);
+      }
+      renderizarAcordeonModulos();
+    }
+
+    // EXPANDIR / CONTRAER TEMAS INDIVIDUALES (DROPDOWN INTERNO)
+    function toggleTopicAccordion(temaId, event) {
+      if (event) event.stopPropagation();
+      if (temasAbiertos.has(temaId)) {
+        temasAbiertos.delete(temaId);
+      } else {
+        temasAbiertos.add(temaId);
+      }
+      renderizarAcordeonModulos();
+    }
+
+    // EXPANDIR O CONTRAER ABSOLUTAMENTE TODO
+    function expandAllModules(shouldRender = true) {
+      CATALOGO_MODULOS.forEach(mod => {
+        modulosAbiertos.add(mod.id);
+        mod.temas.forEach(t => temasAbiertos.add(t.id));
+      });
+      if (shouldRender) renderizarAcordeonModulos();
+    }
+
+    function collapseAllModules() {
+      modulosAbiertos.clear();
+      temasAbiertos.clear();
+      renderizarAcordeonModulos();
+    }
+
+    function resetFilters() {
+      filtroModuloId = "ALL";
+      filtroTemaId = "ALL";
+      textoBusqueda = "";
+      document.getElementById('searchInput').value = "";
+      expandAllModules(false);
+      poblarDropdownModulos();
+      poblarDropdownTemas();
+      renderizarAcordeonModulos();
+    }
+
+    // RENDERIZAR ESTRUCTURA DE MÓDULOS Y TEMAS DESPLEGABLES
+    function renderizarAcordeonModulos() {
+      const container = document.getElementById('modulesAccordionContainer');
+      container.innerHTML = '';
+
+      let modulosFiltrados = CATALOGO_MODULOS;
+      if (filtroModuloId !== "ALL") {
+        modulosFiltrados = modulosFiltrados.filter(m => m.id === filtroModuloId);
+      }
+
+      let totalActividadesMostradas = 0;
+
+      modulosFiltrados.forEach(modulo => {
+        // Filtrar temas del módulo
+        let temasDelModulo = modulo.temas;
+        if (filtroTemaId !== "ALL") {
+          temasDelModulo = temasDelModulo.filter(t => t.id === filtroTemaId);
+        }
+
+        // Filtrar por texto de búsqueda
+        const temasConActividades = [];
+        let contadorActividadesModulo = 0;
+
+        temasDelModulo.forEach(tema => {
+          const acts = tema.actividades.filter(act => {
+            if (!textoBusqueda) return true;
+            return (
+              act.titulo.toLowerCase().includes(textoBusqueda) ||
+              act.subtitulo.toLowerCase().includes(textoBusqueda) ||
+              act.descripcion.toLowerCase().includes(textoBusqueda) ||
+              tema.titulo.toLowerCase().includes(textoBusqueda) ||
+              modulo.titulo.toLowerCase().includes(textoBusqueda)
+            );
+          });
+
+          if (acts.length > 0) {
+            temasConActividades.push({ ...tema, actividadesFiltradas: acts });
+            contadorActividadesModulo += acts.length;
+            totalActividadesMostradas += acts.length;
+          }
+        });
+
+        if (temasConActividades.length === 0) return;
+
+        const isModOpen = modulosAbiertos.has(modulo.id);
+
+        const modCard = document.createElement('div');
+        modCard.className = "bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden transition-all";
+
+        modCard.innerHTML = `
+          <!-- CABECERA DESPLEGABLE DEL MÓDULO (DROPDOWN PRINCIPAL) -->
+          <div 
+            onclick="toggleModuleAccordion('${modulo.id}')"
+            class="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none transition-colors ${
+              isModOpen ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-50 text-slate-900'
+            }"
+          >
+            <div class="flex items-start sm:items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl ${
+                isModOpen ? 'bg-stg-blue text-white' : 'bg-stg-lightBlue text-stg-blue'
+              } flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md ${
+                    isModOpen ? 'bg-stg-orange text-white' : 'bg-orange-100 text-stg-orange'
+                  }">
+                    ${modulo.numero}
+                  </span>
+                  <span class="text-xs font-bold ${isModOpen ? 'text-slate-300' : 'text-slate-400'}">
+                    • ${temasConActividades.length} ${temasConActividades.length === 1 ? 'Tema' : 'Temas'} 
+                    • ${contadorActividadesModulo} ${contadorActividadesModulo === 1 ? 'Evaluación' : 'Evaluaciones'}
+                  </span>
+                </div>
+                <h2 class="text-base sm:text-xl font-black tracking-tight mt-1">
+                  ${modulo.titulo}
+                </h2>
+                <p class="text-xs ${isModOpen ? 'text-slate-300' : 'text-slate-500'} font-medium mt-0.5">
+                  ${modulo.descripcion}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <span class="text-xs font-bold ${isModOpen ? 'text-slate-300' : 'text-stg-blue'}">
+                ${isModOpen ? 'Ocultar temas' : 'Desplegar temas'}
+              </span>
+              <div class="w-8 h-8 rounded-xl ${
+                isModOpen ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
+              } flex items-center justify-center">
+                <i class="fa-solid fa-chevron-down chevron-icon ${isModOpen ? 'rotate-180-custom' : ''}"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- CUERPO DEL MÓDULO (LISTA DE TEMAS DESPLEGABLES) -->
+          <div class="${isModOpen ? 'block' : 'hidden'} p-4 sm:p-6 bg-slate-50/60 space-y-4 border-t border-slate-200/80">
+            ${temasConActividades.map(tema => crearHTMLTemaDesplegable(tema)).join('')}
+          </div>
+        `;
+
+        container.appendChild(modCard);
+      });
+
+      if (totalActividadesMostradas === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
+            <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-base font-black text-slate-800">No se encontraron resultados</h3>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">No hay módulos, temas o actividades que coincidan con tu filtro actual.</p>
+            <button onclick="resetFilters()" class="bg-stg-blue text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-stg-darkBlue transition cursor-pointer">
+              Restablecer todos los filtros
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // GENERAR HTML DE CADA TEMA DESPLEGABLE (SUB-DROPDOWN)
+    function crearHTMLTemaDesplegable(tema) {
+      const isTopicOpen = temasAbiertos.has(tema.id);
+      const cant = tema.actividadesFiltradas.length;
+
+      return `
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+          <!-- Cabecera clicable del Tema -->
+          <div 
+            onclick="toggleTopicAccordion('${tema.id}', event)"
+            class="p-4 sm:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer select-none hover:bg-slate-50/80 transition-colors"
+          >
+            <div class="flex items-start sm:items-center gap-3">
+              <span class="px-3 py-1.5 rounded-xl bg-stg-blue text-white font-black text-xs uppercase tracking-wider shrink-0 shadow-2xs">
+                ${tema.numero}
+              </span>
+              <div>
+                <h3 class="text-sm sm:text-base font-black text-slate-900">
+                  ${tema.titulo}
+                </h3>
+                <p class="text-xs text-slate-500 font-medium">
+                  ${tema.descripcion}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                <i class="fa-solid fa-gamepad text-stg-orange"></i>
+                ${cant} ${cant === 1 ? 'actividad' : 'actividades'}
+              </span>
+              <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-chevron-down chevron-icon ${isTopicOpen ? 'rotate-180-custom' : ''}"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid de Tarjetas de Evaluación del Tema -->
+          <div class="${isTopicOpen ? 'grid' : 'hidden'} grid-cols-1 md:grid-cols-2 gap-4 p-4 sm:p-5 pt-2 border-t border-slate-100 bg-white">
+            ${tema.actividadesFiltradas.map(act => crearHTMLTarjetaActividad(tema, act)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // GENERAR HTML DE CADA TARJETA DE EVALUACIÓN
+    function crearHTMLTarjetaActividad(tema, act) {
+      const esAzul = act.colorTema === 'blue';
+      const badgeColor = esAzul 
+        ? 'bg-stg-lightBlue text-stg-blue border-blue-200' 
+        : 'bg-stg-lightOrange text-stg-orange border-orange-200';
+      const iconBg = esAzul 
+        ? 'bg-gradient-to-br from-stg-blue to-stg-darkBlue text-white shadow-blue-500/25' 
+        : 'bg-gradient-to-br from-stg-orange to-amber-500 text-white shadow-orange-500/25';
+      const btnPrimary = esAzul
+        ? 'bg-stg-blue hover:bg-stg-darkBlue shadow-blue-500/20'
+        : 'bg-stg-orange hover:bg-stg-hoverOrange shadow-orange-500/20';
+
+      const urlSegura = encodeURI(act.archivo);
+      const tituloEscapado = act.titulo.replace(/'/g, "\\'");
+      const temaEscapado = tema.numero.replace(/'/g, "\\'");
+
+      return `
+        <article class="activity-card bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/90 p-5 flex flex-col justify-between gap-4">
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl ${iconBg} flex items-center justify-center text-lg shadow-md shrink-0">
+                  <i class="${act.icono}"></i>
+                </div>
+                <div>
+                  <span class="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${badgeColor} mb-1">
+                    ${act.tipo}
+                  </span>
+                  <h4 class="text-sm sm:text-base font-black text-slate-900 leading-snug">
+                    ${act.titulo}
+                  </h4>
+                  <p class="text-xs font-semibold text-slate-500">
+                    ${act.subtitulo}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              ${act.descripcion}
+            </p>
+
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-bold bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">
+                <i class="fa-regular fa-clock text-stg-orange"></i>
+                ${act.tiempo}
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-bold bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">
+                <i class="fa-solid fa-star text-amber-500"></i>
+                ${act.escala}
+              </span>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-200/80 flex flex-wrap items-center gap-2">
+            <button 
+              onclick="openActivityViewer('${urlSegura}', '${tituloEscapado}', '${temaEscapado}')" 
+              class="flex-1 ${btnPrimary} text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i class="fa-solid fa-play"></i>
+              <span>Iniciar Actividad aquí</span>
+            </button>
+
+            <a 
+              href="${urlSegura}" 
+              target="_blank"
+              class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5"
+              title="Abrir plantilla en pestaña independiente"
+            >
+              <i class="fa-solid fa-up-right-from-square text-slate-400"></i>
+              <span>Nueva Pestaña</span>
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    // CONTROL DEL VISOR INTEGRADO (IFRAME)
+    function openActivityViewer(url, titulo, temaNumero) {
+      document.getElementById('viewerTopicBadge').textContent = temaNumero;
+      document.getElementById('viewerActivityTitle').textContent = titulo;
+      document.getElementById('viewerExternalLink').href = url;
+      document.getElementById('activityIframe').src = url;
+      document.getElementById('integratedViewer').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeActivityViewer() {
+      document.getElementById('integratedViewer').classList.add('hidden');
+      document.getElementById('activityIframe').src = '';
+      document.body.style.overflow = '';
+    }
+  </script>
+</body>
+</html>
