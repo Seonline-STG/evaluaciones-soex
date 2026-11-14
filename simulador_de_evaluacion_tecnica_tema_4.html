@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVALUACIÓN PRÁCTICA: EXPEDIENTES • somostugestoría</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              blue: '#0055FF',
+              darkblue: '#0040CC',
+              orange: '#FF5500',
+              orangeDark: '#E04B00',
+            }
+          },
+          boxShadow: {
+            folderLight: '0 8px 20px -4px rgba(217, 119, 6, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+            folderHover: '0 16px 28px -6px rgba(217, 119, 6, 0.18), 0 6px 10px -3px rgba(0, 0, 0, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .folder-wrapper {
+      perspective: 1000px;
+    }
+    .folder-body {
+      background: linear-gradient(155deg, #FEFBF3 0%, #FEF3C7 60%, #FDE68A 100%);
+      box-shadow: 0 4px 14px -2px rgba(217, 119, 6, 0.10), 0 2px 5px -1px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+    }
+    .folder-pocket {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, #FEF3C7 100%);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(217, 119, 6, 0.06);
+    }
+    .folder-badge-blue {
+      background: linear-gradient(135deg, #0055FF 0%, #0044D6 100%);
+      box-shadow: 0 3px 8px rgba(0, 85, 255, 0.28);
+    }
+    .stamp-audited {
+      border: 2.5px dashed #059669;
+      color: #047857;
+      transform: rotate(-8deg);
+      text-shadow: 0 1px 2px rgba(16, 185, 129, 0.15);
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-100/80 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-blue selection:text-white">
+
+  <!-- ==================== HEADER CORPORATIVO OFICIAL ==================== -->
+  <header class="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Bloque de Identidad Oficial -->
+      <div class="flex items-center gap-3 cursor-pointer select-none" onclick="app.showHomeView()">
+        <div class="bg-white py-1.5 px-3 rounded-2xl flex items-center gap-3.5">
+          <!-- Logo somostugestoría -->
+          <div class="flex flex-col items-center">
+            <div class="text-2xl sm:text-3xl font-black tracking-tight leading-none">
+              <span class="text-[#0055FF]">somos</span><span class="text-[#FF5500]">tu</span><span class="text-[#0055FF]">gestoría</span>
+            </div>
+            <div class="text-[11px] sm:text-xs font-black text-[#FF5500] tracking-wider self-end mt-0.5">
+              desde 1997
+            </div>
+          </div>
+
+          <!-- Línea Divisoria Vertical Gris Clara -->
+          <div class="h-8 w-px bg-slate-300"></div>
+
+          <!-- Pastilla Azul SOEX VENEZUELA -->
+          <div class="bg-[#0055FF] text-white text-[11px] sm:text-xs font-extrabold px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-sm shadow-blue-500/25">
+            SOEX VENEZUELA
+          </div>
+        </div>
+      </div>
+
+      <!-- Controles de Encabezado: Temporizador Global, Restaurar & Calificaciones -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Selector Rápido de Tiempo para Evaluaciones -->
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-600 shadow-2xs">
+          <svg class="w-4 h-4 text-slate-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+            <polyline points="12 6 12 12 16 14" stroke-width="2"></polyline>
+          </svg>
+          <span class="text-slate-500 hidden sm:inline mr-1 font-semibold">Tiempo:</span>
+          <select id="timeDurationSelect" onchange="app.changeDefaultTime(this.value)" class="bg-white border border-slate-300 rounded-lg px-2 py-0.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer text-xs">
+            <option value="60">1:00 min (60s)</option>
+            <option value="90" selected>1:30 min (90s)</option>
+            <option value="120">2:00 min (120s)</option>
+            <option value="180">3:00 min (180s)</option>
+            <option value="300">5:00 min (300s)</option>
+          </select>
+        </div>
+
+        <!-- Botón Calificaciones -->
+        <button onclick="app.showSummaryModal()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-brand-blue border border-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span>Calificaciones</span>
+          <span id="headerAuditedBadge" class="bg-brand-blue text-white rounded-full px-2 py-0.2 text-[10px] font-black">0/16</span>
+        </button>
+
+        <!-- Botón Banco de Expedientes (Gestionar/Modificar/Eliminar) -->
+        <button onclick="app.openBankModal()" title="Ver y gestionar banco de expedientes" class="flex items-center gap-1.5 bg-white hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-3.5 h-3.5 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span class="hidden sm:inline">Banco Expedientes</span>
+        </button>
+
+        <!-- Botón Restaurar / Reiniciar Expedientes -->
+        <button onclick="app.openRestoreModal()" title="Restaurar carpetas a su estado inicial" class="flex items-center gap-1.5 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition-all shadow-2xs">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span class="hidden sm:inline">Restaurar</span>
+        </button>
+
+        <!-- Candado del Evaluador -->
+        <button id="evaluatorToggleBtn" onclick="app.toggleEvaluatorDrawer()" title="Panel del Evaluador (Ctrl + Shift + P)" class="p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-slate-200 text-slate-500 hover:text-brand-blue transition-all shadow-2xs relative">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ==================== VISTA 1: TABLERO DE CARPETAS (HOME) ==================== -->
+    <div id="homeView" class="space-y-6">
+      
+      <!-- Banner Principal de la Sección -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-blue-50 text-brand-blue font-black text-xs px-3.5 py-1.5 rounded-full mb-2.5 border border-blue-100 tracking-wide uppercase">
+            <span>EVALUACIÓN PRÁCTICA: EXPEDIENTES</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            SITUACIONES DIARIAS Y USO DE HERRAMIENTAS
+          </h1>
+          <p class="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl font-medium">
+            Estructura de Calificación por Expediente (Total: 6,0 Puntos): <strong class="text-brand-blue font-bold">Herramientas de Trabajo (2,0 pts)</strong> y <strong class="text-brand-orange font-bold">Procedimiento aplicado en cada Herramienta (4,0 pts)</strong>.
+          </p>
+        </div>
+
+        <!-- Acciones del Tablero -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <button type="button" onclick="app.openBankModal()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-4 py-2.5 rounded-xl border border-slate-300 transition-all cursor-pointer">
+            <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            <span>Ver / Gestionar Banco</span>
+          </button>
+          
+          <button type="button" onclick="app.openNewExpedienteModal()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer">
+            <svg class="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>+ Nuevo Expediente</span>
+          </button>
+          
+          <button type="button" onclick="app.pickRandomExpediente()" class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md shadow-orange-500/20 transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            <span>Asignar Carpeta al Azar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Resumen Rápido -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Carpetas</span>
+          <span id="statTotalExp" class="text-2xl font-black text-slate-900 mt-0.5 block font-mono">16</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Evaluados / Auditados</span>
+          <span id="statAuditedExp" class="text-2xl font-black text-emerald-600 mt-0.5 block font-mono">0</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">Carpetas Pendientes</span>
+          <span id="statPendingExp" class="text-2xl font-black text-amber-600 mt-0.5 block font-mono">16</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[11px] font-bold text-brand-blue uppercase tracking-wider block">Promedio de Grupo</span>
+          <span id="statAverageScore" class="text-2xl font-black text-brand-blue mt-0.5 block font-mono">-- / 6.0</span>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Carpetas Secretas -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <span>Casos Prácticos Disponibles</span>
+            <span class="text-xs font-normal text-slate-500 normal-case">(Selecciona una carpeta para abrir el caso práctico en pantalla)</span>
+          </h2>
+          <span class="text-xs font-bold text-slate-400 hidden sm:inline">somostugestoría • uso de herramientas</span>
+        </div>
+
+        <div id="foldersGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== VISTA 2: AUDITORÍA EN PANTALLA COMPLETA ==================== -->
+    <div id="auditView" class="hidden space-y-6">
+      
+      <!-- Barra Superior de Navegación del Caso -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3">
+          <button onclick="app.showHomeView()" class="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-all font-bold flex items-center gap-1.5 text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+            <span>Volver a las Carpetas</span>
+          </button>
+          
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="auditExpBadge" class="bg-slate-900 text-white text-xs font-black px-2.5 py-0.5 rounded-lg tracking-wider font-mono">CASO PRÁCTICO #01</span>
+              <span id="auditStatusBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 uppercase tracking-wide">Pendiente</span>
+            </div>
+            <h2 id="auditClientTitle" class="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">Elismar Martinez</h2>
+          </div>
+        </div>
+
+        <!-- Módulo del Temporizador Central -->
+        <div class="flex items-center gap-3 bg-slate-950 text-white px-4 py-2.5 rounded-2xl shadow-md border border-slate-800">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-brand-orange animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+              <polyline points="12 6 12 12 16 14" stroke-width="2"></polyline>
+            </svg>
+            <div id="timerDisplay" class="font-mono text-2xl font-black tracking-wider text-emerald-400">01:30</div>
+          </div>
+
+          <div class="flex items-center gap-1 pl-2 border-l border-slate-800">
+            <button id="timerPlayBtn" onclick="app.startTimer()" title="Iniciar / Continuar" class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="timerPauseBtn" onclick="app.pauseTimer()" title="Pausar" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-all opacity-50">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button onclick="app.resetTimer()" title="Reiniciar tiempo" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Botón Rápido: Marcar / Desmarcar Auditado -->
+          <button id="quickAuditToggleBtn" onclick="app.toggleAuditStatus()" class="font-extrabold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-2xs border">
+            <!-- Dinámico vía renderCurrentAudit -->
+          </button>
+
+          <!-- Botón Calificar en Privado -->
+          <button onclick="app.openEvaluatorForCurrent()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <span>Calificar en Privado</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Barra de Progreso del Tiempo -->
+      <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+        <div id="timerProgressBar" class="h-full bg-emerald-500 transition-all duration-300 w-full"></div>
+      </div>
+
+      <!-- 2 Columnas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Ficha de Entrada (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 relative overflow-hidden">
+            <div class="text-xs font-black text-brand-orange uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+              <span>Ficha del Caso Práctico</span>
+            </div>
+            
+            <h3 id="cardClientName" class="text-xl font-black text-slate-900 mt-1.5">Elismar Martinez</h3>
+            <div id="cardClientMeta" class="text-xs text-slate-500 font-semibold mt-0.5">Trabajador SOEX • Caso Práctico #01</div>
+
+            <div class="mt-4 pt-4 border-t border-slate-100 space-y-3.5">
+              <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Situación Operativa:</span>
+                <p id="cardSituation" class="text-sm font-semibold text-slate-700 leading-snug mt-1">
+                  Se necesita generar por un requerimiento de la gerencia, el registro del fichaje en pdf del SOEX Elismar Martinez del mes de Noviembre de 2026.
+                </p>
+              </div>
+
+              <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Requerimiento en Expediente:</span>
+                <div class="mt-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <span id="cardDocType" class="text-[11px] font-bold text-slate-500 block uppercase">Trámite Operativo</span>
+                    <span id="cardDocNumber" class="text-base sm:text-lg font-black text-slate-900 font-mono tracking-wide">Registro de Fichaje (PDF)</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block">Referencia:</span>
+                    <span id="cardDocExtra" class="text-xs font-bold text-brand-blue font-mono">Noviembre 2026</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-center gap-2.5 text-amber-900 text-xs font-medium">
+                <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <span>Herramienta y ruta paso a paso reservadas. Se revelarán con la solución oficial para el cotejo en vivo.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preguntas Técnicas Grandes y Revelar Solución (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Tarjeta Pregunta 1 -->
+          <div class="bg-white rounded-2xl border-2 border-blue-100 p-6 shadow-sm hover:border-brand-blue/40 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="inline-flex items-center gap-2 bg-blue-50 text-brand-blue font-black text-xs px-3 py-1 rounded-lg uppercase tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+                <span>Pregunta 1 • Herramientas de Trabajo</span>
+              </div>
+              <span class="text-sm font-black text-brand-blue font-mono bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">2,0 PUNTOS</span>
+            </div>
+
+            <p id="auditQuestion1" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-2 leading-relaxed">
+              ¿Qué herramienta de trabajo diario se debe utilizar?
+            </p>
+          </div>
+
+          <!-- Tarjeta Pregunta 2 -->
+          <div class="bg-white rounded-2xl border-2 border-orange-100 p-6 shadow-sm hover:border-brand-orange/40 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="inline-flex items-center gap-2 bg-orange-50 text-brand-orange font-black text-xs px-3 py-1 rounded-lg uppercase tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+                <span>Pregunta 2 • Procedimiento Aplicado</span>
+              </div>
+              <span class="text-sm font-black text-brand-orange font-mono bg-orange-50 px-3 py-1 rounded-lg border border-orange-100">4,0 PUNTOS</span>
+            </div>
+
+            <p id="auditQuestion2" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-2 leading-relaxed">
+              Explica y ejecuta el paso a paso del procedimiento a realizar.
+            </p>
+          </div>
+
+          <!-- Revelar Solución Oficial -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider">Solución Oficial y Esquema de Herramienta</h4>
+                <p class="text-xs text-slate-500 font-medium">Revela la herramienta correcta y el paso a paso operativo al concluir la intervención.</p>
+              </div>
+
+              <button id="toggleSolutionBtn" onclick="app.toggleOfficialSolution()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all">
+                <span id="solutionBtnIcon">👁</span>
+                <span id="solutionBtnText">Revelar Solución Oficial</span>
+              </button>
+            </div>
+
+            <div id="solutionBox" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-4">
+              <div class="p-4 rounded-xl bg-blue-50/80 border border-blue-100">
+                <strong class="text-xs font-black text-brand-blue uppercase tracking-wider block mb-1">Solución Pregunta 1 (2,0 pts):</strong>
+                <p id="auditSol1" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">--</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-orange-50/80 border border-orange-100">
+                <strong class="text-xs font-black text-brand-orange uppercase tracking-wider block mb-1">Solución Pregunta 2 (4,0 pts):</strong>
+                <p id="auditSol2" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">--</p>
+              </div>
+
+              
+
+            </div>
+          </div>
+
+          <!-- Navegación entre expedientes -->
+          <div class="flex items-center justify-between pt-1">
+            <button onclick="app.prevExpediente()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-all flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              <span>Carpeta Anterior</span>
+            </button>
+
+            <span id="auditPagingText" class="text-xs font-bold text-slate-400 font-mono">1 de 16</span>
+
+            <button onclick="app.nextExpediente()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-all flex items-center gap-2">
+              <span>Siguiente Carpeta</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== DRAWER PRIVADO DEL EVALUADOR ==================== -->
+  <div id="evaluatorOverlay" onclick="app.toggleEvaluatorDrawer()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+
+  <aside id="evaluatorDrawer" class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] bg-white z-50 shadow-2xl border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+    
+    <div class="p-5 border-b border-slate-200 bg-slate-900 text-white flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <div>
+          <h3 class="font-black text-sm uppercase tracking-wider">Panel del Evaluador</h3>
+          <p class="text-[11px] text-slate-400 font-medium">Registro Privado de Calificaciones (6,0 pts)</p>
+        </div>
+      </div>
+      <button onclick="app.toggleEvaluatorDrawer()" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Expediente a Calificar:</label>
+        <select id="evaluatorExpSelect" onchange="app.onEvaluatorSelectExp(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre del Estudiante Evaluado:</label>
+        <input type="text" id="evalStudentName" placeholder="Ej. Carlos Rodríguez" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+      </div>
+
+      <!-- Calificación Pregunta 1 (2,0 Puntos) -->
+      <div class="bg-blue-50/70 rounded-xl p-4 border border-blue-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black text-brand-blue uppercase tracking-wide">Pilar 1: Herramientas de Trabajo</span>
+          <span id="evalScoreP1Badge" class="text-xs font-black text-brand-blue font-mono bg-white px-2 py-0.5 rounded border border-blue-200">0,0 / 2,0</span>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-slate-500 block mb-1.5">Puntaje Pregunta 1 (Máx. 2,0 pts):</span>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="app.setScoreP1(0)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">0,0 pts</button>
+            <button type="button" onclick="app.setScoreP1(1)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">1,0 pts</button>
+            <button type="button" onclick="app.setScoreP1(2)" class="score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">2,0 pts</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calificación Pregunta 2 (4,0 Puntos) -->
+      <div class="bg-orange-50/70 rounded-xl p-4 border border-orange-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black text-brand-orange uppercase tracking-wide">Pilar 2: Procedimiento Aplicado</span>
+          <span id="evalScoreP2Badge" class="text-xs font-black text-brand-orange font-mono bg-white px-2 py-0.5 rounded border border-orange-200">0,0 / 4,0</span>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-slate-500 block mb-1.5">Puntaje Pregunta 2 (Máx. 4,0 pts):</span>
+          <div class="grid grid-cols-5 gap-1.5">
+            <button type="button" onclick="app.setScoreP2(0)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">0,0</button>
+            <button type="button" onclick="app.setScoreP2(1)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">1,0</button>
+            <button type="button" onclick="app.setScoreP2(2)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">2,0</button>
+            <button type="button" onclick="app.setScoreP2(3)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">3,0</button>
+            <button type="button" onclick="app.setScoreP2(4)" class="score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100">4,0</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Calculado -->
+      <div class="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between">
+        <div>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Calificación Total</span>
+          <span class="text-[10px] text-slate-500 font-medium">Escala oficial de 0,0 a 6,0 puntos</span>
+        </div>
+        <div id="evalTotalScore" class="text-3xl font-black font-mono text-emerald-400">0,0 / 6,0</div>
+      </div>
+
+      <!-- Observaciones -->
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas Privadas / Observaciones:</label>
+        <textarea id="evalNotes" rows="2" placeholder="Observaciones sobre el dominio de la herramienta, precisión del paso a paso..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+      </div>
+
+    </div>
+
+    <!-- Footer Guardar -->
+    <div class="p-5 border-t border-slate-200 bg-slate-50 flex items-center gap-3">
+      <button onclick="app.saveCurrentEvaluation()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl shadow-md shadow-emerald-600/20 text-xs flex items-center justify-center gap-2 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span>Guardar Calificación</span>
+      </button>
+
+      <button onclick="app.clearCurrentEvaluation()" title="Limpiar calificación de este caso" class="p-3 rounded-xl border border-slate-300 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ==================== MODAL: TABLA DE CALIFICACIONES ==================== -->
+  <div id="summaryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">Calificaciones • Uso de Herramientas</h3>
+          <p class="text-xs text-slate-500 font-medium">somostugestoría desde 1997 • SOEX VENEZUELA</p>
+        </div>
+        <button onclick="app.closeSummaryModal()" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+              <th class="p-3">Caso</th>
+              <th class="p-3">Estudiante</th>
+              <th class="p-3">Cliente / Trabajador / Responsable</th>
+              <th class="p-3 text-center">P1 (2.0)</th>
+              <th class="p-3 text-center">P2 (4.0)</th>
+              <th class="p-3 text-center">Total (6.0)</th>
+              <th class="p-3 text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody" class="divide-y divide-slate-100">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-4 text-slate-600">
+          <span>Auditados: <strong id="summaryModalAudited" class="text-emerald-600 font-mono">0/16</strong></span>
+          <span>Promedio: <strong id="summaryModalAvg" class="text-brand-blue font-mono">-- / 6.0</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="app.exportToCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Exportar CSV</span>
+          </button>
+          <button onclick="app.closeSummaryModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-all">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== MODAL: GESTIÓN DEL BANCO DE EXPEDIENTES ==================== -->
+  <div id="bankModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand-blue flex items-center justify-center text-white font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Banco de Casos Prácticos (Herramientas)</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Revisa, modifica las preguntas o elimina casos para ajustar el tamaño del grupo</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="app.closeBankModal(); app.openNewExpedienteModal();" class="bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+            <span>+ Agregar Caso</span>
+          </button>
+          <button onclick="app.closeBankModal()" class="p-2 text-slate-400 hover:text-white rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra informativa -->
+      <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="text-slate-600">
+          <span>Total en banco: <strong id="bankTotalCount" class="text-slate-900 font-mono font-bold">16</strong> casos prácticos activos.</span>
+        </div>
+        <span class="text-[11px] text-slate-500 font-medium italic">Puedes eliminar carpetas para que sean menos o editarlas antes de la evaluación.</span>
+      </div>
+
+      <!-- Lista de Expedientes -->
+      <div class="flex-1 overflow-y-auto p-5">
+        <div id="bankExpedientesList" class="space-y-3">
+          <!-- Inyección dinámica -->
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
+        <button onclick="app.restoreDefaultExpedientes()" class="text-slate-500 hover:text-rose-600 font-bold transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>Recuperar los 16 Casos Originales</span>
+        </button>
+
+        <button onclick="app.closeBankModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl transition-all">
+          Listo / Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: MODIFICAR / EDITAR EXPEDIENTE ==================== -->
+  <div id="editExpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-brand-blue text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white font-black text-sm">
+            ✎
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Modificar Caso Práctico <span id="editExpIdBadge">#01</span></h3>
+            <p class="text-[11px] text-blue-100 font-medium">Actualiza preguntas, respuestas homologadas o datos del caso</p>
+          </div>
+        </div>
+        <button onclick="app.closeEditExpModal()" class="p-2 text-white/80 hover:text-white rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        <input type="hidden" id="editExpId">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Cliente / Trabajador / Responsable *</label>
+            <input type="text" id="editClientName" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Metadato / Rol</label>
+            <input type="text" id="editClientMeta" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Situación Operativa</label>
+          <textarea id="editSituation" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Herramienta Asociada</label>
+            <select id="editDocType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+              <option value="WORKI">Programa Worki</option>
+              <option value="DIFS_AUTOFORM">Programa Difs Autoform</option>
+              <option value="DIF_43">Programa Dif 43</option>
+              <option value="A3ECO">Programa A3Eco</option>
+              <option value="KABILIO">Programa Kabilio</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Trámite / Reporte</label>
+            <input type="text" id="editDocNumber" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Periodo / Referencia</label>
+            <input type="text" id="editDocExtra" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <!-- Pregunta 1 -->
+        <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-blue uppercase tracking-wider block text-[11px]">Pregunta 1 • Herramientas de Trabajo (2,0 pts) *</span>
+          <textarea id="editQuestion1" rows="2" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+          <textarea id="editSol1" rows="2" class="w-full bg-white border border-blue-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="p-3.5 bg-orange-50/70 border border-orange-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-orange uppercase tracking-wider block text-[11px]">Pregunta 2 • Procedimiento Aplicado (4,0 pts) *</span>
+          <textarea id="editQuestion2" rows="2" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+          <textarea id="editSol2" rows="3" class="w-full bg-white border border-orange-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2 text-xs">
+        <button type="button" onclick="app.closeEditExpModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button type="button" onclick="app.saveEditedExpediente()" class="px-5 py-2.5 rounded-xl bg-brand-blue hover:bg-brand-darkblue text-white font-extrabold shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <span>Guardar Cambios</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: NUEVO EXPEDIENTE ==================== -->
+  <div id="newExpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white font-black text-sm">
+            +
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-wider">Crear Nuevo Caso Práctico</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Añade un caso para la evaluación de uso de herramientas</p>
+          </div>
+        </div>
+        <button onclick="app.closeNewExpedienteModal()" class="p-2 text-slate-400 hover:text-white rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Cliente / Trabajador / Responsable *</label>
+            <input type="text" id="newClientName" placeholder="Ej. ARTERIA LOGISTICA DEL ARTE SL" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Metadato / Rol</label>
+            <input type="text" id="newClientMeta" placeholder="Ej. Cliente • Caso Práctico" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Situación Operativa</label>
+          <textarea id="newSituation" rows="2" placeholder="Describe la solicitud o situación operativa diaria..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Herramienta Asociada</label>
+            <select id="newDocType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue cursor-pointer">
+              <option value="WORKI">Programa Worki</option>
+              <option value="DIFS_AUTOFORM">Programa Difs Autoform</option>
+              <option value="DIF_43">Programa Dif 43</option>
+              <option value="A3ECO">Programa A3Eco</option>
+              <option value="KABILIO">Programa Kabilio</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Trámite / Reporte</label>
+            <input type="text" id="newDocNumber" placeholder="Ej. Carga de Facturas" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1">Periodo / Referencia</label>
+            <input type="text" id="newDocExtra" placeholder="Ej. Noviembre 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          </div>
+        </div>
+
+        <!-- Pregunta 1 -->
+        <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-blue uppercase tracking-wider block text-[11px]">Pregunta 1 • Herramientas de Trabajo (2,0 pts) *</span>
+          <textarea id="newQuestion1" rows="2" placeholder="¿Qué herramienta de trabajo diario se debe utilizar?" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-blue">¿Qué herramienta de trabajo diario se debe utilizar?</textarea>
+          <textarea id="newSol1" rows="2" placeholder="Ej. El programa Worki." class="w-full bg-white border border-blue-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-blue"></textarea>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="p-3.5 bg-orange-50/70 border border-orange-100 rounded-xl space-y-2">
+          <span class="font-black text-brand-orange uppercase tracking-wider block text-[11px]">Pregunta 2 • Procedimiento Aplicado (4,0 pts) *</span>
+          <textarea id="newQuestion2" rows="2" placeholder="Explica y ejecuta el paso a paso del procedimiento a realizar." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-orange">Explica y ejecuta el paso a paso del procedimiento a realizar.</textarea>
+          <textarea id="newSol2" rows="3" placeholder="Solución técnica paso a paso..." class="w-full bg-white border border-orange-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-orange"></textarea>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2 text-xs">
+        <button type="button" onclick="app.closeNewExpedienteModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button type="button" onclick="app.saveNewExpediente()" class="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-orange-600 text-white font-extrabold shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <span>Guardar Expediente</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: CONFIRMACIÓN DE RESTAURAR ==================== -->
+  <div id="restoreConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900">¿Restaurar Todo el Tablero?</h3>
+          <p class="text-xs text-slate-500 font-medium">Esta acción limpiará todas las calificaciones y devolverá los expedientes a su estado inicial para una nueva sesión.</p>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800">
+        ✔ Todas las carpetas volverán a estado <strong>Pendiente</strong> (sin sello de auditado).<br>
+        ✔ Se restablecerán las estadísticas y el promedio a <strong>0</strong>.
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 text-xs">
+        <button onclick="app.closeRestoreModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition-all">
+          Cancelar
+        </button>
+        <button onclick="app.executeRestoreAll()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold shadow-md shadow-rose-600/20 transition-all">
+          Sí, Restaurar Ahora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-bold border border-slate-800">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="toastMessage">Operación realizada con éxito</span>
+  </div>
+
+  <script>
+    function playBeep(freq = 520, type = 'sine', duration = 0.15) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+  </script>
+
+  <script>
+    const SCHEME_TEMPLATES = {
+      WORKI: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-blue-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+              Ecosistema Corporativo • Programa Worki
+            </span>
+            <span class="text-[10px] font-bold bg-white text-brand-blue px-2 py-0.5 rounded border border-blue-200">Gestión Integral</span>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Módulos Principales:</span>
+              <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Empleado / Contabilidad / Centro de Control / Worki-Fact</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Centraliza registro de fichajes, envío y colas de facturas, control de impuestos y facturación.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-orange-50/80 border border-brand-orange/40">
+              <span class="text-[10px] font-black text-brand-orange uppercase tracking-wide block">Control de Calidad Operativa:</span>
+              <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Filtros, Punteo y Exportación</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Verificar siempre cliente/responsable, rango de fechas, tipo de documento y estado (Revisado / PDF / Excel).</p>
+            </div>
+          </div>
+        </div>
+      `,
+      DIFS_AUTOFORM: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-amber-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              Validación Documental • Difs Autoform
+            </span>
+            <span class="text-[10px] font-bold bg-white text-amber-800 px-2 py-0.5 rounded border border-amber-200">OCR y Excepciones</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Operaciones de Validación:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Proveedores y Consulta Validadas</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Permite modificar datos de proveedores en facturas por validar y consultar histórico por rango de fecha de validación.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-emerald-50/80 border border-emerald-300">
+              <span class="text-[10px] font-black text-emerald-800 uppercase tracking-wide block">Gestión de Excepciones:</span>
+              <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Duplicadas / Doc NO Contabilizables</span>
+              <p class="text-[11px] text-emerald-700 font-medium mt-1 leading-snug">Las facturas emitidas por la gestoría van a «Doc NO Contabilizables» porque se enlazan directo a contabilidad.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      DIF_43: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-emerald-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Conciliación y Bancos • Programa Dif 43
+            </span>
+            <span class="text-[10px] font-bold bg-white text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">Extractos Bancarios</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Ruta de Carga:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-brand-blue block mt-0.5">Importar Fichero → Empresa → Cuenta Contable</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Ubicación del fichero en la carpeta del cliente y asignación de la cuenta contable bancaria.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-orange-50/80 border border-brand-orange/40">
+              <span class="text-[10px] font-black text-brand-orange uppercase tracking-wide block">Mapeo de Columnas Obligatorio:</span>
+              <span class="font-mono text-xs sm:text-sm font-black text-slate-900 block mt-0.5">Fecha • Concepto • Importe • Saldo</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Finalizar siempre pulsando «Aplicar formato e importar movimientos».</p>
+            </div>
+          </div>
+        </div>
+      `,
+      A3ECO: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-purple-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-purple-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              A3Asesor • Módulo Contable A3Eco
+            </span>
+            <span class="text-[10px] font-bold bg-white text-purple-800 px-2 py-0.5 rounded border border-purple-200">Contabilidad e Impuestos</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Consultas y Apuntes:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Resumen (Modelos) / Apuntes y Movimientos</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Cotejo de Modelos (ej. Mod. 111) con carpeta de Impuestos del cliente y edición de apuntes por fecha.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-purple-50/80 border border-purple-200">
+              <span class="text-[10px] font-black text-purple-900 uppercase tracking-wide block">Listados por Impresora (Excel):</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Balance / PyG / Mayor (430) / Libro Registros</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Configurar fechas, nivel de desglose (anual/mensual) o «formato con total factura» antes de exportar a Excel.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      KABILIO: `
+        <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 bg-blue-50/60 -mx-4 -mt-4 p-3 rounded-t-xl">
+            <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+              Gestión en la Nube • Programa Kabilio
+            </span>
+            <span class="text-[10px] font-bold bg-white text-brand-blue px-2 py-0.5 rounded border border-blue-200">Recepción y Contabilización</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Flujo de Entrada:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Búsqueda de Cliente Directa</span>
+              <p class="text-[11px] text-slate-500 font-medium mt-1 leading-snug">Verificación de documentos subidos directamente por el cliente a la plataforma.</p>
+            </div>
+
+            <div class="p-3 rounded-lg bg-blue-50/80 border border-blue-200">
+              <span class="text-[10px] font-black text-brand-blue uppercase tracking-wide block">Clasificación Operativa:</span>
+              <span class="font-mono text-xs sm:text-sm font-bold text-slate-900 block mt-0.5">Facturas de Compra / Facturas de Venta</span>
+              <p class="text-[11px] text-slate-600 font-medium mt-1 leading-snug">Acceso al módulo correspondiente según la naturaleza de los movimientos pendientes por validar.</p>
+            </div>
+          </div>
+        </div>
+      `
+    };
+  </script>
+
+  <script>
+    const DEFAULT_EXPEDIENTES = [
+      {
+        id: 1,
+        client: "Elismar Martinez",
+        meta: "Trabajador SOEX • Caso Práctico #01",
+        situation: "Se necesita generar por un requerimiento de la gerencia, el registro del fichaje en pdf del SOEX Elismar Martinez del mes de Noviembre de 2026.",
+        docType: "WORKI",
+        docNumber: "Registro de Fichaje (PDF)",
+        docExtra: "Noviembre 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Worki.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Worki, seleccionar la parte de Empleado, Registro de fichajes, marcar el rango de fecha y generar el reporte en pdf."
+      },
+      {
+        id: 2,
+        client: "ARTERIA LOGISTICA DEL ARTE SL",
+        meta: "Cliente • Caso Práctico #02",
+        situation: "El cliente ARTERIA LOGISTICA DEL ARTE SL envía por correo las facturas correspondientes al mes de Octubre de 2026 y se deben cargar las facturas al sistema para procesar la información.",
+        docType: "WORKI",
+        docNumber: "Carga de Facturas al Sistema",
+        docExtra: "Octubre 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Worki.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Worki, seleccionar la parte de contabilidad y acceder a la opción de Envío de Facturas, buscar y seleccionar el cliente, luego marcar el tipo de documento que se va a cargar en el sistema para contabilizar."
+      },
+      {
+        id: 3,
+        client: "VIATEP IBERICA 2012, SL",
+        meta: "Cliente • Caso Práctico #03",
+        situation: "El responsable de la empresa VIATEP IBERICA 2012, SL solicita realizar el punteo de las facturas expedidas del mes de Octubre de 2026.",
+        docType: "WORKI",
+        docNumber: "Punteo de Facturas Expedidas",
+        docExtra: "Octubre 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Worki.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Worki, seleccionar la parte de Contabilidad y acceder a la opción de Colas de Envíos, buscar y seleccionar el cliente, luego filtrar por fecha y por el tipo de factura que se va puntear, en este caso las facturas de ventas o expedidas, seleccionar cada documento y luego de comprobar los datos se marca la opción de Revisado."
+      },
+      {
+        id: 4,
+        client: "Eva Pico",
+        meta: "Responsable • Caso Práctico #04",
+        situation: "La responsable Eva Pico solicita por correo generar un listado en excel con los clientes que tiene asignados para organizar las prioridades de tareas a ejecutar al comienzo del 4to trimestre.",
+        docType: "WORKI",
+        docNumber: "Listado de Clientes Asignados (Excel)",
+        docExtra: "4to Trimestre (4T)",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Worki.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Worki, seleccionar la parte de Centro de Control y acceder a la opción de Centro de Impuestos Avanzado, luego colocar en los filtros la información necesaria (4T - Tipo de Cliente - Responsable), marcar la opción Buscar y por último exportar la información en excel."
+      },
+      {
+        id: 5,
+        client: "Juan Jesus Hernangomez De Pablos",
+        meta: "Cliente • Caso Práctico #05",
+        situation: "El responsable del cliente Juan Jesus Hernangomez De Pablos solicita verificar cuantas facturas emitidas por las empresas de la gestoría tenemos a la fecha a nombre del cliente.",
+        docType: "WORKI",
+        docNumber: "Facturas Emitidas por la Gestoría",
+        docExtra: "Consulta a la fecha",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Worki.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Worki, seleccionar la parte de Worki-Fact y acceder a la opción de Facturación, buscar y seleccionar el cliente."
+      },
+      {
+        id: 6,
+        client: "ALYMA EDUCAR, SLL",
+        meta: "Cliente • Caso Práctico #06",
+        situation: "Al momento de validar las facturas de la sociedad ALYMA EDUCAR, SLL se debe modificar los datos del proveedor de la factura, ¿dónde se realiza?",
+        docType: "DIFS_AUTOFORM",
+        docNumber: "Modificar Datos del Proveedor",
+        docExtra: "Facturas por validar",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Difs Autoform.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Difs Autoform, buscar en el filtro de empresa el cliente, darle doble clic y acceder a las facturas por validar, luego en la opción de Proveedores, seleccionar modificar."
+      },
+      {
+        id: 7,
+        client: "COLMENAR DE NATACIÓN, S.L.",
+        meta: "Cliente • Caso Práctico #07",
+        situation: "Al momento de validar las facturas del cliente COLMENAR DE NATACIÓN, S.L. nos encontramos con una factura duplicada, ¿cuál sería el procedimiento?",
+        docType: "DIFS_AUTOFORM",
+        docNumber: "Incidencia: Factura Duplicada",
+        docExtra: "Facturas por validar",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Difs Autoform.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Difs Autoform, buscar en el filtro de empresa el cliente, darle doble clic y acceder a las facturas por validar, luego en la opción de Mover a excepciones marcar seleccionar ubicación y luego elegir la carpeta correspondiente, Duplicadas Compras o Duplicadas Ventas, según el caso."
+      },
+      {
+        id: 8,
+        client: "OLIVEIRA Y DAVILA SL",
+        meta: "Cliente • Caso Práctico #08",
+        situation: "Al momento de validar las facturas del cliente OLIVEIRA Y DAVILA SL. nos encontramos con una factura emitida por la gestoría, ¿cuál sería el procedimiento? ¿Y por qué?",
+        docType: "DIFS_AUTOFORM",
+        docNumber: "Factura Emitida por la Gestoría",
+        docExtra: "Facturas por validar",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Difs Autoform.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Difs Autoform, buscar en el filtro de empresa el cliente, darle doble clic y acceder a las facturas por validar, luego en la opción de Mover a excepciones marcar seleccionar ubicación y luego elegir la carpeta Doc NO Contabilizables ya que las facturas emitidas por la gestoría se enlazan directamente a la contabilidad de cada cliente, si se valida se duplicaría el registro."
+      },
+      {
+        id: 9,
+        client: "GENESOL SERVICIOS PROFESIONALES, SL",
+        meta: "Cliente • Caso Práctico #09",
+        situation: "Consulta las facturas validadas del cliente GENESOL SERVICIOS PROFESIONALES, SL en el mes de Noviembre de 2026.",
+        docType: "DIFS_AUTOFORM",
+        docNumber: "Consulta de Facturas Validadas",
+        docExtra: "Noviembre 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Difs Autoform.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Difs Autoform, seleccionar la opción de Contabilidad y luego darle doble clic en Consulta de facturas validadas, buscar en el filtro de empresa el cliente, elegir el filtro de Fecha validación, colocar el rango de fecha que se requiere y por último marcar consultar."
+      },
+      {
+        id: 10,
+        client: "IEO VALRESTON SALUD, SLP",
+        meta: "Cliente • Caso Práctico #10",
+        situation: "El cliente IEO VALRESTON SALUD, SLP suministra los extractos bancarios del año 2026 para contabilizar.",
+        docType: "DIF_43",
+        docNumber: "Contabilización Extractos Bancarios",
+        docExtra: "Año 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Dif 43.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Dif 43, seleccionar la opción de Importar Fichero y ubicar la carpeta del cliente, elegir la empresa, colocar la Cuenta contable, confirmar los datos y seleccionar continuar, el sistema lee los datos del fichero y genera una ventana donde se debe indicar los datos a importar/contabilizar (fecha - concepto - importe - saldo) y luego seleccionar la opción de Aplicar formato e importar movimientos."
+      },
+      {
+        id: 11,
+        client: "MARISCOS MARES DE GALICIA, S.L.U",
+        meta: "Cliente • Caso Práctico #11",
+        situation: "El responsable del cliente MARISCOS MARES DE GALICIA,S.L.U solicita confirmar los datos del Modelo 111 del 3T que se genera en el sistema con el modelo guardado en la carpeta del cliente.",
+        docType: "A3ECO",
+        docNumber: "Confirmación Modelo 111 (3T)",
+        docExtra: "Carpeta Cliente 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa A3Eco.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa A3Asesor y elegir el módulo de A3Eco, buscar el cliente, seleccionar la opción de Resumen y ubicar el Modelo 111 del 3T, luego ir a la carpeta del cliente del año 2026 y elegir la carpeta correspondiente a los Impuestos, abrir el pdf correspondiente y comparar la información."
+      },
+      {
+        id: 12,
+        client: "IVAN Y VICTOR TOYS SL",
+        meta: "Cliente • Caso Práctico #12",
+        situation: "En la revisión del Balance del cliente IVAN Y VICTOR TOYS SL se determina que se deben modificar algunos apuntes contables del mes de Septiembre de 2026.",
+        docType: "A3ECO",
+        docNumber: "Modificación de Apuntes Contables",
+        docExtra: "Septiembre 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa A3Eco.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa A3Asesor y elegir el módulo de A3Eco, buscar el cliente, seleccionar la opción de Apuntes/Movimientos y filtrar los movimientos según la fecha indicada."
+      },
+      {
+        id: 13,
+        client: "ARTERIA LOGISTICA DEL ARTE SL",
+        meta: "Cliente • Caso Práctico #13",
+        situation: "Para el análisis del balance del cliente ARTERIA LOGISTICA DEL ARTE SL al 30/09/26 se deben emitir los reportes de Listados Contables de Balance de Situación con desglose anual y el reporte de Pérdidas y Ganancias con desglose mensual en excel.",
+        docType: "A3ECO",
+        docNumber: "Balance de Situación y PyG (Excel)",
+        docExtra: "Al 30/09/2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa A3Eco.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa A3Asesor y elegir el módulo de A3Eco, buscar el cliente, seleccionar la opción de Listados por Impresora y seleccionar los listados contables correspondientes, indicar la fecha, el tipo de desglose, los niveles a listar y generar los reportes en formato de excel."
+      },
+      {
+        id: 14,
+        client: "SOMOS TU EMPRESA DE SERVICIOS, SL",
+        meta: "Cliente • Caso Práctico #14",
+        situation: "Se requiere del cliente SOMOS TU EMPRESA DE SERVICIOS, SL generar un reporte Mayor/Cuentas Corrientes de las cuentas 430 desde 01/01 al 30/09/2026 en formato excel para su análisis.",
+        docType: "A3ECO",
+        docNumber: "Mayor / Cuentas Corrientes (Cta. 430)",
+        docExtra: "01/01 al 30/09/2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa A3Eco.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa A3Asesor y elegir el módulo de A3Eco, buscar el cliente, seleccionar la opción de Listados por Impresora y seleccionar los listados contables de Mayor/Cuentas Corrientes, indicar el rango de la fecha, las cuentas a listar y generar el reporte en formato de excel."
+      },
+      {
+        id: 15,
+        client: "JOSE ANTONIO LORENTE GARCIA",
+        meta: "Cliente • Caso Práctico #15",
+        situation: "El cliente JOSÉ ANTONIO LORENTE GARCIA solicita un reporte de sus facturas expedidas y recibidas del mes de Enero de 2026.",
+        docType: "A3ECO",
+        docNumber: "Reporte Facturas Expedidas y Recibidas",
+        docExtra: "Enero 2026",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa A3Eco.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa A3Asesor y elegir el módulo de A3Eco, buscar el cliente, seleccionar la opción de Listados por Impresora y seleccionar en la parte de Listado Oficial la opción de Libro de Registros, luego indicar el rango de la fecha, el listado de facturas correspondiente, tildar formato con total factura y generar el reporte en formato de excel."
+      },
+      {
+        id: 16,
+        client: "SANTOS JENARO OTINIANO CARRANZA",
+        meta: "Cliente • Caso Práctico #16",
+        situation: "El cliente SANTOS JENARO OTINIANO CARRANZA indica que ha subido documentos por procesar, vamos a verificar y a contabilizar la información.",
+        docType: "KABILIO",
+        docNumber: "Verificar y Contabilizar Documentos",
+        docExtra: "Documentos subidos",
+        q1: "¿Qué herramienta de trabajo diario se debe utilizar?",
+        sol1: "El programa Kabilio.",
+        q2: "Explica y ejecuta el paso a paso del procedimiento a realizar.",
+        sol2: "Se debe ingresar al programa Kabilio, buscar el cliente y seleccionar la opción de facturas de compra o factura de venta según corresponda los movimientos por validar."
+      }
+    ];
+
+    class AppController {
+      constructor() {
+        this.expedientes = [];
+        this.evaluations = {};
+        this.currentExpId = 1;
+        this.defaultDuration = 90;
+        this.timeLeft = 90;
+        this.timerInterval = null;
+        this.isTimerRunning = false;
+        this.isEvaluatorDrawerOpen = false;
+        this.isSolutionRevealed = false;
+        this.currentP1 = 0;
+        this.currentP2 = 0;
+
+        this.init();
+      }
+
+      init() {
+        const savedExp = localStorage.getItem('soex_expedientes_tema4_v1');
+        if (savedExp) {
+          try {
+            this.expedientes = JSON.parse(savedExp);
+          } catch (e) {
+            this.expedientes = [...DEFAULT_EXPEDIENTES];
+          }
+        } else {
+          this.expedientes = [...DEFAULT_EXPEDIENTES];
+          this.saveExpedientesToStorage();
+        }
+
+        const savedEval = localStorage.getItem('soex_evaluations_tema4_v1');
+        if (savedEval) {
+          try {
+            this.evaluations = JSON.parse(savedEval);
+          } catch (e) {
+            this.evaluations = {};
+          }
+        }
+
+        this.renderFoldersGrid();
+        this.updateStats();
+        this.populateEvaluatorSelect();
+
+        window.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+            e.preventDefault();
+            this.toggleEvaluatorDrawer();
+          }
+        });
+      }
+
+      showToast(msg) {
+        const toast = document.getElementById('toastNotification');
+        document.getElementById('toastMessage').textContent = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 2500);
+      }
+
+      saveExpedientesToStorage() {
+        localStorage.setItem('soex_expedientes_tema4_v1', JSON.stringify(this.expedientes));
+      }
+
+      saveEvaluationsToStorage() {
+        localStorage.setItem('soex_evaluations_tema4_v1', JSON.stringify(this.evaluations));
+        this.updateStats();
+        this.renderFoldersGrid();
+      }
+
+      showHomeView() {
+        this.pauseTimer();
+        document.getElementById('homeView').classList.remove('hidden');
+        document.getElementById('auditView').classList.add('hidden');
+        this.updateStats();
+        this.renderFoldersGrid();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      showAuditView(expId) {
+        this.currentExpId = parseInt(expId);
+        document.getElementById('homeView').classList.add('hidden');
+        document.getElementById('auditView').classList.remove('hidden');
+        this.hideOfficialSolution();
+        this.renderCurrentAudit();
+        this.resetTimer();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      getCurrentExpediente() {
+        return this.expedientes.find(e => e.id === this.currentExpId) || this.expedientes[0];
+      }
+
+      prevExpediente() {
+        const idx = this.expedientes.findIndex(e => e.id === this.currentExpId);
+        const prevIdx = idx > 0 ? idx - 1 : this.expedientes.length - 1;
+        this.showAuditView(this.expedientes[prevIdx].id);
+      }
+
+      nextExpediente() {
+        const idx = this.expedientes.findIndex(e => e.id === this.currentExpId);
+        const nextIdx = idx < this.expedientes.length - 1 ? idx + 1 : 0;
+        this.showAuditView(this.expedientes[nextIdx].id);
+      }
+
+      pickRandomExpediente() {
+        const pending = this.expedientes.filter(e => !this.evaluations[e.id]);
+        const pool = pending.length > 0 ? pending : this.expedientes;
+        const randomExp = pool[Math.floor(Math.random() * pool.length)];
+        this.showAuditView(randomExp.id);
+      }
+
+      renderFoldersGrid() {
+        const container = document.getElementById('foldersGrid');
+        container.innerHTML = '';
+
+        this.expedientes.forEach((exp) => {
+          const isAudited = !!this.evaluations[exp.id];
+
+          const card = document.createElement('div');
+          card.className = "folder-wrapper group cursor-pointer select-none";
+          card.onclick = () => this.showAuditView(exp.id);
+
+          card.innerHTML = `
+            <div class="relative transition-all duration-300 transform group-hover:-translate-y-1.5">
+              
+              <div class="w-24 h-5 bg-[#FDE68A] rounded-t-lg ml-3 border-t border-l border-r border-amber-300/80 flex items-center justify-center shadow-2xs">
+                <span class="text-[9px] font-mono font-bold text-amber-900/80 uppercase tracking-widest">
+                  CONFIDENCIAL
+                </span>
+              </div>
+
+              <div class="folder-body w-full h-44 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden shadow-folderLight group-hover:shadow-folderHover transition-shadow">
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></div>
+                    <span class="text-[10px] font-mono font-bold text-amber-900/80 tracking-wider">DOC • CLASIFICADO</span>
+                  </div>
+                  
+                  <span class="text-xs font-mono font-black text-amber-950 bg-white/80 px-2.5 py-0.5 rounded-md border border-amber-200/80 shadow-2xs">
+                    #${String(exp.id).padStart(2, '0')}
+                  </span>
+                </div>
+
+                <div class="folder-pocket rounded-xl p-3 relative flex flex-col items-center justify-center text-center">
+                  <div class="folder-badge-blue text-white rounded-lg px-3 py-1.5 w-full flex items-center justify-center gap-1.5 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-white/95" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <span class="text-xs font-black tracking-wider uppercase font-mono">CASO PRÁCTICO #${String(exp.id).padStart(2, '0')}</span>
+                  </div>
+
+                  <span class="text-[10px] font-bold text-slate-500 mt-1.5 uppercase tracking-wide">
+                    Situación Operativa
+                  </span>
+                </div>
+
+                ${isAudited 
+                  ? `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-2xl flex items-center justify-center p-3 pointer-events-none">
+                      <div class="stamp-audited bg-white/95 px-3 py-1.5 rounded-lg shadow-md text-center font-black text-xs uppercase tracking-wider flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                        <span>AUDITADO</span>
+                      </div>
+                    </div>`
+                  : `<div class="flex items-center justify-between text-[10px] font-bold text-amber-900/80 pt-1">
+                      <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        Secreto (6,0 pts)
+                      </span>
+                      <span class="group-hover:translate-x-1 transition-transform font-bold text-brand-blue">Abrir →</span>
+                    </div>`
+                }
+
+              </div>
+
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      renderCurrentAudit() {
+        const exp = this.getCurrentExpediente();
+        const isAudited = !!this.evaluations[exp.id];
+
+        document.getElementById('auditExpBadge').textContent = `CASO PRÁCTICO #${String(exp.id).padStart(2, '0')}`;
+        
+        const statusBadge = document.getElementById('auditStatusBadge');
+        const auditBtn = document.getElementById('quickAuditToggleBtn');
+
+        if (isAudited) {
+          statusBadge.textContent = "Auditado";
+          statusBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 uppercase tracking-wide";
+          
+          auditBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all cursor-pointer";
+          auditBtn.innerHTML = `
+            <svg class="w-4 h-4 text-emerald-100" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            <span>✓ Auditado (Quitar Sello)</span>
+          `;
+          auditBtn.title = "Clic para desmarcar el sello de auditado";
+        } else {
+          statusBadge.textContent = "Pendiente";
+          statusBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 uppercase tracking-wide";
+          
+          auditBtn.className = "bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer";
+          auditBtn.innerHTML = `
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Marcar como Auditado</span>
+          `;
+          auditBtn.title = "Sellar carpeta como auditada sin necesidad de calificar";
+        }
+
+        document.getElementById('auditClientTitle').textContent = exp.client;
+        document.getElementById('cardClientName').textContent = exp.client;
+        document.getElementById('cardClientMeta').textContent = exp.meta;
+        document.getElementById('cardSituation').textContent = exp.situation;
+        // Se muestra etiqueta neutral en la tarjeta izquierda para no revelar la respuesta de la Pregunta 1
+        document.getElementById('cardDocType').textContent = "Trámite Operativo";
+        document.getElementById('cardDocNumber').textContent = exp.docNumber;
+        document.getElementById('cardDocExtra').textContent = exp.docExtra || 'En trámite';
+
+        document.getElementById('auditQuestion1').textContent = exp.q1;
+        document.getElementById('auditQuestion2').textContent = exp.q2;
+
+        document.getElementById('auditSol1').textContent = exp.sol1;
+        document.getElementById('auditSol2').textContent = exp.sol2;
+
+        const idx = this.expedientes.findIndex(e => e.id === exp.id);
+        document.getElementById('auditPagingText').textContent = `${idx + 1} de ${this.expedientes.length}`;
+
+        const schemeKey = exp.docType in SCHEME_TEMPLATES ? exp.docType : 'WORKI';
+        document.getElementById('visualSchemeContainer').innerHTML = SCHEME_TEMPLATES[schemeKey] || SCHEME_TEMPLATES.WORKI;
+        document.getElementById('visualTagBadge').textContent = exp.docType.replace('_', ' ');
+
+        if (this.isEvaluatorDrawerOpen) {
+          this.syncEvaluatorDrawer(exp.id);
+        }
+      }
+
+      toggleOfficialSolution() {
+        if (this.isSolutionRevealed) {
+          this.hideOfficialSolution();
+        } else {
+          this.revealOfficialSolution();
+        }
+      }
+
+      revealOfficialSolution() {
+        this.isSolutionRevealed = true;
+        document.getElementById('solutionBox').classList.remove('hidden');
+        document.getElementById('solutionBtnText').textContent = 'Ocultar Solución';
+        document.getElementById('solutionBtnIcon').textContent = '✕';
+        playBeep(650, 'sine', 0.15);
+      }
+
+      hideOfficialSolution() {
+        this.isSolutionRevealed = false;
+        document.getElementById('solutionBox').classList.add('hidden');
+        document.getElementById('solutionBtnText').textContent = 'Revelar Solución Oficial';
+        document.getElementById('solutionBtnIcon').textContent = '👁';
+      }
+
+      changeDefaultTime(seconds) {
+        this.defaultDuration = parseInt(seconds);
+        this.resetTimer();
+      }
+
+      startTimer() {
+        if (this.isTimerRunning) return;
+        this.isTimerRunning = true;
+        playBeep(520, 'sine', 0.1);
+
+        document.getElementById('timerPlayBtn').classList.add('opacity-50');
+        document.getElementById('timerPauseBtn').classList.remove('opacity-50');
+
+        this.timerInterval = setInterval(() => {
+          this.timeLeft--;
+
+          if (this.timeLeft === 10) {
+            playBeep(620, 'square', 0.25);
+          }
+
+          if (this.timeLeft <= 0) {
+            this.timeLeft = 0;
+            this.pauseTimer();
+            playBeep(320, 'sawtooth', 0.5);
+          }
+
+          this.updateTimerDisplay();
+        }, 1000);
+      }
+
+      pauseTimer() {
+        this.isTimerRunning = false;
+        clearInterval(this.timerInterval);
+        document.getElementById('timerPlayBtn').classList.remove('opacity-50');
+        document.getElementById('timerPauseBtn').classList.add('opacity-50');
+      }
+
+      resetTimer() {
+        this.pauseTimer();
+        this.timeLeft = this.defaultDuration;
+        this.updateTimerDisplay();
+      }
+
+      updateTimerDisplay() {
+        const mins = Math.floor(this.timeLeft / 60);
+        const secs = this.timeLeft % 60;
+        const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        
+        const display = document.getElementById('timerDisplay');
+        display.textContent = formatted;
+
+        const bar = document.getElementById('timerProgressBar');
+        const percent = (this.timeLeft / this.defaultDuration) * 100;
+        bar.style.width = `${percent}%`;
+
+        if (this.timeLeft <= 10) {
+          display.className = "font-mono text-2xl font-black tracking-wider text-rose-400 animate-pulse";
+          bar.className = "h-full bg-rose-500 transition-all duration-300";
+        } else if (this.timeLeft <= 30) {
+          display.className = "font-mono text-2xl font-black tracking-wider text-amber-400";
+          bar.className = "h-full bg-amber-500 transition-all duration-300";
+        } else {
+          display.className = "font-mono text-2xl font-black tracking-wider text-emerald-400";
+          bar.className = "h-full bg-emerald-500 transition-all duration-300";
+        }
+      }
+
+      toggleEvaluatorDrawer() {
+        const drawer = document.getElementById('evaluatorDrawer');
+        const overlay = document.getElementById('evaluatorOverlay');
+        
+        this.isEvaluatorDrawerOpen = !this.isEvaluatorDrawerOpen;
+
+        if (this.isEvaluatorDrawerOpen) {
+          drawer.classList.remove('translate-x-full');
+          overlay.classList.remove('hidden');
+          this.syncEvaluatorDrawer(this.currentExpId);
+        } else {
+          drawer.classList.add('translate-x-full');
+          overlay.classList.add('hidden');
+        }
+      }
+
+      openEvaluatorForCurrent() {
+        if (!this.isEvaluatorDrawerOpen) {
+          this.toggleEvaluatorDrawer();
+        }
+        this.syncEvaluatorDrawer(this.currentExpId);
+      }
+
+      populateEvaluatorSelect() {
+        const select = document.getElementById('evaluatorExpSelect');
+        select.innerHTML = '';
+        this.expedientes.forEach(exp => {
+          const opt = document.createElement('option');
+          opt.value = exp.id;
+          opt.textContent = `Caso Práctico #${String(exp.id).padStart(2, '0')} - ${exp.client}`;
+          select.appendChild(opt);
+        });
+      }
+
+      onEvaluatorSelectExp(expId) {
+        this.syncEvaluatorDrawer(parseInt(expId));
+      }
+
+      syncEvaluatorDrawer(expId) {
+        const select = document.getElementById('evaluatorExpSelect');
+        select.value = expId;
+
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        const saved = this.evaluations[exp.id] || { student: '', p1: 0, p2: 0, total: 0, notes: '' };
+        document.getElementById('evalStudentName').value = saved.student || '';
+        document.getElementById('evalNotes').value = saved.notes || '';
+
+        this.setScoreP1(saved.p1 || 0);
+        this.setScoreP2(saved.p2 || 0);
+      }
+
+      setScoreP1(val) {
+        this.currentP1 = parseFloat(val);
+        document.getElementById('evalScoreP1Badge').textContent = `${this.currentP1.toFixed(1).replace('.', ',')} / 2,0`;
+        
+        document.querySelectorAll('.score-p1-btn').forEach(btn => {
+          const btnVal = parseFloat(btn.textContent.replace(',', '.'));
+          if (btnVal === this.currentP1) {
+            btn.className = 'score-p1-btn py-1.5 rounded-lg border-2 border-brand-blue text-xs font-black bg-brand-blue text-white shadow-2xs';
+          } else {
+            btn.className = 'score-p1-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100';
+          }
+        });
+
+        this.updateDrawerTotal();
+      }
+
+      setScoreP2(val) {
+        this.currentP2 = parseFloat(val);
+        document.getElementById('evalScoreP2Badge').textContent = `${this.currentP2.toFixed(1).replace('.', ',')} / 4,0`;
+
+        document.querySelectorAll('.score-p2-btn').forEach(btn => {
+          const btnVal = parseFloat(btn.textContent.replace(',', '.'));
+          if (btnVal === this.currentP2) {
+            btn.className = 'score-p2-btn py-1.5 rounded-lg border-2 border-brand-orange text-xs font-black bg-brand-orange text-white shadow-2xs';
+          } else {
+            btn.className = 'score-p2-btn py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white text-slate-700 hover:bg-slate-100';
+          }
+        });
+
+        this.updateDrawerTotal();
+      }
+
+      updateDrawerTotal() {
+        const total = (this.currentP1 || 0) + (this.currentP2 || 0);
+        document.getElementById('evalTotalScore').textContent = `${total.toFixed(1).replace('.', ',')} / 6,0`;
+      }
+
+      saveCurrentEvaluation() {
+        const select = document.getElementById('evaluatorExpSelect');
+        const expId = parseInt(select.value);
+        const student = document.getElementById('evalStudentName').value.trim();
+        const notes = document.getElementById('evalNotes').value.trim();
+        const p1 = this.currentP1 || 0;
+        const p2 = this.currentP2 || 0;
+        const total = p1 + p2;
+
+        this.evaluations[expId] = {
+          student: student || `Estudiante Caso #${expId}`,
+          p1,
+          p2,
+          total,
+          notes,
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        this.saveEvaluationsToStorage();
+        playBeep(880, 'sine', 0.2);
+        this.showToast(`¡Caso Práctico #${expId} calificado correctamente!`);
+
+        setTimeout(() => {
+          this.toggleEvaluatorDrawer();
+          this.renderCurrentAudit();
+        }, 500);
+      }
+
+      clearCurrentEvaluation() {
+        const select = document.getElementById('evaluatorExpSelect');
+        const expId = parseInt(select.value);
+
+        delete this.evaluations[expId];
+        this.saveEvaluationsToStorage();
+
+        document.getElementById('evalStudentName').value = '';
+        document.getElementById('evalNotes').value = '';
+        this.setScoreP1(0);
+        this.setScoreP2(0);
+        this.renderCurrentAudit();
+        this.showToast(`Calificación del Caso #${expId} eliminada`);
+      }
+
+      updateStats() {
+        const totalExp = this.expedientes.length;
+        const auditedCount = Object.keys(this.evaluations).length;
+        const pendingCount = totalExp - auditedCount;
+
+        document.getElementById('statTotalExp').textContent = totalExp;
+        document.getElementById('statAuditedExp').textContent = auditedCount;
+        document.getElementById('statPendingExp').textContent = pendingCount;
+        document.getElementById('headerAuditedBadge').textContent = `${auditedCount}/${totalExp}`;
+
+        let avg = '--';
+        const gradedEvals = Object.values(this.evaluations).filter(ev => !ev.auditedOnly || ev.total > 0);
+        if (gradedEvals.length > 0) {
+          const sum = gradedEvals.reduce((acc, curr) => acc + (curr.total || 0), 0);
+          avg = (sum / gradedEvals.length).toFixed(2);
+        }
+        document.getElementById('statAverageScore').textContent = `${avg} / 6.0`;
+      }
+
+      showSummaryModal() {
+        this.updateStats();
+        const tbody = document.getElementById('summaryTableBody');
+        tbody.innerHTML = '';
+
+        this.expedientes.forEach(exp => {
+          const ev = this.evaluations[exp.id];
+          const isAudited = !!ev;
+
+          const row = document.createElement('tr');
+          row.className = "hover:bg-slate-50 transition-colors";
+          row.innerHTML = `
+            <td class="p-3 font-mono font-black text-slate-900">#${String(exp.id).padStart(2, '0')}</td>
+            <td class="p-3 font-bold text-slate-800">${ev ? ev.student : '<span class="text-slate-400 italic font-normal">Pendiente</span>'}</td>
+            <td class="p-3 text-slate-600 font-medium">${exp.client}</td>
+            <td class="p-3 text-center font-mono font-bold text-brand-blue">${ev ? (ev.auditedOnly && ev.total === 0 ? '-' : ev.p1.toFixed(1)) : '-'}</td>
+            <td class="p-3 text-center font-mono font-bold text-brand-orange">${ev ? (ev.auditedOnly && ev.total === 0 ? '-' : ev.p2.toFixed(1)) : '-'}</td>
+            <td class="p-3 text-center font-mono font-black ${ev && ev.total >= 3.6 ? 'text-emerald-600' : 'text-slate-800'}">
+              ${ev ? (ev.auditedOnly && ev.total === 0 ? '<span class="text-emerald-600 text-[10px] font-bold">Auditado</span>' : ev.total.toFixed(1)) : '-'}
+            </td>
+            <td class="p-3 text-center">
+              ${isAudited 
+                ? '<span class="inline-block px-2 py-0.5 text-[10px] font-black rounded bg-emerald-100 text-emerald-800 uppercase">Auditado</span>' 
+                : '<span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-500 uppercase">Pendiente</span>'}
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        const auditedCount = Object.keys(this.evaluations).length;
+        document.getElementById('summaryModalAudited').textContent = `${auditedCount}/${this.expedientes.length}`;
+        
+        let avg = '--';
+        const gradedEvals = Object.values(this.evaluations).filter(ev => !ev.auditedOnly || ev.total > 0);
+        if (gradedEvals.length > 0) {
+          const sum = gradedEvals.reduce((acc, curr) => acc + (curr.total || 0), 0);
+          avg = (sum / gradedEvals.length).toFixed(2);
+        }
+        document.getElementById('summaryModalAvg').textContent = `${avg} / 6.0`;
+
+        document.getElementById('summaryModal').classList.remove('hidden');
+      }
+
+      closeSummaryModal() {
+        document.getElementById('summaryModal').classList.add('hidden');
+      }
+
+      exportToCSV() {
+        let csv = "Caso,Estudiante,Cliente/Trabajador,Tramite,Herramienta,P1 (/2.0),P2 (/4.0),Total (/6.0),Estado,Observaciones\n";
+
+        this.expedientes.forEach(exp => {
+          const ev = this.evaluations[exp.id];
+          const student = ev ? `"${ev.student.replace(/"/g, '""')}"` : '""';
+          const client = `"${exp.client.replace(/"/g, '""')}"`;
+          const p1 = ev ? ev.p1.toFixed(1) : '0';
+          const p2 = ev ? ev.p2.toFixed(1) : '0';
+          const total = ev ? ev.total.toFixed(1) : '0';
+          const status = ev ? 'Auditado' : 'Pendiente';
+          const notes = ev ? `"${(ev.notes || '').replace(/"/g, '""')}"` : '""';
+
+          csv += `${exp.id},${student},${client},"${exp.docNumber}","${exp.docType}",${p1},${p2},${total},${status},${notes}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Calificaciones_Herramientas_SOEX_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // ---------------- MARCAR / DESMARCAR AUDITADO DIRECTO ----------------
+      toggleAuditStatus(expId = this.currentExpId) {
+        const id = parseInt(expId);
+        const exp = this.expedientes.find(e => e.id === id);
+        if (!exp) return;
+
+        if (this.evaluations[id]) {
+          delete this.evaluations[id];
+          this.showToast(`Caso Práctico #${String(id).padStart(2, '0')} devuelto a Pendiente`);
+          playBeep(420, 'triangle', 0.15);
+        } else {
+          this.evaluations[id] = {
+            student: 'Participante (Auditado)',
+            p1: 0,
+            p2: 0,
+            total: 0,
+            notes: 'Auditado en sesión',
+            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            auditedOnly: true
+          };
+          this.showToast(`Caso Práctico #${String(id).padStart(2, '0')} sellado como AUDITADO`);
+          playBeep(880, 'sine', 0.2);
+        }
+
+        this.saveEvaluationsToStorage();
+        if (this.currentExpId === id) {
+          this.renderCurrentAudit();
+        }
+        if (!document.getElementById('bankModal').classList.contains('hidden')) {
+          this.renderBankList();
+        }
+      }
+
+      // ---------------- GESTIÓN DEL BANCO DE EXPEDIENTES ----------------
+      openBankModal() {
+        this.renderBankList();
+        document.getElementById('bankModal').classList.remove('hidden');
+      }
+
+      closeBankModal() {
+        document.getElementById('bankModal').classList.add('hidden');
+      }
+
+      renderBankList() {
+        const container = document.getElementById('bankExpedientesList');
+        container.innerHTML = '';
+        document.getElementById('bankTotalCount').textContent = this.expedientes.length;
+
+        if (this.expedientes.length === 0) {
+          container.innerHTML = '<div class="p-8 text-center text-slate-400 font-medium">No hay casos en el banco. Añade uno nuevo o restaura los originales.</div>';
+          return;
+        }
+
+        this.expedientes.forEach((exp) => {
+          const isAudited = !!this.evaluations[exp.id];
+          const item = document.createElement('div');
+          item.className = "p-3.5 bg-slate-50 hover:bg-white rounded-xl border border-slate-200 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs";
+          
+          item.innerHTML = `
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="font-mono text-xs font-black bg-slate-900 text-white px-2.5 py-1 rounded-lg shrink-0">
+                #${String(exp.id).padStart(2, '0')}
+              </span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-extrabold text-slate-900 text-xs sm:text-sm truncate">${exp.client}</h4>
+                  <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-brand-blue uppercase">${exp.docNumber}</span>
+                  ${isAudited ? '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 uppercase">Auditado</span>' : '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 uppercase">Pendiente</span>'}
+                </div>
+                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">${exp.situation}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button onclick="app.toggleAuditStatus(${exp.id})" class="px-2.5 py-1.5 ${isAudited ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border-slate-300'} border font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Alternar sello de auditado">
+                <span>${isAudited ? '✓ Auditado' : '○ Sellar'}</span>
+              </button>
+
+              <button onclick="app.openEditExpModal(${exp.id})" class="px-2.5 py-1.5 bg-white hover:bg-blue-50 text-brand-blue border border-blue-200 font-bold rounded-lg text-xs flex items-center gap-1 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <span>Modificar</span>
+              </button>
+              
+              <button onclick="app.deleteExpediente(${exp.id})" class="px-2.5 py-1.5 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Quitar este caso del tablero">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <span>Quitar</span>
+              </button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      deleteExpediente(expId) {
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        if (confirm(`¿Estás seguro de que deseas quitar el Caso Práctico #${String(expId).padStart(2, '0')} (${exp.client})? El tablero tendrá una carpeta menos.`)) {
+          this.expedientes = this.expedientes.filter(e => e.id !== expId);
+          delete this.evaluations[expId];
+          
+          this.saveExpedientesToStorage();
+          this.saveEvaluationsToStorage();
+          this.populateEvaluatorSelect();
+          this.renderBankList();
+          this.renderFoldersGrid();
+          this.updateStats();
+
+          if (this.currentExpId === expId) {
+            this.showHomeView();
+          }
+
+          this.showToast(`Caso Práctico #${expId} eliminado del banco`);
+          playBeep(380, 'sine', 0.2);
+        }
+      }
+
+      openEditExpModal(expId) {
+        const exp = this.expedientes.find(e => e.id === expId);
+        if (!exp) return;
+
+        document.getElementById('editExpId').value = exp.id;
+        document.getElementById('editExpIdBadge').textContent = `#${String(exp.id).padStart(2, '0')}`;
+        document.getElementById('editClientName').value = exp.client;
+        document.getElementById('editClientMeta').value = exp.meta || '';
+        document.getElementById('editSituation').value = exp.situation || '';
+        document.getElementById('editDocType').value = exp.docType || 'WORKI';
+        document.getElementById('editDocNumber').value = exp.docNumber || '';
+        document.getElementById('editDocExtra').value = exp.docExtra || '';
+        document.getElementById('editQuestion1').value = exp.q1 || '';
+        document.getElementById('editSol1').value = exp.sol1 || '';
+        document.getElementById('editQuestion2').value = exp.q2 || '';
+        document.getElementById('editSol2').value = exp.sol2 || '';
+
+        document.getElementById('editExpModal').classList.remove('hidden');
+      }
+
+      closeEditExpModal() {
+        document.getElementById('editExpModal').classList.add('hidden');
+      }
+
+      saveEditedExpediente() {
+        const id = parseInt(document.getElementById('editExpId').value);
+        const exp = this.expedientes.find(e => e.id === id);
+        if (!exp) return;
+
+        const client = document.getElementById('editClientName').value.trim();
+        const q1 = document.getElementById('editQuestion1').value.trim();
+        const q2 = document.getElementById('editQuestion2').value.trim();
+
+        if (!client || !q1 || !q2) {
+          alert('Por favor completa al menos el Nombre del Cliente y las dos Preguntas.');
+          return;
+        }
+
+        exp.client = client;
+        exp.meta = document.getElementById('editClientMeta').value.trim();
+        exp.situation = document.getElementById('editSituation').value.trim();
+        exp.docType = document.getElementById('editDocType').value;
+        exp.docNumber = document.getElementById('editDocNumber').value.trim();
+        exp.docExtra = document.getElementById('editDocExtra').value.trim();
+        exp.q1 = q1;
+        exp.sol1 = document.getElementById('editSol1').value.trim();
+        exp.q2 = q2;
+        exp.sol2 = document.getElementById('editSol2').value.trim();
+
+        this.saveExpedientesToStorage();
+        this.populateEvaluatorSelect();
+        this.renderBankList();
+        this.renderFoldersGrid();
+        
+        if (this.currentExpId === id) {
+          this.renderCurrentAudit();
+        }
+
+        this.closeEditExpModal();
+        this.showToast(`¡Caso Práctico #${id} actualizado correctamente!`);
+        playBeep(700, 'sine', 0.15);
+      }
+
+      restoreDefaultExpedientes() {
+        if (confirm("¿Deseas restaurar la lista predeterminada con los 16 casos prácticos oficiales completos?")) {
+          this.expedientes = JSON.parse(JSON.stringify(DEFAULT_EXPEDIENTES));
+          this.evaluations = {};
+          this.saveExpedientesToStorage();
+          this.saveEvaluationsToStorage();
+          this.populateEvaluatorSelect();
+          this.renderBankList();
+          this.renderFoldersGrid();
+          this.updateStats();
+          this.showToast("Banco restaurado a los 16 casos prácticos originales");
+          playBeep(520, 'sine', 0.2);
+        }
+      }
+
+      openRestoreModal() {
+        document.getElementById('restoreConfirmModal').classList.remove('hidden');
+      }
+
+      closeRestoreModal() {
+        document.getElementById('restoreConfirmModal').classList.add('hidden');
+      }
+
+      executeRestoreAll() {
+        this.evaluations = {};
+        this.saveEvaluationsToStorage();
+        this.closeRestoreModal();
+        this.showToast('¡Tablero y carpetas restaurados a su estado inicial!');
+        playBeep(440, 'triangle', 0.25);
+      }
+
+      openNewExpedienteModal() {
+        const modal = document.getElementById('newExpModal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('newClientName').focus();
+        }, 50);
+      }
+
+      closeNewExpedienteModal() {
+        document.getElementById('newExpModal').classList.add('hidden');
+      }
+
+      saveNewExpediente() {
+        const client = document.getElementById('newClientName').value.trim();
+        const meta = document.getElementById('newClientMeta').value.trim();
+        const situation = document.getElementById('newSituation').value.trim();
+        const docType = document.getElementById('newDocType').value;
+        const docNumber = document.getElementById('newDocNumber').value.trim();
+        const docExtra = document.getElementById('newDocExtra').value.trim();
+        const q1 = document.getElementById('newQuestion1').value.trim();
+        const sol1 = document.getElementById('newSol1').value.trim();
+        const q2 = document.getElementById('newQuestion2').value.trim();
+        const sol2 = document.getElementById('newSol2').value.trim();
+
+        if (!client || !q1 || !q2) {
+          alert('Por favor completa al menos el Nombre del Cliente y las dos Preguntas Técnicas.');
+          return;
+        }
+
+        const newId = this.expedientes.length > 0 ? Math.max(...this.expedientes.map(e => e.id)) + 1 : 1;
+
+        const newExp = {
+          id: newId,
+          client,
+          meta: meta || `Cliente • Caso Práctico #${String(newId).padStart(2, '0')}`,
+          situation: situation || 'Situación operativa diaria en gestoría.',
+          docType,
+          docNumber: docNumber || 'Gestión Operativa',
+          docExtra: docExtra || 'En trámite',
+          q1,
+          sol1: sol1 || 'Respuesta técnica oficial homologada.',
+          q2,
+          sol2: sol2 || 'Respuesta técnica oficial homologada.'
+        };
+
+        this.expedientes.push(newExp);
+        this.saveExpedientesToStorage();
+        this.populateEvaluatorSelect();
+        this.renderFoldersGrid();
+        this.updateStats();
+
+        document.getElementById('newClientName').value = '';
+        document.getElementById('newClientMeta').value = '';
+        document.getElementById('newSituation').value = '';
+        document.getElementById('newDocNumber').value = '';
+        document.getElementById('newDocExtra').value = '';
+        document.getElementById('newSol1').value = '';
+        document.getElementById('newSol2').value = '';
+
+        this.closeNewExpedienteModal();
+        this.showToast(`¡Caso Práctico #${newId} registrado con éxito!`);
+        playBeep(750, 'sine', 0.2);
+      }
+    }
+
+    let app;
+    window.addEventListener('DOMContentLoaded', () => {
+      app = new AppController();
+    });
+  </script>
+
+</body>
+</html>
