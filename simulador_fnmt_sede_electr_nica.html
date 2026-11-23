@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sede Electrónica - FNMT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fnmtDarkBlue: '#0b3d6e',
+                        fnmtHoverBlue: '#155799',
+                        fnmtBannerBlue: '#004b87',
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Fondo tecnológico simulado para el banner central */
+        .tech-pattern {
+            background-color: #004b87;
+            background-image: radial-gradient(#155799 1px, transparent 1px), radial-gradient(#155799 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            position: relative;
+        }
+        .tech-pattern::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(0,75,135,0.9) 0%, rgba(0,75,135,0.4) 50%, rgba(0,75,135,0.9) 100%);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-gray-800 overflow-x-hidden">
+
+    <!-- Cabecera Superior Blanca -->
+    <header class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shadow-sm z-20 relative">
+        <!-- Izquierda: Logo -->
+        <div class="flex items-center gap-3 w-1/4">
+            <div class="relative flex flex-col items-center justify-center text-fnmtDarkBlue">
+                <i class="fa-solid fa-crown text-[10px] absolute -top-1"></i>
+                <span class="font-serif text-4xl font-bold leading-none">M</span>
+            </div>
+            <div class="flex flex-col justify-center leading-tight">
+                <span class="font-bold text-sm text-fnmtDarkBlue mb-0.5">Sede Electrónica</span>
+                <span class="text-[10px] text-gray-600">Real Casa de la Moneda</span>
+                <span class="text-[10px] text-gray-600">Fábrica Nacional</span>
+                <span class="text-[10px] text-gray-600">de Moneda y Timbre</span>
+            </div>
+        </div>
+
+        <!-- Centro: Navegación de Iconos -->
+        <nav class="flex items-end justify-center gap-6 w-2/4 text-[10px] text-gray-600 font-medium">
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-crown text-lg"></i><span>FNMT</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-rotate text-lg"></i><span>Ceres</span>
+            </a>
+            <a href="#" class="flex flex-col items-center text-fnmtDarkBlue font-bold gap-1 relative pb-1">
+                <i class="fa-solid fa-shield-halved text-lg"></i><span>Sede Electrónica</span>
+                <div class="absolute bottom-0 w-full h-0.5 bg-fnmtDarkBlue"></div>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-building-columns text-lg"></i><span>Museo Casa de la Moneda</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-scale-balanced text-lg"></i><span>SIAEN</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-e text-lg"></i><span>Escuela de Grabado</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
+                <i class="fa-solid fa-shop text-lg"></i><span>Tienda Virtual</span>
+            </a>
+        </nav>
+
+        <!-- Derecha: Utilidades -->
+        <div class="flex items-center justify-end gap-5 w-1/4 text-xs text-gray-700 font-medium">
+            <i class="fa-solid fa-magnifying-glass cursor-pointer hover:text-fnmtDarkBlue"></i>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="current-date">--/--/----</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock"></i>
+                <span id="current-time">--h : --m : --s</span>
+            </div>
+            <div class="flex items-center gap-1 cursor-pointer hover:text-fnmtDarkBlue">
+                <i class="fa-solid fa-globe"></i>
+                <span>ES <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal (Sidebar + Contenido) -->
+    <div class="flex flex-1">
+        
+        <!-- Menú Lateral Izquierdo -->
+        <aside class="w-[260px] bg-fnmtDarkBlue text-white flex-shrink-0 z-10 min-h-[calc(100vh-140px)] shadow-lg relative">
+            <ul class="text-sm font-medium">
+                <!-- Ítem Activo (Inicio) -->
+                <li class="relative border-b border-[#1c4d7f] cursor-pointer bg-[#155799]">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+                    <div class="px-5 py-3">INICIO</div>
+                </li>
+                <!-- Ítems Desplegables -->
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                    <span>Cert. Electrónico Ciudadano</span><span class="font-mono text-lg leading-none">+</span>
+                </li>
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                    <span>Cert. Electrónico Empresa</span><span class="font-mono text-lg leading-none">+</span>
+                </li>
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                    <span>Cert. Electrónico Sector Público</span><span class="font-mono text-lg leading-none">+</span>
+                </li>
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                    <span>Soporte Técnico</span><span class="font-mono text-lg leading-none">+</span>
+                </li>
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                    <span>Trámites</span><span class="font-mono text-lg leading-none">+</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Área de Contenido Principal -->
+        <main class="flex-1 flex flex-col bg-white">
+            
+            <!-- Banner Hero "SEDE ELECTRÓNICA" -->
+            <div class="tech-pattern h-36 w-full flex items-center justify-center shadow-inner">
+                <div class="relative z-10 flex flex-col items-center">
+                    <!-- Marca de agua 'M' difuminada detrás del texto -->
+                    <div class="absolute text-[120px] font-serif text-white opacity-10 -top-8 font-bold select-none">M</div>
+                    <h1 class="text-white text-3xl font-bold tracking-[0.2em] drop-shadow-lg z-20 flex items-center gap-4">
+                        <i class="fa-regular fa-id-card opacity-70"></i>
+                        SEDE ELECTRÓNICA
+                        <i class="fa-solid fa-mobile-screen opacity-70"></i>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Sección de Tarjetas -->
+            <div class="p-10 mx-auto max-w-6xl w-full">
+                
+                <!-- Título -->
+                <div class="text-center mb-10">
+                    <h2 class="text-[1.35rem] text-gray-800 font-medium">Información Destacada</h2>
+                    <div class="w-8 h-[3px] bg-fnmtDarkBlue mx-auto mt-3"></div>
+                </div>
+
+                <!-- Grid de 8 Bloques -->
+                <div class="grid grid-cols-4 gap-x-5 gap-y-6">
+                    
+                    <!-- Tarjeta 1 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="App Movil" class="w-full h-full object-cover opacity-90">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">App Móvil</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=400&q=80" alt="Video Identificacion" class="w-full h-full object-cover opacity-90">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">Vídeo Identificación</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Ciudadano" class="w-full h-full object-cover opacity-90">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">Ciudadano</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=400&q=80" alt="Empresa" class="w-full h-full object-cover opacity-90">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">Empresa</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 5 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 w-full overflow-hidden relative bg-black">
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=400&q=80" alt="Componente" class="w-full h-full object-cover opacity-70">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">Componente</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 6 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-[#004b87] w-full flex items-center justify-center text-white text-3xl">
+                            <i class="fa-solid fa-laptop-file"></i>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[11px] text-gray-600 mb-0.5">Verifica el estado de tu</span>
+                            <span class="text-[13px] font-bold text-gray-900 leading-none">Certificado Digital</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 7 -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
+                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80" alt="Noticias" class="w-full h-full object-cover opacity-90">
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-[13px] font-bold text-gray-900 leading-none mt-2">Noticias</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 8 (Portal Transparencia) -->
+                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col items-center justify-center h-36 p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="grid grid-cols-2 gap-0.5 w-6 h-6">
+                                <div class="bg-cyan-500 rounded-sm"></div>
+                                <div class="bg-cyan-500 rounded-sm"></div>
+                                <div class="bg-cyan-500 rounded-sm"></div>
+                                <div class="bg-white"></div>
+                            </div>
+                            <div class="flex flex-col leading-none">
+                                <span class="text-[10px] text-gray-500">portal de la</span>
+                                <span class="text-lg text-cyan-600 font-light tracking-tight">transparencia</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Banner de Cookies Inferior -->
+    <div class="bg-[#1c3c5f] text-white p-4 w-full flex justify-between items-center z-50 fixed bottom-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div class="pr-8">
+            <h4 class="font-bold text-xs mb-1">INFORMACIÓN SOBRE COOKIES</h4>
+            <p class="text-[11px] leading-tight text-gray-200">
+                Este sitio web emplea elementos técnicos de almacenamiento y recuperación de datos (cookies) propios y de terceros orientados a optimizar la experiencia de usuario, permitir funcionalidades básicas y registrar preferencias operativas durante su sesión en el portal. Al continuar con la navegación, se asume su conformidad con estas políticas de uso. 
+                <a href="#" class="underline hover:text-white font-bold ml-1">Más Información.</a>
+            </p>
+        </div>
+        <button class="bg-[#3b82f6] hover:bg-blue-600 text-white text-[11px] font-bold px-8 py-2.5 rounded shadow-sm transition whitespace-nowrap">
+            ACEPTO
+        </button>
+    </div>
+
+    <!-- Padding inferior extra para que el footer fijo no tape contenido -->
+    <div class="h-20 bg-white"></div>
+
+    <script>
+        // Script para reloj dinámico y fecha en cabecera
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Formatear Fecha (DD/MM/YYYY)
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('current-date').textContent = `${day}/${month}/${year}`;
+            
+            // Formatear Hora (HHh : MMm : SSs)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}h : ${minutes}m : ${seconds}s`;
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); // Ejecución inicial inmediata
+    </script>
+</body>
+</html>
