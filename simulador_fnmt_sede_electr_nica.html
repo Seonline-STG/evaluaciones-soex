@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sede Electrónica - FNMT</title>
+    <title>Sede Electrónica - Simulador FNMT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -23,7 +23,6 @@
         }
     </script>
     <style>
-        /* Fondo tecnológico simulado para el banner central */
         .tech-pattern {
             background-color: #004b87;
             background-image: radial-gradient(#155799 1px, transparent 1px), radial-gradient(#155799 1px, transparent 1px);
@@ -38,15 +37,16 @@
             background: linear-gradient(90deg, rgba(0,75,135,0.9) 0%, rgba(0,75,135,0.4) 50%, rgba(0,75,135,0.9) 100%);
             z-index: 1;
         }
+        .menu-transition { transition: max-height 0.3s ease-in-out; overflow: hidden; max-height: 0; }
+        .menu-open { max-height: 500px; }
     </style>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen text-gray-800 overflow-x-hidden">
 
     <!-- Cabecera Superior Blanca -->
     <header class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shadow-sm z-20 relative">
-        <!-- Izquierda: Logo -->
         <div class="flex items-center gap-3 w-1/4">
-            <div class="relative flex flex-col items-center justify-center text-fnmtDarkBlue">
+            <div class="relative flex flex-col items-center justify-center text-fnmtDarkBlue cursor-pointer" onclick="reiniciarSimulador()">
                 <i class="fa-solid fa-crown text-[10px] absolute -top-1"></i>
                 <span class="font-serif text-4xl font-bold leading-none">M</span>
             </div>
@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <!-- Centro: Navegación de Iconos -->
+        <!-- Navegación de Iconos Central -->
         <nav class="flex items-end justify-center gap-6 w-2/4 text-[10px] text-gray-600 font-medium">
             <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
                 <i class="fa-solid fa-crown text-lg"></i><span>FNMT</span>
@@ -71,74 +71,69 @@
                 <div class="absolute bottom-0 w-full h-0.5 bg-fnmtDarkBlue"></div>
             </a>
             <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
-                <i class="fa-solid fa-building-columns text-lg"></i><span>Museo Casa de la Moneda</span>
-            </a>
-            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
-                <i class="fa-solid fa-scale-balanced text-lg"></i><span>SIAEN</span>
-            </a>
-            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
-                <i class="fa-solid fa-e text-lg"></i><span>Escuela de Grabado</span>
-            </a>
-            <a href="#" class="flex flex-col items-center hover:text-fnmtDarkBlue transition gap-1">
-                <i class="fa-solid fa-shop text-lg"></i><span>Tienda Virtual</span>
+                <i class="fa-solid fa-building-columns text-lg"></i><span>Museo</span>
             </a>
         </nav>
 
-        <!-- Derecha: Utilidades -->
+        <!-- Utilidades Derecha -->
         <div class="flex items-center justify-end gap-5 w-1/4 text-xs text-gray-700 font-medium">
-            <i class="fa-solid fa-magnifying-glass cursor-pointer hover:text-fnmtDarkBlue"></i>
-            <div class="flex items-center gap-1.5">
-                <i class="fa-regular fa-calendar"></i>
-                <span id="current-date">--/--/----</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <i class="fa-regular fa-clock"></i>
-                <span id="current-time">--h : --m : --s</span>
-            </div>
-            <div class="flex items-center gap-1 cursor-pointer hover:text-fnmtDarkBlue">
-                <i class="fa-solid fa-globe"></i>
-                <span>ES <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></span>
-            </div>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div class="flex items-center gap-1.5"><i class="fa-regular fa-calendar"></i><span id="current-date"></span></div>
+            <div class="flex items-center gap-1.5"><i class="fa-regular fa-clock"></i><span id="current-time"></span></div>
         </div>
     </header>
+
+    <!-- Banner Modo Simulador -->
+    <div class="bg-yellow-100 border-b border-yellow-300 text-yellow-800 px-4 py-1.5 text-xs text-center font-bold">
+        <i class="fa-solid fa-triangle-exclamation mr-1"></i> ENTORNO DE SIMULACIÓN Y PRÁCTICA (GESTORÍA) - NAVEGUE POR EL MENÚ LATERAL
+    </div>
 
     <!-- Contenedor Principal (Sidebar + Contenido) -->
     <div class="flex flex-1">
         
         <!-- Menú Lateral Izquierdo -->
-        <aside class="w-[260px] bg-fnmtDarkBlue text-white flex-shrink-0 z-10 min-h-[calc(100vh-140px)] shadow-lg relative">
+        <aside class="w-[260px] bg-fnmtDarkBlue text-white flex-shrink-0 z-10 min-h-[calc(100vh-140px)] shadow-lg select-none">
             <ul class="text-sm font-medium">
-                <!-- Ítem Activo (Inicio) -->
-                <li class="relative border-b border-[#1c4d7f] cursor-pointer bg-[#155799]">
+                <li class="relative border-b border-[#1c4d7f] cursor-pointer bg-[#155799]" onclick="mostrarVista('vista-inicio')">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
                     <div class="px-5 py-3">INICIO</div>
                 </li>
-                <!-- Ítems Desplegables -->
-                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
+                
+                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center hover:bg-[#155799] transition">
                     <span>Cert. Electrónico Ciudadano</span><span class="font-mono text-lg leading-none">+</span>
                 </li>
-                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
-                    <span>Cert. Electrónico Empresa</span><span class="font-mono text-lg leading-none">+</span>
-                </li>
-                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
-                    <span>Cert. Electrónico Sector Público</span><span class="font-mono text-lg leading-none">+</span>
-                </li>
-                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
-                    <span>Soporte Técnico</span><span class="font-mono text-lg leading-none">+</span>
-                </li>
-                <li class="border-b border-[#1c4d7f] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#155799] transition">
-                    <span>Trámites</span><span class="font-mono text-lg leading-none">+</span>
+
+                <!-- Empresa (Menú Desplegable Activo) -->
+                <li class="border-b border-[#1c4d7f] flex flex-col cursor-pointer transition">
+                    <div class="px-5 py-3 flex justify-between items-center hover:bg-[#155799]" onclick="toggleMenu('menu-empresa')">
+                        <span>Cert. Electrónico Empresa</span><span id="icon-empresa" class="font-mono text-lg leading-none">+</span>
+                    </div>
+                    <ul id="menu-empresa" class="menu-transition bg-[#082a4d] text-xs">
+                        <!-- Adm Único -->
+                        <li>
+                            <div class="px-6 py-2 border-b border-[#1c4d7f] flex justify-between items-center hover:bg-[#155799]" onclick="toggleMenu('menu-admin')">
+                                <span>Administrador Único o Solidario</span><span id="icon-admin" class="font-mono text-lg leading-none">+</span>
+                            </div>
+                            <ul id="menu-admin" class="menu-transition bg-[#061d36] text-[11px] text-gray-300">
+                                <li class="px-8 py-2 hover:text-white hover:bg-[#155799]" onclick="iniciarSolicitud()">1. Solicitud con certificado</li>
+                                <li class="px-8 py-2 hover:text-white hover:bg-[#155799]" onclick="mostrarVista('vista-descarga')">2. Descargar Certificado</li>
+                            </ul>
+                        </li>
+                        <!-- Persona Jurídica (Trampa PRD) -->
+                        <li class="px-6 py-2 border-b border-[#1c4d7f] hover:bg-red-900 transition" onclick="mostrarErrorTrampa()">
+                            <span>Representante de Persona Jurídica</span>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </aside>
 
         <!-- Área de Contenido Principal -->
-        <main class="flex-1 flex flex-col bg-white">
+        <main class="flex-1 flex flex-col bg-white pb-20 relative">
             
             <!-- Banner Hero "SEDE ELECTRÓNICA" -->
             <div class="tech-pattern h-36 w-full flex items-center justify-center shadow-inner">
                 <div class="relative z-10 flex flex-col items-center">
-                    <!-- Marca de agua 'M' difuminada detrás del texto -->
                     <div class="absolute text-[120px] font-serif text-white opacity-10 -top-8 font-bold select-none">M</div>
                     <h1 class="text-white text-3xl font-bold tracking-[0.2em] drop-shadow-lg z-20 flex items-center gap-4">
                         <i class="fa-regular fa-id-card opacity-70"></i>
@@ -148,152 +143,338 @@
                 </div>
             </div>
 
-            <!-- Sección de Tarjetas -->
+            <!-- Contenedor de Vistas -->
             <div class="p-10 mx-auto max-w-6xl w-full">
+
+                <!-- AVISO LEGAL OBLIGATORIO (Se muestra al entrar a Empresa) -->
+                <div id="aviso-legal" class="hidden mb-6 bg-[#ffffe0] border border-[#e6cc00] p-4 text-[13px] rounded shadow-sm">
+                    <span class="font-bold text-[#b30000]"><i class="fa-solid fa-circle-exclamation"></i> Importante:</span> 
+                    Los representantes que sean administrador único/solidario de la entidad <strong>NO deben solicitar certificado de representante de persona jurídica</strong>. Deben solicitar el certificado de administrador único o solidario.
+                </div>
                 
-                <!-- Título -->
-                <div class="text-center mb-10">
-                    <h2 class="text-[1.35rem] text-gray-800 font-medium">Información Destacada</h2>
-                    <div class="w-8 h-[3px] bg-fnmtDarkBlue mx-auto mt-3"></div>
+                <!-- VISTA 1: INICIO (Grid Original de 8 Bloques) -->
+                <div id="vista-inicio" class="block">
+                    <div class="text-center mb-10">
+                        <h2 class="text-[1.35rem] text-gray-800 font-medium">Información Destacada</h2>
+                        <div class="w-8 h-[3px] bg-fnmtDarkBlue mx-auto mt-3"></div>
+                    </div>
+
+                    <!-- Tarjetas inactivas visualmente para forzar uso del menú lateral -->
+                    <div class="grid grid-cols-4 gap-x-5 gap-y-6">
+                        <!-- Tarjeta 1 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="App" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">App Móvil</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 2 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">Vídeo Identificación</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 3 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Ciudadano" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">Ciudadano</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 4 (Empresa) -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed" title="Utilice el menú lateral izquierdo para realizar el trámite">
+                            <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=400&q=80" alt="Empresa" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">Empresa</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 5 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-black w-full overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=400&q=80" alt="Componente" class="w-full h-full object-cover opacity-70">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">Componente</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 6 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-[#004b87] w-full flex items-center justify-center text-white text-3xl">
+                                <i class="fa-solid fa-laptop-file"></i>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[11px] text-gray-600 mb-0.5">Verifica el estado de tu</span>
+                                <span class="text-[13px] font-bold text-gray-900 leading-none">Certificado Digital</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 7 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col overflow-hidden h-36 opacity-90 cursor-not-allowed">
+                            <div class="h-20 bg-gray-200 w-full overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80" alt="Noticias" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-[13px] font-bold text-gray-900 leading-none mt-2">Noticias</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta 8 -->
+                        <div class="border border-gray-200 rounded shadow-sm bg-white flex flex-col items-center justify-center h-36 p-4 opacity-90 cursor-not-allowed">
+                            <div class="flex items-center gap-2">
+                                <div class="grid grid-cols-2 gap-0.5 w-6 h-6">
+                                    <div class="bg-cyan-500 rounded-sm"></div><div class="bg-cyan-500 rounded-sm"></div>
+                                    <div class="bg-cyan-500 rounded-sm"></div><div class="bg-white"></div>
+                                </div>
+                                <div class="flex flex-col leading-none">
+                                    <span class="text-[10px] text-gray-500">portal de la</span>
+                                    <span class="text-lg text-cyan-600 font-light tracking-tight">transparencia</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Grid de 8 Bloques -->
-                <div class="grid grid-cols-4 gap-x-5 gap-y-6">
+                <!-- VISTA 2: SOLICITUD PASO 1 (Autenticación) -->
+                <div id="vista-solicitud-1" class="hidden max-w-3xl mx-auto mt-6">
+                    <h2 class="text-2xl text-fnmtDarkBlue border-b-2 border-fnmtDarkBlue pb-2 mb-6">Solicitud de Certificado: Administrador Único o Solidario</h2>
+                    <p class="text-sm mb-6 text-gray-700">Para solicitar el certificado de representante debe identificarse previamente con su Certificado Digital de Persona Física en vigor (cuya acreditación presencial sea inferior a 5 años).</p>
+                    <button onclick="abrirModalCertificado()" class="bg-fnmtDarkBlue text-white px-6 py-2.5 rounded hover:bg-fnmtHoverBlue shadow transition font-bold">
+                        <i class="fa-solid fa-certificate mr-2"></i> Identificarse con Certificado
+                    </button>
+                </div>
+
+                <!-- VISTA 3: SOLICITUD PASO 2 (Formulario Empresa y Contacto) -->
+                <div id="vista-solicitud-2" class="hidden max-w-3xl mx-auto mt-6">
+                    <h2 class="text-2xl text-fnmtDarkBlue border-b-2 border-fnmtDarkBlue pb-2 mb-6">Datos de la Sociedad y Contacto</h2>
+                    <form id="form-solicitud" onsubmit="procesarSolicitud(event)" class="space-y-6">
+                        
+                        <div class="bg-gray-50 p-6 border rounded border-gray-300">
+                            <label class="block text-sm font-bold mb-2 text-gray-800">NIF de la Sociedad (S.L. o S.A.) *</label>
+                            <input type="text" id="sim-nif" required class="w-full border border-gray-300 p-2.5 rounded uppercase" placeholder="Ej: B12345678">
+                        </div>
+
+                        <div class="bg-gray-50 p-6 border rounded border-gray-300 space-y-5">
+                            <div>
+                                <label class="block text-sm font-bold mb-2 text-gray-800">Correo Electrónico *</label>
+                                <input type="email" required class="w-full border border-gray-300 p-2.5 rounded" placeholder="notificaciones@somostugestoria.es">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-2 text-red-700">Contraseña de Solicitud *</label>
+                                <p class="text-[12px] text-red-600 mb-2 font-bold bg-red-50 p-2 border border-red-200 rounded">⚠️ Esta contraseña NO es recuperable; si la olvida o la pierde deberá reiniciar todo el trámite.</p>
+                                <input type="password" required class="w-full border border-gray-300 p-2.5 rounded" placeholder="Establezca una contraseña segura">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="bg-fnmtDarkBlue text-white px-6 py-3 rounded hover:bg-fnmtHoverBlue shadow w-full font-bold text-lg">
+                            Enviar Petición al Registro Mercantil
+                        </button>
+                    </form>
+                </div>
+
+                <!-- VISTA 4: DESCARGA Y PAGO -->
+                <div id="vista-descarga" class="hidden max-w-3xl mx-auto mt-6">
+                    <h2 class="text-2xl text-fnmtDarkBlue border-b-2 border-fnmtDarkBlue pb-2 mb-6">Descargar Certificado y Pago de Tasas</h2>
+                    <p class="text-sm mb-4 text-gray-700">La emisión del certificado de representante tiene un coste de <strong>24 € + impuestos</strong> y una validez de 2 años.</p>
                     
-                    <!-- Tarjeta 1 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="App Movil" class="w-full h-full object-cover opacity-90">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">App Móvil</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 2 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=400&q=80" alt="Video Identificacion" class="w-full h-full object-cover opacity-90">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén tu Certificado con</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">Vídeo Identificación</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 3 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Ciudadano" class="w-full h-full object-cover opacity-90">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">Ciudadano</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 4 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=400&q=80" alt="Empresa" class="w-full h-full object-cover opacity-90">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">Empresa</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 5 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 w-full overflow-hidden relative bg-black">
-                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=400&q=80" alt="Componente" class="w-full h-full object-cover opacity-70">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Obtén/Renueva tu Certificado</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">Componente</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 6 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-[#004b87] w-full flex items-center justify-center text-white text-3xl">
-                            <i class="fa-solid fa-laptop-file"></i>
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[11px] text-gray-600 mb-0.5">Verifica el estado de tu</span>
-                            <span class="text-[13px] font-bold text-gray-900 leading-none">Certificado Digital</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 7 -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col overflow-hidden h-36">
-                        <div class="h-20 bg-gray-200 w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80" alt="Noticias" class="w-full h-full object-cover opacity-90">
-                        </div>
-                        <div class="flex-1 flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-[13px] font-bold text-gray-900 leading-none mt-2">Noticias</span>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 8 (Portal Transparencia) -->
-                    <div class="border border-gray-200 rounded shadow-sm hover:shadow-md transition bg-white flex flex-col items-center justify-center h-36 p-4">
-                        <div class="flex items-center gap-2">
-                            <div class="grid grid-cols-2 gap-0.5 w-6 h-6">
-                                <div class="bg-cyan-500 rounded-sm"></div>
-                                <div class="bg-cyan-500 rounded-sm"></div>
-                                <div class="bg-cyan-500 rounded-sm"></div>
-                                <div class="bg-white"></div>
+                    <form id="form-descarga" onsubmit="procesarDescarga(event)" class="space-y-5 bg-gray-50 p-8 border border-gray-300 rounded shadow-sm">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-1 text-gray-800">NIF/NIE del Representante *</label>
+                                <input type="text" required class="w-full border border-gray-300 p-2.5 rounded">
                             </div>
-                            <div class="flex flex-col leading-none">
-                                <span class="text-[10px] text-gray-500">portal de la</span>
-                                <span class="text-lg text-cyan-600 font-light tracking-tight">transparencia</span>
+                            <div>
+                                <label class="block text-sm font-bold mb-1 text-gray-800">Primer Apellido *</label>
+                                <input type="text" required class="w-full border border-gray-300 p-2.5 rounded uppercase">
                             </div>
                         </div>
-                    </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1 text-gray-800">Código de Solicitud (9 dígitos) *</label>
+                            <input type="text" id="input-codigo" required maxlength="9" class="w-full border border-gray-400 p-3 rounded font-mono text-xl tracking-widest text-center bg-white shadow-inner">
+                        </div>
 
+                        <div class="pt-6 border-t border-gray-300 mt-4">
+                            <h3 class="font-bold text-sm mb-3 text-gray-800"><i class="fa-regular fa-credit-card mr-1"></i> Pasarela de Pago Oficial</h3>
+                            <button type="submit" class="bg-green-700 text-white px-6 py-3 rounded hover:bg-green-800 shadow w-full font-bold text-lg transition">
+                                Abonar Tasa (24,00 €) y Descargar (.PFX)
+                            </button>
+                        </div>
+                    </form>
                 </div>
+
+                <!-- VISTA 5: ÉXITO -->
+                <div id="vista-exito" class="hidden text-center py-12 max-w-3xl mx-auto">
+                    <i class="fa-solid fa-circle-check text-6xl text-green-600 mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">¡Práctica de Simulación Completada!</h2>
+                    <p class="text-gray-600 text-lg">El certificado se ha instalado correctamente en el almacén de Windows de este navegador simulado.</p>
+                    
+                    <div class="mt-8 p-6 bg-blue-50 border-l-4 border-blue-600 text-left rounded shadow-sm">
+                        <h3 class="font-bold text-blue-900 mb-3 text-lg"><i class="fa-solid fa-list-check mr-2"></i>Siguientes pasos obligatorios (Worki):</h3>
+                        <ol class="list-decimal pl-6 space-y-2 text-blue-800 font-medium">
+                            <li>Exportar el certificado desde Chrome marcando estrictamente <span class="bg-yellow-200 px-1 text-gray-900 rounded">"Sí, exportar la clave privada"</span>.</li>
+                            <li>Aplicar la contraseña interna estándar de la gestoría al archivo.</li>
+                            <li>Guardar el archivo <span class="font-mono bg-white px-1 text-xs">.PFX</span> en la Carpeta de Firma Digital del cliente en el NAS.</li>
+                            <li>Registrar la fecha exacta de vencimiento y configurar el correo DEHú en la plataforma Worki.</li>
+                        </ol>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
-    <!-- Banner de Cookies Inferior -->
-    <div class="bg-[#1c3c5f] text-white p-4 w-full flex justify-between items-center z-50 fixed bottom-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-        <div class="pr-8">
-            <h4 class="font-bold text-xs mb-1">INFORMACIÓN SOBRE COOKIES</h4>
-            <p class="text-[11px] leading-tight text-gray-200">
-                Este sitio web emplea elementos técnicos de almacenamiento y recuperación de datos (cookies) propios y de terceros orientados a optimizar la experiencia de usuario, permitir funcionalidades básicas y registrar preferencias operativas durante su sesión en el portal. Al continuar con la navegación, se asume su conformidad con estas políticas de uso. 
-                <a href="#" class="underline hover:text-white font-bold ml-1">Más Información.</a>
-            </p>
+    <!-- MODAL SIMULADOR WINDOWS: Selección de Certificado -->
+    <div id="modal-cert" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-white w-[450px] rounded shadow-2xl border border-gray-400 flex flex-col overflow-hidden">
+            <div class="bg-white border-b px-4 py-3 flex justify-between items-center">
+                <span class="font-sans text-sm text-gray-700">Seguridad de Windows</span>
+                <i class="fa-solid fa-xmark cursor-pointer hover:bg-red-500 hover:text-white px-2 py-0.5 rounded transition" onclick="cerrarModalCertificado()"></i>
+            </div>
+            <div class="p-6 bg-gray-50 flex-1">
+                <h3 class="text-lg text-[#003399] font-medium mb-1">Seleccionar un certificado</h3>
+                <p class="text-xs text-gray-600 mb-4">El sitio web sede.fnmt.gob.es necesita sus credenciales:</p>
+                
+                <div class="border border-blue-400 bg-white p-3 rounded cursor-pointer hover:bg-blue-50 flex gap-4 items-center shadow-sm transition" onclick="seleccionarCert()">
+                    <i class="fa-solid fa-certificate text-3xl text-yellow-500"></i>
+                    <div>
+                        <div class="font-bold text-sm text-gray-800">JUAN PÉREZ LÓPEZ (AUTENTICACIÓN)</div>
+                        <div class="text-[11px] text-gray-500">Emisor: AC FNMT Usuarios</div>
+                        <div class="text-[11px] text-gray-500">Válido hasta: 15/12/2028 (Acreditación < 5 años)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-100 border-t px-4 py-3 flex justify-end gap-2">
+                <button class="px-6 py-1.5 bg-gray-300 border border-gray-400 rounded text-sm hover:bg-gray-400 font-medium" onclick="cerrarModalCertificado()">Cancelar</button>
+                <button class="px-6 py-1.5 bg-[#0055cc] text-white border border-[#0044aa] rounded text-sm hover:bg-[#0044aa] font-medium transition" onclick="avanzarFormulario()">Aceptar</button>
+            </div>
         </div>
-        <button class="bg-[#3b82f6] hover:bg-blue-600 text-white text-[11px] font-bold px-8 py-2.5 rounded shadow-sm transition whitespace-nowrap">
-            ACEPTO
-        </button>
     </div>
 
-    <!-- Padding inferior extra para que el footer fijo no tape contenido -->
-    <div class="h-20 bg-white"></div>
+    <!-- NOTIFICACIÓN FLOTANTE SIMULADOR DE CORREO -->
+    <div id="simulador-correo" class="hidden fixed bottom-6 right-6 w-[350px] bg-white rounded shadow-2xl border-l-4 border-blue-500 z-50 overflow-hidden transform translate-y-20 transition-transform duration-500">
+        <div class="bg-gray-100 px-3 py-2 border-b text-xs font-bold text-gray-600 flex justify-between items-center">
+            <span><i class="fa-solid fa-envelope mr-1 text-blue-600"></i> Webmail Gestoría (Simulador)</span>
+            <i class="fa-solid fa-xmark cursor-pointer text-gray-400 hover:text-gray-800" onclick="cerrarCorreo()"></i>
+        </div>
+        <div class="p-5">
+            <p class="text-[11px] text-gray-500 mb-1">De: notificaciones@fnmt.es</p>
+            <p class="text-sm font-bold text-gray-800 mb-2">Código de Solicitud FNMT</p>
+            <p class="text-xs text-gray-700 mb-4">Su código para la descarga del certificado de administrador es:</p>
+            <div class="bg-yellow-50 border border-yellow-300 text-center py-3 text-2xl font-mono tracking-widest font-bold text-blue-900 rounded shadow-inner select-all" id="codigo-generado">
+                ---------
+            </div>
+            <p class="text-[10px] text-gray-500 mt-4 text-center">* En el entorno real, la FNMT exige esperar 1 hora antes de permitir la descarga y pago.</p>
+        </div>
+    </div>
 
     <script>
-        // Script para reloj dinámico y fecha en cabecera
+        let codigoActual = "";
+
+        // Reloj y Fecha en tiempo real
         function updateDateTime() {
             const now = new Date();
+            document.getElementById('current-date').textContent = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+            document.getElementById('current-time').textContent = String(now.getHours()).padStart(2, '0') + 'h : ' + String(now.getMinutes()).padStart(2, '0') + 'm : ' + String(now.getSeconds()).padStart(2, '0') + 's';
+        }
+        setInterval(updateDateTime, 1000); updateDateTime();
+
+        // Control de Menús Laterales
+        function toggleMenu(id) {
+            const menu = document.getElementById(id);
+            const icon = id === 'menu-empresa' ? document.getElementById('icon-empresa') : document.getElementById('icon-admin');
             
-            // Formatear Fecha (DD/MM/YYYY)
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            document.getElementById('current-date').textContent = `${day}/${month}/${year}`;
-            
-            // Formatear Hora (HHh : MMm : SSs)
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('current-time').textContent = `${hours}h : ${minutes}m : ${seconds}s`;
+            if (menu.classList.contains('menu-open')) {
+                menu.classList.remove('menu-open');
+                if(icon) icon.textContent = '+';
+            } else {
+                menu.classList.add('menu-open');
+                if(icon) icon.textContent = '-';
+                // Mostrar el aviso legal solo cuando despliegan Empresa
+                if(id === 'menu-empresa') document.getElementById('aviso-legal').classList.remove('hidden');
+            }
         }
 
-        setInterval(updateDateTime, 1000);
-        updateDateTime(); // Ejecución inicial inmediata
+        // Navegación de Vistas
+        function ocultarTodasLasVistas() {
+            const vistas = ['vista-inicio', 'vista-solicitud-1', 'vista-solicitud-2', 'vista-descarga', 'vista-exito'];
+            vistas.forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById('aviso-legal').classList.add('hidden'); // Ocultar aviso al cambiar vista
+        }
+
+        function mostrarVista(id) {
+            ocultarTodasLasVistas();
+            document.getElementById(id).classList.remove('hidden');
+            // Mantener el aviso legal visible si seguimos en el flujo de Empresa
+            if(id !== 'vista-inicio' && id !== 'vista-exito') {
+                document.getElementById('aviso-legal').classList.remove('hidden');
+            }
+        }
+
+        // LÓGICA DEL SIMULADOR
+        function iniciarSolicitud() { mostrarVista('vista-solicitud-1'); }
+
+        function mostrarErrorTrampa() {
+            alert("❌ ERROR CRÍTICO DE PRÁCTICA: Has seleccionado 'Representante de Persona Jurídica'. El aviso legal en pantalla advierte expresamente que un Administrador Único/Solidario NUNCA debe usar esta opción.");
+        }
+
+        function abrirModalCertificado() { document.getElementById('modal-cert').classList.remove('hidden'); }
+        function cerrarModalCertificado() { document.getElementById('modal-cert').classList.add('hidden'); }
+        function avanzarFormulario() {
+            cerrarModalCertificado();
+            mostrarVista('vista-solicitud-2');
+        }
+
+        function procesarSolicitud(e) {
+            e.preventDefault();
+            codigoActual = Math.floor(100000000 + Math.random() * 900000000).toString();
+            document.getElementById('codigo-generado').textContent = codigoActual;
+            
+            const correo = document.getElementById('simulador-correo');
+            correo.classList.remove('hidden');
+            setTimeout(() => { correo.classList.remove('translate-y-20'); }, 100);
+            
+            e.target.innerHTML = `<div class="bg-green-50 text-green-800 p-6 rounded shadow-sm font-bold text-center border border-green-300">
+                <i class="fa-solid fa-check text-2xl block mb-2"></i>
+                Solicitud registrada con éxito en el Registro Mercantil simulado.<br>El código se ha enviado al Webmail de la gestoría.
+            </div>`;
+        }
+
+        function cerrarCorreo() {
+            const correo = document.getElementById('simulador-correo');
+            correo.classList.add('translate-y-20');
+            setTimeout(() => { correo.classList.add('hidden'); }, 500);
+        }
+
+        function procesarDescarga(e) {
+            e.preventDefault();
+            const inputCodigo = document.getElementById('input-codigo').value;
+            
+            if (inputCodigo !== codigoActual && codigoActual !== "") {
+                alert("❌ El código de 9 dígitos introducido no coincide con el enviado a su correo simulado.");
+                return;
+            }
+            mostrarVista('vista-exito');
+        }
+
+        function reiniciarSimulador() { location.reload(); }
     </script>
 </body>
 </html>
